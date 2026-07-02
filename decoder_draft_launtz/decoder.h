@@ -1,4 +1,33 @@
+#include <stdio.h>
+#define REGISTERS 8
+#define CATEGORIES 16
+
+int decodeInstruction(int instruction);
+int handleALUInstruction (int instruction, int* cycle_p);
+int handleHaltInstruction (int instruction, int* cycle_p);
+int handleHighInstructions (int instruction, int* cycle_p);
+int handleLowInstructions (int instruction, int* cycle_p);
+int handleMoveInstruction (int instruction, int* cycle_p);
+
+typedef enum  {
+    B,
+    C,
+    D,
+    E,
+    H,
+    L,
+    M, // stand-in for a location in memory
+    A
+} CPURegister;
+
+char CPURegisters[] = {'B','C','D','E','H','L','M','A'};
+char *ALUOps[] = {"ADD", "ADC", "SUB", "SBB", "ANA", "XRA", "ORA", "CMP"};
+char *CPURegisterPairs[] = {"BC", "DE", "HL", "SP"};
+char statusFlags[] = {'Z', 'C', 'P', 'S'}; 
+
 /*
+* NOTES ON OPCODES FOR THE INTEL 8080 CPU
+*
 *  -------- HEXADECIMAL RANGE:      0-3F -----------
 *
 *   16 BIT "REGISTER PAIRS" = [
