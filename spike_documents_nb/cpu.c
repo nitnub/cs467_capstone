@@ -240,7 +240,7 @@ void setFlags(state *s, uint16_t oldValue, uint16_t newValue) {
 
 
 // INR r (Increment Register)
-// (r) ~ (r) + 1
+// (r) <- (r) + 1
 // The content of register r is incremented by one.
 // Note: All condition flags except CY are affected.
 int opInr(state *s, uint8_t *rgstr) {
@@ -252,7 +252,7 @@ int opInr(state *s, uint8_t *rgstr) {
 }
 
 // INR M (Increment memory)
-// ((H) (L)) ~ ((H) (L)) + 1
+// ((H) (L)) <- ((H) (L)) + 1
 // The content of the memory location whose address
 // is contained in the H and L registers is incremented
 // by one. Note: All condition flags except CY are
@@ -267,7 +267,7 @@ int opInrMem(state *s) {
 }
 
 // DCR r (Decrement Register)
-// (r) ~ (r)-1
+// (r) <- (r)-1
 // The content of register r is decremented by one.
 // Note: All condition flag~ except CY are affected
 int opDcr(state *s, uint8_t *rgstr) {
