@@ -31,7 +31,7 @@ int parseBinary(char *filepath, struct instructionData *currentIns) {
 
         cursorStatus = fseek(rom_ptr, offset, SEEK_SET);
 
-        printf("0x%02lx: ", ftell(rom_ptr));
+        printf("0x%04lx: ", ftell(rom_ptr));
 
         // read 3 bytes into the buffer starting at location byteCounter
         byteCounter = fread(buffer, sizeof(unsigned char), 3, rom_ptr);

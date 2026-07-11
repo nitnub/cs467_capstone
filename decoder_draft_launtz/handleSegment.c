@@ -190,7 +190,7 @@ int segment0_1(struct instructionData *currentIns) {
 
     // insert and print assembly instructions
     modifyRegisterPair(registerPair, &printableRegisterPair);
-    sprintf(currentIns->assembly, "LXI %s, %x%x ", printableRegisterPair, currentIns->operand2, currentIns->operand1);
+    sprintf(currentIns->assembly, "LXI %s, 0x%02X%02X ", printableRegisterPair, currentIns->operand2, currentIns->operand1);
     //printf("%s\n", currentIns->assembly);
 
     // insert help instructions
@@ -243,7 +243,7 @@ int segment0_2(struct instructionData *currentIns) {
         case 2:
             // store content of registers HL in memory (imm1 is low part of address, imm2 is high part)
             // addr <- low, addr + 1 <- high
-            sprintf(currentIns->assembly, "SHLD %x%x", currentIns->operand2, currentIns->operand1);
+            sprintf(currentIns->assembly, "SHLD 0x%02X%02X", currentIns->operand2, currentIns->operand1);
             // printf("%s\n", currentIns->assembly);
             // store help instructions
             sprintf(currentIns->help, 
@@ -255,7 +255,7 @@ int segment0_2(struct instructionData *currentIns) {
 
         case 3:
             // store accumulator in memory (N+1 imm: low address, N+2 imm: high address)
-            sprintf(currentIns->assembly, "STA %x%x", currentIns->operand2, currentIns->operand1);
+            sprintf(currentIns->assembly, "STA 0x%02X%02X", currentIns->operand2, currentIns->operand1);
             // printf("%s\n", currentIns->assembly);
             // store help instructions
             sprintf(currentIns->help, "Store accumulator in memory (N+1 imm is low address, N+2 is high).");
@@ -344,7 +344,7 @@ int segment0_5(struct instructionData *currentIns) {
     // set clock cycles
     currentIns->cycles = 5;
 
-    printf("to implement: dispatch segment 0 mod 0x05\n");
+    // printf("to implement: dispatch segment 0 mod 0x05\n");
     return 0;
 }
 
@@ -360,7 +360,7 @@ int segment0_6(struct instructionData *currentIns) {
     char* reg = CPURegisters[register_index];
 
     // store assembly
-    sprintf(currentIns->assembly, "MVI %s, 0x%x", reg, currentIns->operand1);
+    sprintf(currentIns->assembly, "MVI %s, 0x%02X", reg, currentIns->operand1);
     // printf("%s\n", currentIns->assembly);
 
     // store help information
@@ -467,9 +467,9 @@ int segment0_A(struct instructionData *currentIns) {
 
         case 2:
             // LHDR addr
-            sprintf(currentIns->assembly, "LHDR %x%x", currentIns->operand2, currentIns->operand1);
+            sprintf(currentIns->assembly, "LHDR 0x%02X%02X", currentIns->operand2, currentIns->operand1);
             // printf("%s\n", currentIns->assembly);
-            sprintf(currentIns->help, "Load the contents of registers HL into memory at immediate address %x (high), %x (low)", 
+            sprintf(currentIns->help, "Load the contents of registers HL into memory at immediate address 0x%02x (high), 0x%02x (low)", 
                     currentIns->operand2, currentIns->operand1 );
             currentIns->cycles = 16;
             immediateCount = 2;
@@ -477,7 +477,7 @@ int segment0_A(struct instructionData *currentIns) {
 
         case 3:
             // LDA addr
-            sprintf(currentIns->assembly, "LDA %x%x", currentIns->operand2, currentIns->operand1);
+            sprintf(currentIns->assembly, "LDA 0x%02X%02X", currentIns->operand2, currentIns->operand1);
             // printf("%s\n", currentIns->assembly);
             sprintf(currentIns->help, "load accumulator directly from memory (N+1 low  address, N+2 high address");
             currentIns->cycles = 13;
@@ -549,7 +549,7 @@ int segment0_E(struct instructionData *currentIns) {
     int regIndex = (getSeqIndex_16(currentIns) * 2) + 1;
     char *reg = CPURegisters[regIndex];
 
-    sprintf(currentIns->assembly, "MVI %s, %x", reg, currentIns->operand1);
+    sprintf(currentIns->assembly, "MVI %s, 0x%02X", reg, currentIns->operand1);
     // printf("%s\n", currentIns->assembly);
     sprintf(currentIns->help, "Load immediate byte into %s", reg);
 
@@ -722,7 +722,7 @@ int segment3_2(struct instructionData *currentIns) {
     int conditionalIndex = getSeqIndex_8(currentIns);
     char* flag = flagConditionals[conditionalIndex];
 
-    sprintf(currentIns->assembly, "J%s %x%x", flag, currentIns->operand2, currentIns->operand1);
+    sprintf(currentIns->assembly, "J%s 0x%02X%02X", flag, currentIns->operand2, currentIns->operand1);
     // printf("%s\n", currentIns->assembly);
     sprintf(currentIns->help, 
             "Jump if flag is clear\n(NZ = not zero, NC = not carry, PO = parity is odd (even parity clear), P = positive (sign clear))");
@@ -743,7 +743,7 @@ int segment3_3(struct instructionData *currentIns) {
 
         case 0:
             // unconditional jump
-            sprintf(currentIns->assembly, "%s %x%x", ops[opIndex], currentIns->operand2, currentIns->operand1);
+            sprintf(currentIns->assembly, "%s 0x%02X%02X", ops[opIndex], currentIns->operand2, currentIns->operand1);
             sprintf(currentIns->help, "Unconditional jump");
             currentIns->cycles = 10;
             instructionCount = 2;
@@ -751,7 +751,7 @@ int segment3_3(struct instructionData *currentIns) {
 
         case 1:
             // output
-            sprintf(currentIns->assembly, "%s %x", ops[opIndex], currentIns->operand1);
+            sprintf(currentIns->assembly, "%s 0x%02X", ops[opIndex], currentIns->operand1);
             sprintf(currentIns->help, "Output (port)");
             currentIns->cycles = 10;
             instructionCount = 1;
@@ -784,7 +784,7 @@ int segment3_4(struct instructionData *currentIns) {
     int conditionalIndex = getSeqIndex_8(currentIns);
     char* flag = flagConditionals[conditionalIndex];
 
-    sprintf(currentIns->assembly, "C%s %x%x", flag, currentIns->operand2, currentIns->operand1);
+    sprintf(currentIns->assembly, "C%s 0x%02X%02X", flag, currentIns->operand2, currentIns->operand1);
     // printf("%s\n", currentIns->assembly);
     sprintf(currentIns->help, 
             "Call subroutine if flag is clear\n(NZ = not zero, NC = not carry, PO = parity is odd (even parity clear), P = positive (sign clear))");
@@ -834,7 +834,7 @@ int segment3_6(struct instructionData *currentIns) {
     char* op = ALUImmInstructions[opIndex];
     int helpSource = 8;
 
-    sprintf(currentIns->assembly, "%s %x", op, currentIns->operand1);
+    sprintf(currentIns->assembly, "%s 0x%02X", op, currentIns->operand1);
     handleALUHelp(currentIns, &opIndex, &helpSource);
 
     currentIns->cycles = 7;
@@ -933,7 +933,7 @@ int segment3_A(struct instructionData *currentIns) {
     int conditionalIndex = getSeqIndex_8(currentIns);
     char* flag = flagConditionals[conditionalIndex];
 
-    sprintf(currentIns->assembly, "J%s %x%x", flag, currentIns->operand2, currentIns->operand1);
+    sprintf(currentIns->assembly, "J%s 0x%02X%02X", flag, currentIns->operand2, currentIns->operand1);
     // printf("%s\n", currentIns->assembly);
     sprintf(currentIns->help, 
             "Jump if flag is set\n(Z = zero, C = carry, PE = parity is even, M = negative (sign set))");
@@ -958,14 +958,14 @@ int segment3_B(struct instructionData *currentIns) {
         case 0:
             // undefined
             sprintf(currentIns->assembly, "Undefined instruction");
-            printf("Invalid instruction: %x\n", currentIns->instruction);
+            printf("Invalid instruction: 0x%02x\n", currentIns->instruction);
             return -1;
             break;
 
         case 1:
             // input
-            sprintf(currentIns->assembly, "%s %x", ops[opIndex], currentIns->operand1);
-            sprintf(currentIns->help, "Input from port %x", currentIns->operand1);
+            sprintf(currentIns->assembly, "%s 0x%02X", ops[opIndex], currentIns->operand1);
+            sprintf(currentIns->help, "Input from port 0x%02x", currentIns->operand1);
             currentIns->cycles = 10;
             immediateBytes = 1;
             break;
@@ -999,7 +999,7 @@ int segment3_C(struct instructionData *currentIns) {
     int conditionalIndex = getSeqIndex_8(currentIns);
     char* flag = flagConditionals[conditionalIndex];
 
-    sprintf(currentIns->assembly, "C%s %x%x", flag, currentIns->operand2, currentIns->operand1);
+    sprintf(currentIns->assembly, "C%s 0x%02X%02X", flag, currentIns->operand2, currentIns->operand1);
     // printf("%s\n", currentIns->assembly);
     sprintf(currentIns->help, 
             "Call subroutine if flag is set\n(Z = zero, C = carry, PE = parity is even, M = negative (sign set))");
@@ -1018,7 +1018,7 @@ int segment3_D(struct instructionData *currentIns) {
 
     // 0xCD is the only valid instruction in this group (unconditional call)
     if (currentIns->instruction == 0xCD) {
-        sprintf(currentIns->assembly, "CAL %x%x", currentIns->operand2, currentIns->operand1);
+        sprintf(currentIns->assembly, "CAL 0x%02X%02X", currentIns->operand2, currentIns->operand1);
         sprintf(currentIns->help, "Unconditional call subroutine at immediate address");
         currentIns->cycles = 17;
         // printf("%s\n", currentIns->assembly);
@@ -1041,7 +1041,7 @@ int segment3_E(struct instructionData *currentIns) {
     char* op = ALUImmInstructions[opIndex];
     int helpSource = 8;
 
-    sprintf(currentIns->assembly, "%s %x", op, currentIns->operand1);
+    sprintf(currentIns->assembly, "%s 0x%02X", op, currentIns->operand1);
     handleALUHelp(currentIns, &opIndex, &helpSource);
 
     currentIns->cycles = 7;
