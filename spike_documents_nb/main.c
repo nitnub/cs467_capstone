@@ -39,7 +39,7 @@ int main1() {
 
 
     // Uncomment to print initial emulator memory state (can call func elsewhere as well)
-    // return printMemoryAddresses(&cpu_state);
+    return printMemoryAddresses(&cpu_state);
 
     // Uncomment to print initial emulator cpu state (can call func elsewhere as well)
     // printState(&cpu_state);

@@ -6,7 +6,6 @@
 
 #define MEM_SIZE 65536
 
-
 // current memory struct layout follows pattern from the emulator101 resource for now
 typedef struct {
     uint8_t a;

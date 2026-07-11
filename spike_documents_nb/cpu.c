@@ -35,7 +35,6 @@ unsigned char *getFileBuffer(char fileName[], size_t *fSize) {
     return buffer;
 }
 
-
 int copyBufferToMemory(const size_t bufferLen, const unsigned char *buffer, state *s) {
     for (int i = 0; i < bufferLen; i++) {
         s->memory[i] = buffer[i];
@@ -46,14 +45,52 @@ int copyBufferToMemory(const size_t bufferLen, const unsigned char *buffer, stat
 int printMemoryAddresses(const state *s) {
     uint16_t rowId = 0x00;
 
+    // print header
+    printf("Address");
+    for (int i = 0; i < 16; i++) {
+        if (i % 8 == 0) {
+            printf(" ");
+        }
+        printf("%02x ", i);
+    }
+    printf("\n");
+
+    // print rows
+    char asciiRow[17] = {'\0'};
     for (int i = 0; i < MEM_SIZE; i++) {
+        const uint8_t value = s->memory[i];
+
         // print row labels
+        if (i % 8 == 0) {
+            printf(" ");
+        }
+
+        // if hex row has been looped through, append ascii row
         if (i % 16 == 0) {
-            printf("\n0x%04x", rowId);
+            // append ascii row to end (cover edge case of row 0)
+            printf(" %s", asciiRow);
+        }
+
+        // update ascii char array for ascii range: 21(!) - 7e(~)
+        if (value > 0x1f && value < 0x7f) {
+            asciiRow[i % 16] = (char) value;
+        } else {
+            asciiRow[i % 16] = '.';
+        }
+
+        // if hex and ascii row have been added, go to newline
+        if (i % 16 == 0) {
+            // jump to next line
+            printf("\n00%04x:", rowId);
             rowId += 0x10;
         }
-        printf(" %02x", s->memory[i]);
+
+        // add next value to hex row
+        printf(" %02x", value);
     }
+
+    // print last row
+    printf("  %s", asciiRow);
     return 0;
 }
 
@@ -203,7 +240,7 @@ void setFlags(state *s, uint16_t oldValue, uint16_t newValue) {
 
 
 // INR r (Increment Register)
-// (r) ~ (r) + 1
+// (r) <- (r) + 1
 // The content of register r is incremented by one.
 // Note: All condition flags except CY are affected.
 int opInr(state *s, uint8_t *rgstr) {
@@ -215,7 +252,7 @@ int opInr(state *s, uint8_t *rgstr) {
 }
 
 // INR M (Increment memory)
-// ((H) (L)) ~ ((H) (L)) + 1
+// ((H) (L)) <- ((H) (L)) + 1
 // The content of the memory location whose address
 // is contained in the H and L registers is incremented
 // by one. Note: All condition flags except CY are
@@ -230,7 +267,7 @@ int opInrMem(state *s) {
 }
 
 // DCR r (Decrement Register)
-// (r) ~ (r)-1
+// (r) <- (r)-1
 // The content of register r is decremented by one.
 // Note: All condition flag~ except CY are affected
 int opDcr(state *s, uint8_t *rgstr) {
