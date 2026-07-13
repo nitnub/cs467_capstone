@@ -5,7 +5,7 @@
 struct instructionData code;
 
 /*
-* set up object for unit testiong
+* set up object for unit testing of dispatch function (disassembler)
 */
 int setupTests(int opcode, struct instructionData *currentIns) {
 
