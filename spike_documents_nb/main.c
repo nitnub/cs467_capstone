@@ -8,8 +8,8 @@
 
 
 // temporarily rename to "main1" to avoid conflicts; change back if testing these spike files...
-int main1() {
-    state cpu_state = {};
+int main() {
+    state cpuState = {};
 
     // update file name to point to valid ROM
     char fileName[] = "invaders.combined";
@@ -22,40 +22,34 @@ int main1() {
     // return printAssembly(fileName);
 
 
-
     /* ******************
      * Run Emulator (PoC)
      * ******************/
 
-    // copy file buffer from ROM to computer's memory...
-    size_t fSize;
-    unsigned char * buffer = getFileBuffer(fileName, &fSize );
-
-    if (buffer == NULL) {
-        return EXIT_FAILURE;
-    }
-
-    copyBufferToMemory(fSize, buffer, &cpu_state);
-
+    // copy file buffer from ROM to cpu struct's memory...            
+    loadRomToMemory(&cpuState,fileName);
 
     // Uncomment to print initial emulator memory state (can call func elsewhere as well)
-    return printMemoryAddresses(&cpu_state);
-
-    // Uncomment to print initial emulator cpu state (can call func elsewhere as well)
-    // printState(&cpu_state);
+    // return printAllMemoryAddresses(&cpu_state);
 
 
-    // endless "done" loop as simple placeholder for now
-    // can set a range conditional for "done" to force loop to end and then print state / memory
+    // Uncomment to print initial emulator ROM state (can call func elsewhere as well)
+    // return printRomAddresses(&cpuState);
+    
+    // current cpu implementation gets to loop at address 1a32
+    // can set a range to force loop to end and then print state / memory.
     int done = 0;
-    while (!done) {
-        if (emulate(&cpu_state) == -1) {
-            free(buffer);
+    while (done < 1000) {
+        if (emulate(&cpuState) == -1) {
             return EXIT_FAILURE;
         }
+        printState(&cpuState);
+        done++;
     }
 
-    // free buffer
-    free(buffer);
+    // uncomment to print all memory or ROM memory range only at end of emulation loop 
+    // return printAllMemoryAddresses(&cpuState);
+    printRomAddresses(&cpuState);
+
     return EXIT_SUCCESS;
 }

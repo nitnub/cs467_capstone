@@ -21,8 +21,6 @@ int printAssembly(char fileName[]) {
     // free the buffer
     free(buffer);
     return 0;
-
-
 }
 
 int disassemble(const unsigned char *codeBuffer, const int pc) {

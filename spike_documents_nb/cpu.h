@@ -6,6 +6,12 @@
 
 #define MEM_SIZE 65536
 
+#define MEM_START 0x00
+#define MEM_RAM_START 0x2000
+#define MEM_VIDEO_START 0x2400
+#define MEM_RAM_MIRROR_START 0x4000
+#define MEM_END 0x10000
+
 // current memory struct layout follows pattern from the emulator101 resource for now
 typedef struct {
     uint8_t a;
@@ -33,6 +39,10 @@ typedef struct {
     unsigned char memory[MEM_SIZE];     // memory
 } state;
 
+
+
+
+int loadRomToMemory(state *s, char fileName[]);
 
 /**
  * Move the given file's contents to a usable buffer. Must be freed.
@@ -64,7 +74,37 @@ int emulate( state *s);
  * @param s reference to an Intel 8080 state struct
  * @return 0 on success
  */
-int printMemoryAddresses(const state *s);
+int printAllMemoryAddresses(const state *s);
+
+/**
+ * Print the ROM section of the given state struct's memory array.
+ * @param s reference to an Intel 8080 state struct
+ * @return 0 on success
+ */
+int printRomAddresses(const state *s);
+
+/**
+ * Print the RAM section of the given state struct's memory array.
+ * @param s reference to an Intel 8080 state struct
+ * @return 0 on success
+ */
+int printRamAddresses(const state *s);
+
+/**
+ * Print the Video section of the given state struct's memory array.
+ * @param s reference to an Intel 8080 state struct
+ * @return 0 on success
+ */
+int prinVideoMemoryAddresses(const state *s);
+
+/**
+ * Print a custom memory address range from the given state struct.
+ * @param s reference to an Intel 8080 state struct
+ * @param min the min memory address to print
+ * @param max one greater than the final memory address to print
+ * @return 0 on succewss
+ */
+int printMemoryAddresses(const state *s, const int min, const int max);
 
 /**
  * Print the current cpu state in a human-readable format.
