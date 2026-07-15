@@ -32,14 +32,18 @@ typedef struct {
 } status_r;
 
 typedef struct {
+    uint16_t sr;                        // shift register
+    uint8_t sr_result;                  // result of latest shift register offset calculation
+} siRegister_r;
+
+typedef struct {
     main_r reg;                         // registers
     status_r flags;                     // cpu flags
     uint16_t pc;                        // program counter
     uint16_t sp;                        // stack pointer
     unsigned char memory[MEM_SIZE];     // memory
+    siRegister_r si;
 } state;
-
-
 
 
 int loadRomToMemory(state *s, char fileName[]);

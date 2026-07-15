@@ -115,7 +115,7 @@ int printRamAddresses(const state *s) {
     return printMemoryAddresses(s, MEM_RAM_START, MEM_VIDEO_START);
 }
 
-int prinVideoMemoryAddresses(const state *s) {
+int printVideoMemoryAddresses(const state *s) {
     return printMemoryAddresses(s, MEM_VIDEO_START, MEM_RAM_MIRROR_START);
 }
 
@@ -291,7 +291,7 @@ void setFlags(state *s, uint16_t oldValue, uint16_t newValue) {
 
 
 // INR r (Increment Register)
-// (r) ~ (r) + 1
+// (r) <- (r) + 1
 // The content of register r is incremented by one.
 // Note: All condition flags except CY are affected.
 int opInr(state *s, uint8_t *rgstr) {
@@ -303,7 +303,7 @@ int opInr(state *s, uint8_t *rgstr) {
 }
 
 // INR M (Increment memory)
-// ((H) (L)) ~ ((H) (L)) + 1
+// ((H) (L)) <- ((H) (L)) + 1
 // The content of the memory location whose address
 // is contained in the H and L registers is incremented
 // by one. Note: All condition flags except CY are
@@ -318,7 +318,7 @@ int opInrMem(state *s) {
 }
 
 // DCR r (Decrement Register)
-// (r) ~ (r)-1
+// (r) <- (r)-1
 // The content of register r is decremented by one.
 // Note: All condition flag~ except CY are affected
 int opDcr(state *s, uint8_t *rgstr) {
@@ -344,7 +344,7 @@ int opDcrMem(state *s) {
 }
 
 // MOV r, M (Move from memory)
-// (r) ~ ((H) (L))
+// (r) <- ((H) (L))
 // The content of the memory location, whose address
 // is in registers Hand L, is moved to register r
 int opMovToRegFromMem(state *s, uint8_t *rgstr) {
@@ -373,7 +373,7 @@ int opMovToRegFromReg(state *s, uint8_t *targetReg, const uint8_t *sourceReg) {
 }
 
 // MVI r, data (Move Immediate)
-// (r) ~ (byte 2)
+// (r) <- (byte 2)
 // The content of byte 2 of the instruction is moved to
 // register r.
 int opMviReg(state *s, uint8_t *rgstr, uint8_t value) {
@@ -383,7 +383,7 @@ int opMviReg(state *s, uint8_t *rgstr, uint8_t value) {
 }
 
 // MVI M, data (Move to memory immediate)
-// ((H) (L)) ~ (byte 2)
+// ((H) (L)) <- (byte 2)
 // The content of byte 2 of the instruction is moved to
 // the memory location whose address is in registers H
 // and L.
@@ -414,8 +414,8 @@ int opRlc(state *s) {
 }
 
 // RRC (Rotate right)
-// (An) ~ (An-,); (A7) ~ (AO)
-// (CY) ~ (AO)
+// (An) <- (An-,); (A7) ~ (AO)
+// (CY) <- (AO)
 // The content of the accumulator is rotated right one
 // position. The high order bit and the CY flag are both
 // set to the value shifted out of the low order bit posi-
@@ -431,16 +431,14 @@ int opRrc(state *s) {
     } else {
         s->flags.c = 0;
     }
-
     s->reg.a = tmp & 0xff;
-
     s->pc++;
     return getCycles();
 }
 
 // LHLD addr (Load Hand L direct)
-// (L) ~ ((byte 3)(byte 2))
-// (H) ~ ((byte 3) (byte 2) + 1)
+// (L) <- ((byte 3)(byte 2))
+// (H) <- ((byte 3) (byte 2) + 1)
 // The content of the memory location, whose address
 // is specified in byte 2 and byte 3 of the inion, is
 // moved to register L. The content of the memory loca-
@@ -505,7 +503,7 @@ int opShld(state *s, const uint8_t loBits, const uint8_t hiBits) {
 }
 
 // STC (Set carry)
-// (CY) ~ 1
+// (CY) <- 1
 // The CY flag is set to 1. No other flags are affected.
 int opStc(state *s) {
     s->flags.c = 1;
@@ -650,7 +648,7 @@ int opSubReg(state *s, const uint8_t regValue) {
 
 
 // ANA r (AND Register)
-// (A) ~ (A) /\ (r)
+// (A) <- (A) /\ (r)
 // The content of register r is logically anded with the
 // content of the accumulator. The result is placed in
 // the accumulator. The CY flag is cleared.
@@ -761,7 +759,7 @@ int opCmpMem(state *s) {
 // set to 1 if (A) = (byte 2). The CY flag is set to 1 if
 // (A) < (byte 2).
 int opCpi(state *s, const uint8_t value) {
-    const uint16_t newValue = s->reg.a + value;
+    const uint16_t newValue = s->reg.a - value;
     setFlags(s, s->reg.a, newValue);
     s->pc += 2;
     return getCycles();
@@ -813,12 +811,21 @@ int opRnc(state *s) {
     return opReturnIfTrue(s, s->flags.c == 0);
 }
 
+
+int pushPcToStack(state *s) {
+    // push the next program counter to the stack
+    s->memory[s->sp-1] = (s->pc >> 8) & 0xff;
+    s->memory[s->sp-2] = s->pc & 0xff;
+    s->sp -= 2;
+    return 0;
+}
+
 // RST n
 // (Restart)
-// ((SP) - 1) ~ (PCH)
-// ((SP) - 2) ~ (PCl)
-// (SP) ~ (SP) - 2
-// (PC) ~ 8* (NNN)
+// ((SP) - 1) <- (PCH)
+// ((SP) - 2) <- (PCl)
+// (SP) <- (SP) - 2
+// (PC) <- 8* (NNN)
 // The high-order eight bits of the next instruction ad-
 // dress are moved to the memory location whose
 // address is one less than the content of register SP.
@@ -830,10 +837,15 @@ int opRnc(state *s) {
 // dress is eight times the content of NNN.
 int opRst(state *s, int n) {
 
-    s->memory[s->sp-1] = (s->pc >> 8) & 0xff;
-    s->memory[s->sp-2] = s->pc & 0xff;
+    // store the next program counter location to the stack
+    s->pc += 1;
+    // s->memory[s->sp-1] = (s->pc >> 8) & 0xff;
+    // s->memory[s->sp-2] = s->pc & 0xff;
+    // s->sp -= 2;
 
-    s->sp -= 2;
+    pushPcToStack(s);
+
+
     // TODO: multiply binary representation of NNN (ex: 111 == 7 decimal) by 8..
     s->pc = 8 * n;
     return getCycles();
@@ -1020,9 +1032,15 @@ int opJm(state *s, const uint8_t loBits, const uint8_t hiBits) {
 // specified in byte 3 and byte 2 of the current
 // instruction.
 int opCall(state *s, const uint8_t loBits, const uint8_t hiBits) {
-    s->memory[s->sp - 1] = (s->pc >> 8) & 0xff;
-    s->memory[s->sp - 2] = s->pc & 0xff;
-    s->sp -= 2;
+
+    // store the next program counter location to the stack
+    s->pc += 3;
+    // s->memory[s->sp - 1] = (s->pc >> 8) & 0xff;
+    // s->memory[s->sp - 2] = s->pc & 0xff;
+    // s->sp -= 2;
+    pushPcToStack(s);
+
+    // set the program counter to the call address, then proceed
     s->pc = get16BitAddress(loBits, hiBits);
     return getCycles();
 }
@@ -1130,8 +1148,40 @@ int opOri(state *s, const uint8_t value) {
 // bus by the specified port is moved to register A
 int opIn(state *s, uint8_t value) {
     printf("~~~~~~~~~Need to implement opIn [next byte: 0x%02x]~~~~~~~~~\n", value);
+
+    switch (value) {
+
+        case 0x03:
+            s->reg.a = s->si.sr_result;
+            break;
+        default:
+            break;
+    }
+
+
+
+
     s->pc += 2;
     return getCycles();
+}
+
+
+// OUT value to port 4 is the next value to add to the shift register
+// Simulate 16 bit shift register hardware in Space Invaders machine
+void addTo16BitShiftRegister(state *s, const uint8_t value) {
+
+    printf("@@addTo16BitShiftRegister\n");
+    const uint16_t hiByte = value << 8 & 0xff00;
+    s->si.sr = hiByte & (s->si.sr >> 8);
+}
+
+// OUT value to port 2 is the shiftOffset
+int get16BitShiftRegisterByOffset(state *s, const int shiftOffset) {
+
+    printf("@@get16BitShiftRegisterByOffset\n");
+    const uint8_t tmp = s->si.sr >> (8 - shiftOffset);
+    s->si.sr_result = tmp & 0xff;
+    return tmp & 0xff;
 }
 
 // OUT port (Output)
@@ -1141,6 +1191,18 @@ int opIn(state *s, uint8_t value) {
 // ified port.
 int opOut(state *s, uint8_t value) {
     printf("~~~~~~~~~(pc= %02x) Need to implement opOut[next byte: 0x%02x]~~~~~~~~~\n", s->pc, value);
+
+    switch (value) {
+
+        case 0x02:
+            get16BitShiftRegisterByOffset(s, s->reg.a);
+        case 0x04:
+            addTo16BitShiftRegister(s, s->reg.a);
+        default:
+            break;
+    }
+
+
     s->pc += 2;
     return getCycles();
 }
@@ -1218,14 +1280,19 @@ int opPchl(state *s) {
 }
 
 
+
+
+
 int emulate(state *s) {
     unsigned char *code = &s->memory[s->pc];
     // dummy value for clock cycles
     int cc = 999999;
 
-    // debug printing
-    // printf("Program Counter: %04x -> %02x\n ", s->pc, code[0]);
+    // // debug printing
+    // printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    // printf("Program Counter: %04x -> %02x, %02x, %02x\n ", s->pc, code[0], code[1], code[2]);
     // printf("%04x \n", s->pc);
+    // printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
 
     // can get clockCycles through other structure at single point; currently returning dummy value from each function
     switch (*code) {

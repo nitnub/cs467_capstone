@@ -8,7 +8,7 @@
 
 
 // temporarily rename to "main1" to avoid conflicts; change back if testing these spike files...
-int main() {
+int main1() {
     state cpuState = {};
 
     // update file name to point to valid ROM
@@ -39,17 +39,17 @@ int main() {
     // current cpu implementation gets to loop at address 1a32
     // can set a range to force loop to end and then print state / memory.
     int done = 0;
-    while (done < 1000) {
+    while (done < 1000000) {
         if (emulate(&cpuState) == -1) {
             return EXIT_FAILURE;
         }
-        printState(&cpuState);
+        // printState(&cpuState);
         done++;
     }
 
     // uncomment to print all memory or ROM memory range only at end of emulation loop 
-    // return printAllMemoryAddresses(&cpuState);
-    printRomAddresses(&cpuState);
+    return printAllMemoryAddresses(&cpuState);
+    // printRomAddresses(&cpuState);
 
     return EXIT_SUCCESS;
 }
