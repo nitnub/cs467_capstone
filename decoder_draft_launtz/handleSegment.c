@@ -1026,7 +1026,6 @@ int segment3_B(struct instructionData *currentIns) {
         case 0:
             // undefined
             sprintf(currentIns->assembly, "Undefined instruction");
-            printf("Invalid instruction: 0x%02x\n", currentIns->instruction);
             return -1;
             break;
 
@@ -1083,7 +1082,7 @@ int segment3_D(struct instructionData *currentIns) {
 
     // 0xCD is the only valid instruction in this group (unconditional call)
     if (currentIns->instruction == 0xCD) {
-        sprintf(currentIns->assembly, "CAL 0x%02X%02X", currentIns->operand2, currentIns->operand1);
+        sprintf(currentIns->assembly, "CALL 0x%02X%02X", currentIns->operand2, currentIns->operand1);
         sprintf(currentIns->help, "Unconditional call subroutine at immediate address");
         currentIns->cycles = 17;
         // printf("%s\n", currentIns->assembly);
