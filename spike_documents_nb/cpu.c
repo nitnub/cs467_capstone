@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 // Citation: file read and buffer creation code in getFileBuffer func sourced / adapted from
@@ -35,14 +36,22 @@ unsigned char *getFileBuffer(char fileName[], size_t *fSize) {
     return buffer;
 }
 
-int copyBufferToMemory(const size_t bufferLen, const unsigned char *buffer, state *s) {
-    for (int i = 0; i < bufferLen; i++) {
-        s->memory[i] = buffer[i];
+int loadRomToMemory(state *s, char fileName[]) {
+    // copy file buffer from ROM to computer's memory...
+    size_t fSize;
+    unsigned char * buffer = getFileBuffer(fileName, &fSize );
+
+    if (buffer == NULL) {
+        printf("Error: Couldn't open %s\n", fileName);
+        return 1;
     }
+
+    memcpy(s->memory, buffer, fSize);
+    free(buffer);
     return 0;
 }
 
-int printMemoryAddresses(const state *s) {
+int printMemoryAddresses(const state *s, const int min, const int max) {
     uint16_t rowId = 0x00;
 
     // print header
@@ -57,7 +66,7 @@ int printMemoryAddresses(const state *s) {
 
     // print rows
     char asciiRow[17] = {'\0'};
-    for (int i = 0; i < MEM_SIZE; i++) {
+    for (int i = min; i < max; i++) {
         const uint8_t value = s->memory[i];
 
         // print row labels
@@ -92,6 +101,38 @@ int printMemoryAddresses(const state *s) {
     // print last row
     printf("  %s", asciiRow);
     return 0;
+}
+
+int printAllMemoryAddresses(const state *s) {
+    return printMemoryAddresses(s, MEM_START, MEM_END);
+}
+
+int printRomAddresses(const state *s) {
+    return printMemoryAddresses(s, MEM_START, MEM_RAM_START);
+}
+
+int printRamAddresses(const state *s) {
+    return printMemoryAddresses(s, MEM_RAM_START, MEM_VIDEO_START);
+}
+
+int printVideoMemoryAddresses(const state *s) {
+    return printMemoryAddresses(s, MEM_VIDEO_START, MEM_RAM_MIRROR_START);
+}
+
+void printState(const state *s) {
+    printf("\nFLAGS: Sign: %d, Zero: %d, Aux Carry: %d, Parity: %d, Carry: %d\n"
+           "REGISTERS: "
+           "\n\tA: 0x%02x "
+           "\n\tB: 0x%02x "
+           "\n\tC: 0x%02x "
+           "\n\tD: 0x%02x "
+           "\n\tE: 0x%02x "
+           "\n\tH: 0x%02x "
+           "\n\tL: 0x%02x "
+           "\nSP: 0x%04x, PC: 0x%04x\n\n",
+           s->flags.s, s->flags.z, s->flags.ac, s->flags.p, s->flags.c,
+           s->reg.a, s->reg.b, s->reg.c, s->reg.d, s->reg.e, s->reg.h, s->reg.l,
+           s->sp, s->pc);
 }
 
 // TODO: filler for now.. macro or func?
@@ -137,7 +178,6 @@ int opLxiB(state *s, const uint8_t loBits, const uint8_t hiBits) {
 // D <- byte 3
 // E <- byte 2
 // const uint8_t loBits, const uint8_t hiBits
-// int opLxiD(state *s, const unsigned char *codeBuffer, int pc) {
 int opLxiD(state *s, const uint8_t loBits, const uint8_t hiBits) {
     s->reg.d = hiBits;
     s->reg.e = loBits;
@@ -201,6 +241,17 @@ int opSetHL(state *s, const uint16_t value) {
     s->pc++;
     return getCycles();
 }
+
+// increment the stack pointer...
+int opInxSp(state *s) {
+    // decrement stack pointer
+    s->sp++;
+
+    // update program counter
+    s->pc++;
+    return getCycles();
+}
+
 
 // Couple of approaches for getting even parity...
 int isEvenParity(uint8_t value) {
@@ -271,7 +322,7 @@ int opInrMem(state *s) {
 // The content of register r is decremented by one.
 // Note: All condition flag~ except CY are affected
 int opDcr(state *s, uint8_t *rgstr) {
-    const uint16_t newValue = (uint16_t) (*rgstr - 1) & 0xff;
+    const uint16_t newValue = (uint16_t) ((*rgstr - 1) & 0xff);
     setFlagsNoCarry(s, *rgstr, newValue);
     *rgstr = newValue;
     s->pc++;
@@ -293,7 +344,7 @@ int opDcrMem(state *s) {
 }
 
 // MOV r, M (Move from memory)
-// (r) ~ ((H) (L))
+// (r) <- ((H) (L))
 // The content of the memory location, whose address
 // is in registers Hand L, is moved to register r
 int opMovToRegFromMem(state *s, uint8_t *rgstr) {
@@ -322,7 +373,7 @@ int opMovToRegFromReg(state *s, uint8_t *targetReg, const uint8_t *sourceReg) {
 }
 
 // MVI r, data (Move Immediate)
-// (r) ~ (byte 2)
+// (r) <- (byte 2)
 // The content of byte 2 of the instruction is moved to
 // register r.
 int opMviReg(state *s, uint8_t *rgstr, uint8_t value) {
@@ -332,7 +383,7 @@ int opMviReg(state *s, uint8_t *rgstr, uint8_t value) {
 }
 
 // MVI M, data (Move to memory immediate)
-// ((H) (L)) ~ (byte 2)
+// ((H) (L)) <- (byte 2)
 // The content of byte 2 of the instruction is moved to
 // the memory location whose address is in registers H
 // and L.
@@ -363,8 +414,8 @@ int opRlc(state *s) {
 }
 
 // RRC (Rotate right)
-// (An) ~ (An-,); (A7) ~ (AO)
-// (CY) ~ (AO)
+// (An) <- (An-,); (A7) ~ (AO)
+// (CY) <- (AO)
 // The content of the accumulator is rotated right one
 // position. The high order bit and the CY flag are both
 // set to the value shifted out of the low order bit posi-
@@ -380,16 +431,14 @@ int opRrc(state *s) {
     } else {
         s->flags.c = 0;
     }
-
     s->reg.a = tmp & 0xff;
-
     s->pc++;
     return getCycles();
 }
 
 // LHLD addr (Load Hand L direct)
-// (L) ~ ((byte 3)(byte 2))
-// (H) ~ ((byte 3) (byte 2) + 1)
+// (L) <- ((byte 3)(byte 2))
+// (H) <- ((byte 3) (byte 2) + 1)
 // The content of the memory location, whose address
 // is specified in byte 2 and byte 3 of the inion, is
 // moved to register L. The content of the memory loca-
@@ -454,7 +503,7 @@ int opShld(state *s, const uint8_t loBits, const uint8_t hiBits) {
 }
 
 // STC (Set carry)
-// (CY) ~ 1
+// (CY) <- 1
 // The CY flag is set to 1. No other flags are affected.
 int opStc(state *s) {
     s->flags.c = 1;
@@ -479,9 +528,10 @@ int opDad(state *s, uint16_t rpValue) {
     } else {
         s->flags.c = 0;
     }
+
     opSetHL(s, tmp);
 
-    s->pc++;
+    // s->pc++; // TODO: Don't double increment pc after running opSetHL:
     return getCycles();
 }
 
@@ -543,6 +593,15 @@ int opDcx(state *s, uint8_t *hiBits, uint8_t *loBits) {
     return getCycles();
 }
 
+int opDcxSp(state *s) {
+    // decrement stack pointer
+    s->sp--;
+
+    // update program counter
+    s->pc++;
+    return getCycles();
+}
+
 // ADD r (Add Register)
 // (A) <- (A) + (r)
 // The content of register r is added to the content of the
@@ -586,10 +645,10 @@ int opSubReg(state *s, const uint8_t regValue) {
     return getCycles();
 }
 
-// TODO: Need to clarify "logical" AND is not &&
-// TODO: Check that reg A is "old" value here...
+
+
 // ANA r (AND Register)
-// (A) ~ (A) /\ (r)
+// (A) <- (A) /\ (r)
 // The content of register r is logically anded with the
 // content of the accumulator. The result is placed in
 // the accumulator. The CY flag is cleared.
@@ -659,6 +718,14 @@ int opCmpReg(state *s, const uint8_t regValue) {
     // set flags via standard call and nothing else?
     setFlags(s, s->reg.a, newValue);
 
+    // TODO: Explicit here; verify necessary and not contained in setFlags logic
+    if (s->reg.a == regValue) {
+        s->flags.z = 1;
+    }
+    if (s->reg.a < regValue) {
+        s->flags.c = 1;
+    }
+    // TODO: Explicit here; verify necessary and not contained in setFlags logic
     s->pc++;
     return getCycles();
 }
@@ -692,7 +759,7 @@ int opCmpMem(state *s) {
 // set to 1 if (A) = (byte 2). The CY flag is set to 1 if
 // (A) < (byte 2).
 int opCpi(state *s, const uint8_t value) {
-    const uint16_t newValue = s->reg.a + value;
+    const uint16_t newValue = s->reg.a - value;
     setFlags(s, s->reg.a, newValue);
     s->pc += 2;
     return getCycles();
@@ -743,6 +810,47 @@ int opRz(state *s) {
 int opRnc(state *s) {
     return opReturnIfTrue(s, s->flags.c == 0);
 }
+
+
+int pushPcToStack(state *s) {
+    // push the next program counter to the stack
+    s->memory[s->sp-1] = (s->pc >> 8) & 0xff;
+    s->memory[s->sp-2] = s->pc & 0xff;
+    s->sp -= 2;
+    return 0;
+}
+
+// RST n
+// (Restart)
+// ((SP) - 1) <- (PCH)
+// ((SP) - 2) <- (PCl)
+// (SP) <- (SP) - 2
+// (PC) <- 8* (NNN)
+// The high-order eight bits of the next instruction ad-
+// dress are moved to the memory location whose
+// address is one less than the content of register SP.
+// The low-order eight bits of the next instruction ad-
+// dress are moved to the memory location whose
+// address is two less than the content of register SP.
+// The content of register SP is decremented by two.
+// Control is transferred to the instruction whose ad-
+// dress is eight times the content of NNN.
+int opRst(state *s, int n) {
+
+    // store the next program counter location to the stack
+    s->pc += 1;
+    // s->memory[s->sp-1] = (s->pc >> 8) & 0xff;
+    // s->memory[s->sp-2] = s->pc & 0xff;
+    // s->sp -= 2;
+
+    pushPcToStack(s);
+
+
+    // TODO: multiply binary representation of NNN (ex: 111 == 7 decimal) by 8..
+    s->pc = 8 * n;
+    return getCycles();
+}
+
 
 // POP rp (Pop)
 // (rl) <- ((SP))
@@ -838,25 +946,6 @@ int opPushPsw(state *s) {
     s->memory[s->sp-1] = s->reg.a;
 
     uint8_t statusWord = 0x00;
-    // if (s->flags.c == 0x01)
-    //     statusWord = statusWord | 0x01; // bit 0
-    //
-    // statusWord = statusWord | 0x02; // bit 1
-    // if (s->flags.p == 0x01)
-    //     statusWord = statusWord | 0x04; // bit 2
-    //
-    //
-    // // statusWord = statusWord | 0x08; // bit 3 set to zero
-    // if (s->flags.ac == 0x01)
-    //     statusWord = statusWord | 0x10; // bit 4
-    //
-    //
-    // // statusWord = statusWord | 0x20; // bit 5 set to zero
-    // if (s->flags.z == 0x01)
-    //     statusWord = statusWord | 0x40; // bit 6
-    // if (s->flags.s == 0x01)
-    //     statusWord = statusWord | 0x80; // bit 7
-
     // TODO: found below approach in emulator101. Much more elegant than if statements...
 
     // Note: bit 1 is always set, bits 3 and 5 are always clear
@@ -943,9 +1032,15 @@ int opJm(state *s, const uint8_t loBits, const uint8_t hiBits) {
 // specified in byte 3 and byte 2 of the current
 // instruction.
 int opCall(state *s, const uint8_t loBits, const uint8_t hiBits) {
-    s->memory[s->sp - 1] = (s->pc >> 8) & 0xff;
-    s->memory[s->sp - 2] = s->pc & 0xff;
-    s->sp -= 2;
+
+    // store the next program counter location to the stack
+    s->pc += 3;
+    // s->memory[s->sp - 1] = (s->pc >> 8) & 0xff;
+    // s->memory[s->sp - 2] = s->pc & 0xff;
+    // s->sp -= 2;
+    pushPcToStack(s);
+
+    // set the program counter to the call address, then proceed
     s->pc = get16BitAddress(loBits, hiBits);
     return getCycles();
 }
@@ -1047,14 +1142,46 @@ int opOri(state *s, const uint8_t value) {
 }
 
 
-// IN port (I nput)
+// IN port (Input)
 // (A) <- (data)
 // The data placed on the eight bit bi-directional data
 // bus by the specified port is moved to register A
 int opIn(state *s, uint8_t value) {
-    printf("~~~~~~~~~Need to implement opIn~~~~~~~~~\n");
+    printf("~~~~~~~~~Need to implement opIn [next byte: 0x%02x]~~~~~~~~~\n", value);
+
+    switch (value) {
+
+        case 0x03:
+            s->reg.a = s->si.sr_result;
+            break;
+        default:
+            break;
+    }
+
+
+
+
     s->pc += 2;
     return getCycles();
+}
+
+
+// OUT value to port 4 is the next value to add to the shift register
+// Simulate 16 bit shift register hardware in Space Invaders machine
+void addTo16BitShiftRegister(state *s, const uint8_t value) {
+
+    printf("@@addTo16BitShiftRegister\n");
+    const uint16_t hiByte = value << 8 & 0xff00;
+    s->si.sr = hiByte & (s->si.sr >> 8);
+}
+
+// OUT value to port 2 is the shiftOffset
+int get16BitShiftRegisterByOffset(state *s, const int shiftOffset) {
+
+    printf("@@get16BitShiftRegisterByOffset\n");
+    const uint8_t tmp = s->si.sr >> (8 - shiftOffset);
+    s->si.sr_result = tmp & 0xff;
+    return tmp & 0xff;
 }
 
 // OUT port (Output)
@@ -1063,7 +1190,19 @@ int opIn(state *s, uint8_t value) {
 // bi-directional data bus for transmission to the spec-
 // ified port.
 int opOut(state *s, uint8_t value) {
-    printf("~~~~~~~~~Need to implement opOut~~~~~~~~~\n");
+    printf("~~~~~~~~~(pc= %02x) Need to implement opOut[next byte: 0x%02x]~~~~~~~~~\n", s->pc, value);
+
+    switch (value) {
+
+        case 0x02:
+            get16BitShiftRegisterByOffset(s, s->reg.a);
+        case 0x04:
+            addTo16BitShiftRegister(s, s->reg.a);
+        default:
+            break;
+    }
+
+
     s->pc += 2;
     return getCycles();
 }
@@ -1141,28 +1280,35 @@ int opPchl(state *s) {
 }
 
 
+
+
+
 int emulate(state *s) {
     unsigned char *code = &s->memory[s->pc];
     // dummy value for clock cycles
     int cc = 999999;
 
-    // debug printing
-    // printf("Program Counter: %04x -> %02x\n ", s->pc, code[0]);
+    // // debug printing
+    // printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    // printf("Program Counter: %04x -> %02x, %02x, %02x\n ", s->pc, code[0], code[1], code[2]);
     // printf("%04x \n", s->pc);
+    // printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
 
     // can get clockCycles through other structure at single point; currently returning dummy value from each function
     switch (*code) {
-        case 0x00: cc = opNoOp(s); break; // was in original implementation
+        case 0x00: cc = opNoOp(s); break;                                       // was in original implementation
         case 0x01: cc = opLxiB(s, code[1], code[2]); break;
         case 0x02: cc = stax(s, opGetBC(s)); break;
-        case 0x03: cc = opSetBC(s, opGetBC(s) + 1); break; // was in original implementation
+        case 0x03: cc = opSetBC(s, opGetBC(s) + 1); break;                  // was in original implementation
         case 0x04: cc = opInr(s, &s->reg.b); break;
         case 0x05: cc = opDcr(s, &s->reg.b); break;
         case 0x06: cc = opMviReg(s, &s->reg.b, code[1]); break;
-        case 0x07: cc = opRlc(s); break; // was in original implementation
-        case 0x08: cc = opNoOp(s); break; // was in original implementation
+        case 0x07: cc = opRlc(s); break;                                        // was in original implementation
+        case 0x08: cc = opNoOp(s); break;                                       // was in original implementation
         case 0x09: cc = opDad(s, opGetBC(s)); break;
-        case 0x0a: cc = opLdax(s, opGetBC(s)); break; // TODO: Remove as unneeded?
+        case 0x0a: cc = opLdax(s, opGetBC(s)); break;                   // TODO: Remove as unneeded?
+        case 0x0b: cc = opDcx(s, &s->reg.b, &s->reg.c); break;
+
         case 0x0d: cc = opDcr(s, &s->reg.c); break;
         case 0x0e: cc = opMviReg(s, &s->reg.c, code[1]); break;
         case 0x0f: cc = opRrc(s); break;
@@ -1172,9 +1318,11 @@ int emulate(state *s) {
         case 0x14: cc = opInr(s, &s->reg.d); break;
         case 0x15: cc = opDcr(s, &s->reg.d); break;
         case 0x16: cc = opMviReg(s, &s->reg.d, code[1]); break;
+        case 0x18: cc = opNoOp(s); break;
         case 0x19: cc = opDad(s, opGetDE(s)); break;
         case 0x1a: cc = opLdax(s, opGetDE(s)); break;
 
+        case 0x20: cc = opNoOp(s); break;
         case 0x21: cc = opLxiH(s, code[1], code[2]); break;
         case 0x22: cc = opShld(s, code[1], code[2]); break;
         case 0x23: cc = opSetHL(s, getHL(s) + 1); break;
@@ -1194,10 +1342,17 @@ int emulate(state *s) {
         case 0x36: cc = opMviMem(s, code[1]); break;
         case 0x37: cc = opStc(s); break;
         case 0x3a: cc = opLda(s, code[1], code[2]); break;
+        case 0x3b: cc = opDcxSp(s); break;
         case 0x3c: cc = opInr(s, &s->reg.a); break;
         case 0x3d: cc = opDcr(s, &s->reg.a); break;
         case 0x3e: cc = opMviReg(s, &s->reg.a, code[1]); break;
 
+        case 0x40: cc = opMovToRegFromReg(s, &s->reg.b, &s->reg.b); break;
+        case 0x41: cc = opMovToRegFromReg(s, &s->reg.b, &s->reg.c); break;
+        case 0x42: cc = opMovToRegFromReg(s, &s->reg.b, &s->reg.d); break;
+        case 0x43: cc = opMovToRegFromReg(s, &s->reg.b, &s->reg.e); break;
+        case 0x44: cc = opMovToRegFromReg(s, &s->reg.b, &s->reg.h); break;
+        case 0x45: cc = opMovToRegFromReg(s, &s->reg.b, &s->reg.l); break;
         case 0x46: cc = opMovToRegFromMem(s, &s->reg.b); break;
         case 0x47: cc = opMovToRegFromReg(s, &s->reg.b, &s->reg.a); break;
         case 0x4e: cc = opMovToRegFromMem(s, &s->reg.c); break;
@@ -1208,12 +1363,24 @@ int emulate(state *s) {
         case 0x5e: cc = opMovToRegFromMem(s, &s->reg.e); break;
         case 0x5f: cc = opMovToRegFromReg(s, &s->reg.e, &s->reg.a); break;
 
+        case 0x60: cc = opMovToRegFromReg(s, &s->reg.h, &s->reg.b); break;
         case 0x61: cc = opMovToRegFromReg(s, &s->reg.h, &s->reg.c); break;
+        case 0x62: cc = opMovToRegFromReg(s, &s->reg.h, &s->reg.d); break;
+        case 0x63: cc = opMovToRegFromReg(s, &s->reg.h, &s->reg.e); break;
+        case 0x64: cc = opMovToRegFromReg(s, &s->reg.h, &s->reg.h); break;
+        case 0x65: cc = opMovToRegFromReg(s, &s->reg.h, &s->reg.l); break;
         case 0x66: cc = opMovToRegFromMem(s, &s->reg.h); break;
         case 0x67: cc = opMovToRegFromReg(s, &s->reg.h, &s->reg.a); break;
         case 0x68: cc = opMovToRegFromReg(s, &s->reg.l, &s->reg.b); break;
         case 0x69: cc = opMovToRegFromReg(s, &s->reg.l, &s->reg.c); break;
+        case 0x6a: cc = opMovToRegFromReg(s, &s->reg.l, &s->reg.d); break;
+        case 0x6b: cc = opMovToRegFromReg(s, &s->reg.l, &s->reg.e); break;
+        case 0x6c: cc = opMovToRegFromReg(s, &s->reg.l, &s->reg.h); break;
+        case 0x6d: cc = opMovToRegFromReg(s, &s->reg.l, &s->reg.l); break;
+        case 0x6e: cc = opMovToRegFromMem(s, &s->reg.l); break;
         case 0x6f: cc = opMovToRegFromReg(s, &s->reg.l, &s->reg.a); break;
+
+
 
         case 0x70: cc = opMovToMemFromReg(s, s->reg.b); break;
         case 0x71: cc = opMovToMemFromReg(s, s->reg.c); break;
@@ -1227,10 +1394,27 @@ int emulate(state *s) {
         case 0x7c: cc = opMovToRegFromReg(s, &s->reg.a, &s->reg.h); break;
         case 0x7d: cc = opMovToRegFromReg(s, &s->reg.a, &s->reg.l); break;
         case 0x7e: cc = opMovToRegFromMem(s, &s->reg.a); break;
+        case 0x7f: cc = opMovToRegFromReg(s, &s->reg.a, &s->reg.a); break;
 
         case 0x80: cc = opAddReg(s, s->reg.b); break;
+        case 0x81: cc = opAddReg(s, s->reg.c); break;
+        case 0x82: cc = opAddReg(s, s->reg.d); break;
+        case 0x83: cc = opAddReg(s, s->reg.e); break;
+        case 0x84: cc = opAddReg(s, s->reg.h); break;
         case 0x85: cc = opAddReg(s, s->reg.l); break;
         case 0x86: cc = opAddMem(s); break;
+        case 0x87: cc = opAddReg(s, s->reg.a); break;
+
+
+        case 0x90: cc = opSubReg(s, s->reg.b); break;
+        case 0x91: cc = opSubReg(s, s->reg.c); break;
+        case 0x92: cc = opSubReg(s, s->reg.d); break;
+        case 0x93: cc = opSubReg(s, s->reg.e); break;
+        case 0x94: cc = opSubReg(s, s->reg.h); break;
+        case 0x95: cc = opSubReg(s, s->reg.l); break;
+        // case 0x96: cc = opSubReg(s, s->); break;
+
+
 
         case 0x97: cc = opSubReg(s, s->reg.a); break;
 
@@ -1246,7 +1430,7 @@ int emulate(state *s) {
         case 0xc0: cc = opRnz(s); break;
         case 0xc1: cc = opPop(s, &s->reg.b, &s->reg.c); break;
         case 0xc2: cc = opJnz(s, code[1], code[2]); break;
-        case 0xc3: cc = opJmp(s, code[1], code[2]); break; // was in original implementation
+        case 0xc3: cc = opJmp(s, code[1], code[2]); break;              // was in original implementation
         case 0xc4: cc = opCnz(s, code[1], code[2]); break;
         case 0xc5: cc = opPush(s, s->reg.b, s->reg.c); break;
         case 0xc6: cc = opAdi(s, code[1]); break;
@@ -1259,10 +1443,9 @@ int emulate(state *s) {
         case 0xd0: cc = opRnc(s); break;
         case 0xd1: cc = opPop(s, &s->reg.d, &s->reg.e); break;
         case 0xd2: cc = opJnc(s, code[1], code[2]); break;
-
-        case 0xd3: printf("OUT      d8,#0x%02x", code[1]); cc = 2; break;       // TODO: not implemented
+        case 0xd3: cc = opOut(s, code[1]);  break;                                  // TODO: not implemented
         case 0xda: cc = opJc(s, code[1], code[2]); break;
-        case 0xdb: printf("IN       d8,  $%02x", code[1]); cc = 2; break;       // TODO: not implemented
+        case 0xdb: cc = opIn(s, code[1]);  break;                                   // TODO: not implemented
         case 0xd5: cc = opPush(s, s->reg.d, s->reg.e); break;
         case 0xd6: cc = opSui(s, code[1]); break;
         case 0xde: cc = opSbi(s, code[1]); break;
@@ -1278,30 +1461,14 @@ int emulate(state *s) {
         case 0xf5: cc = opPushPsw(s); break;
         case 0xf6: cc = opOri(s, code[1]); break;
         case 0xfa: cc = opJm(s, code[1], code[2]); break;
-        case 0xfb: printf("EI"); break;                                         // TODO: not implemented
+        case 0xfb: opEi(s); break;                                                  // TODO: not implemented
         case 0xfe: cc = opCpi(s, code[1]); break;
+        case 0xff: cc = opRst(s, 7); break;
 
         default:
-            printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  UNKNOWN: %02x", code[0]);
+            printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  UNKNOWN: %02x\n", code[0]);
             s->pc += 2;
             return -1;
     }
     return cc;
-}
-
-
-void printState(const state *s) {
-    printf("\nFLAGS: Sign: %d, Zero: %d, Aux Carry: %d, Parity: %d, Carry: %d\n"
-           "REGISTERS: "
-           "\n\tA: 0x%02x "
-           "\n\tB: 0x%02x "
-           "\n\tC: 0x%02x "
-           "\n\tD: 0x%02x "
-           "\n\tE: 0x%02x "
-           "\n\tH: 0x%02x "
-           "\n\tL: 0x%02x "
-           "SP: 0x%04x, PC: 0x%04x\n",
-           s->flags.s, s->flags.z, s->flags.ac, s->flags.p, s->flags.c,
-           s->reg.a, s->reg.b, s->reg.c, s->reg.d, s->reg.e, s->reg.h, s->reg.l,
-           s->sp, s->pc);
 }
