@@ -1,5 +1,6 @@
 #include "handler.h"
 
+// uncomment for testing
 //struct instructionData code;
 
 /*
@@ -112,11 +113,12 @@ int dispatchLevel2(struct instructionData *currentIns) {
 /*
 int main(void) {
 
-    code.instruction = 0xc9;
+
+    code.instruction = 006;
     code.cycles = 4;
     code.operand1 = 0x18;
     code.operand2 = 0xA1;
-    return dispatchLevel2(&code);
-
+    dispatchLevel2(&code);
+    printf("%s\n", code.assembly);
 }
 */

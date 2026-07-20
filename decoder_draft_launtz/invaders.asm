@@ -206,7 +206,7 @@
      0x00cd: 3E [00 C2]  |   MVI A, 0x00
      0x00ce: 00 [C2 D3]  |   NOP
      0x00cf: C2 [D3 00]  |   JNZ 0x00D3
-     0x00d0: D3 [00 3C]  |   XTHL
+     0x00d0: D3 [00 3C]  |   OUT 0x00
      0x00d1: 00 [3C 32]  |   NOP
      0x00d2: 3C [32 0D]  |   INR A
      0x00d3: 32 [0D 20]  |   STA 0x200D
@@ -300,13 +300,13 @@
      0x012b: C4 [3B 01]  |   CNZ 0x013B
      0x012c: 3B [01 2A]  |   DCX SP
      0x012d: 01 [2A 0B]  |   LXI B, 0x0B2A 
-     0x012e: 2A [0B 20]  |   LHDR 0x200B
+     0x012e: 2A [0B 20]  |   LHLD 0x200B
      0x012f: 0B [20 06]  |   DCX B
      0x0130: 20 [06 10]  |   Undefined instruction
      0x0131: 06 [10 CD]  |   MVI B, 0x10
      0x0132: 10 [CD D3]  |   Undefined instruction
      0x0133: CD [D3 15]  |   CAL 0x15D3
-     0x0134: D3 [15 AF]  |   XTHL
+     0x0134: D3 [15 AF]  |   OUT 0x15
      0x0135: 15 [AF 32]  |   DCR D
      0x0136: AF [32 00]  |   XRA A
      0x0137: 32 [00 20]  |   STA 0x2000
@@ -618,7 +618,7 @@
      0x0269: 21 [6F 02]  |   LXI H, 0x026F 
      0x026a: 6F [02 E3]  |   MOV L, A
      0x026b: 02 [E3 D5]  |   STAX B
-     0x026c: E3 [D5 E9]  |   STAX B
+     0x026c: E3 [D5 E9]  |   XTHL
      0x026d: D5 [E9 E1]  |   PUSH D
      0x026e: E9 [E1 11]  |   PCHL
      0x026f: E1 [11 0C]  |   POP H
@@ -684,7 +684,7 @@
      0x02ab: C2 [9B 03]  |   JNZ 0x039B
      0x02ac: 9B [03 2A]  |   SBB E
      0x02ad: 03 [2A 1A]  |   INX B
-     0x02ae: 2A [1A 20]  |   LHDR 0x201A
+     0x02ae: 2A [1A 20]  |   LHLD 0x201A
      0x02af: 1A [20 06]  |   LDAX D
      0x02b0: 20 [06 10]  |   Undefined instruction
      0x02b1: 06 [10 CD]  |   MVI B, 0x10
@@ -795,7 +795,7 @@
      0x031a: 11 [20 78]  |   LXI D, 0x7820 
      0x031b: 20 [78 D3]  |   Undefined instruction
      0x031c: 78 [D3 05]  |   MOV A, B
-     0x031d: D3 [05 3C]  |   XTHL
+     0x031d: D3 [05 3C]  |   OUT 0x05
      0x031e: 05 [3C 32]  |   DCR B
      0x031f: 3C [32 98]  |   INR A
      0x0320: 32 [98 20]  |   STA 0x2098
@@ -954,7 +954,7 @@
      0x03b9: 46 [03 11]  |   MOV B, M
      0x03ba: 03 [11 2A]  |   INX B
      0x03bb: 11 [2A 20]  |   LXI D, 0x202A 
-     0x03bc: 2A [20 CD]  |   LHDR 0xCD20
+     0x03bc: 2A [20 CD]  |   LHLD 0xCD20
      0x03bd: 20 [CD 06]  |   Undefined instruction
      0x03be: CD [06 1A]  |   CAL 0x1A06
      0x03bf: 06 [1A E1]  |   MVI B, 0x1A
@@ -979,7 +979,7 @@
      0x03d2: FE [03 C2]  |   CPI 0x03
      0x03d3: 03 [C2 2A]  |   INX B
      0x03d4: C2 [2A 04]  |   JNZ 0x042A
-     0x03d5: 2A [04 35]  |   LHDR 0x3504
+     0x03d5: 2A [04 35]  |   LHLD 0x3504
      0x03d6: 04 [35 CA]  |   INR B
      0x03d7: 35 [CA 36]  |   DCR M
      0x03d8: CA [36 04]  |   JZ 0x0436
@@ -1024,7 +1024,7 @@
      0x03ff: C6 [08 32]  |   ADI 0x08
      0x0400: 08 [32 2A]  |   Undefined instruction
      0x0401: 32 [2A 20]  |   STA 0x202A
-     0x0402: 2A [20 CD]  |   LHDR 0xCD20
+     0x0402: 2A [20 CD]  |   LHLD 0xCD20
      0x0403: 20 [CD 30]  |   Undefined instruction
      0x0404: CD [30 04]  |   CAL 0x0430
      0x0405: 30 [04 C3]  |   Undefined instruction
@@ -1093,7 +1093,7 @@
      0x0444: CD [32 1A]  |   CAL 0x1A32
      0x0445: 32 [1A 2A]  |   STA 0x2A1A
      0x0446: 1A [2A 8D]  |   LDAX D
-     0x0447: 2A [8D 20]  |   LHDR 0x208D
+     0x0447: 2A [8D 20]  |   LHLD 0x208D
      0x0448: 8D [20 2C]  |   ADC L
      0x0449: 20 [2C 7D]  |   Undefined instruction
      0x044a: 2C [7D FE]  |   INR L
@@ -1108,7 +1108,7 @@
      0x0453: 22 [8D 20]  |   SHLD 0x208D
      0x0454: 8D [20 2A]  |   ADC L
      0x0455: 20 [2A 8F]  |   Undefined instruction
-     0x0456: 2A [8F 20]  |   LHDR 0x208F
+     0x0456: 2A [8F 20]  |   LHLD 0x208F
      0x0457: 8F [20 2C]  |   ADC A
      0x0458: 20 [2C 22]  |   Undefined instruction
      0x0459: 2C [22 8F]  |   INR L
@@ -1147,7 +1147,7 @@
      0x047a: 32 [32 20]  |   STA 0x2032
      0x047b: 32 [20 2A]  |   STA 0x2A20
      0x047c: 20 [2A 38]  |   Undefined instruction
-     0x047d: 2A [38 20]  |   LHDR 0x2038
+     0x047d: 2A [38 20]  |   LHLD 0x2038
      0x047e: 38 [20 7D]  |   Undefined instruction
      0x047f: 20 [7D B4]  |   Undefined instruction
      0x0480: 7D [B4 C2]  |   MOV A, L
@@ -1286,7 +1286,7 @@
      0x0505: 32 [6E 20]  |   STA 0x206E
      0x0506: 6E [20 2A]  |   MOV L, M
      0x0507: 20 [2A 76]  |   Undefined instruction
-     0x0508: 2A [76 20]  |   LHDR 0x2076
+     0x0508: 2A [76 20]  |   LHLD 0x2076
      0x0509: 76 [20 C3]  |   HLT
      0x050a: 20 [C3 7E]  |   Undefined instruction
      0x050b: C3 [7E 06]  |   JMP 0x067E
@@ -1351,7 +1351,7 @@
      0x0546: CD [32 1A]  |   CAL 0x1A32
      0x0547: 32 [1A 2A]  |   STA 0x2A1A
      0x0548: 1A [2A 76]  |   LDAX D
-     0x0549: 2A [76 20]  |   LHDR 0x2076
+     0x0549: 2A [76 20]  |   LHLD 0x2076
      0x054a: 76 [20 22]  |   HLT
      0x054b: 20 [22 58]  |   Undefined instruction
      0x054c: 22 [58 20]  |   SHLD 0x2058
@@ -1434,7 +1434,7 @@
      0x0599: CA [1B 06]  |   JZ 0x061B
      0x059a: 1B [06 2A]  |   DCX D
      0x059b: 06 [2A 76]  |   MVI B, 0x2A
-     0x059c: 2A [76 20]  |   LHDR 0x2076
+     0x059c: 2A [76 20]  |   LHLD 0x2076
      0x059d: 76 [20 4E]  |   HLT
      0x059e: 20 [4E 23]  |   Undefined instruction
      0x059f: 4E [23 00]  |   MOV C, M
@@ -1778,7 +1778,7 @@
      0x06f1: 77 [E6 20]  |   MOV M, A
      0x06f2: E6 [20 D3]  |   ANI 0x20
      0x06f3: 20 [D3 05]  |   Undefined instruction
-     0x06f4: D3 [05 00]  |   XTHL
+     0x06f4: D3 [05 00]  |   OUT 0x05
      0x06f5: 05 [00 00]  |   DCR B
      0x06f6: 00 [00 00]  |   NOP
      0x06f7: 00 [00 CD]  |   NOP
@@ -1807,7 +1807,7 @@
      0x070e: 32 [F1 20]  |   STA 0x20F1
      0x070f: F1 [20 2A]  |   POP PSW
      0x0710: 20 [2A 8D]  |   Undefined instruction
-     0x0711: 2A [8D 20]  |   LHDR 0x208D
+     0x0711: 2A [8D 20]  |   LHLD 0x208D
      0x0712: 8D [20 46]  |   ADC L
      0x0713: 20 [46 0E]  |   Undefined instruction
      0x0714: 46 [0E 04]  |   MOV B, M
@@ -1910,12 +1910,12 @@
      0x0775: 13 [30 11]  |   INX D
      0x0776: 30 [11 F3]  |   Undefined instruction
      0x0777: 11 [F3 1F]  |   LXI D, 0x1FF3 
-     0x0778: F3 [1F 0E]  |   LXI D, 0x1FF3 
+     0x0778: F3 [1F 0E]  |   DI
      0x0779: 1F [0E 04]  |   RAR
      0x077a: 0E [04 CD]  |   MVI C, 0x04
      0x077b: 04 [CD F3]  |   INR B
      0x077c: CD [F3 08]  |   CAL 0x08F3
-     0x077d: F3 [08 3A]  |   CAL 0x08F3
+     0x077d: F3 [08 3A]  |   DI
      0x077e: 08 [3A EB]  |   Undefined instruction
      0x077f: 3A [EB 20]  |   LDA 0x20EB
      0x0780: EB [20 3D]  |   XCHG
@@ -1933,7 +1933,7 @@
      0x078c: CF [1A CD]  |   RST 1
      0x078d: 1A [CD F3]  |   LDAX D
      0x078e: CD [F3 08]  |   CAL 0x08F3
-     0x078f: F3 [08 DB]  |   CAL 0x08F3
+     0x078f: F3 [08 DB]  |   DI
      0x0790: 08 [DB 01]  |   Undefined instruction
      0x0791: DB [01 E6]  |   IN 0x01
      0x0792: 01 [E6 04]  |   LXI B, 0x04E6 
@@ -2084,7 +2084,7 @@
      0x0823: 0A [19 CD]  |   LDAX B
      0x0824: 19 [CD F3]  |   DAD D
      0x0825: CD [F3 15]  |   CAL 0x15F3
-     0x0826: F3 [15 CD]  |   CAL 0x15F3
+     0x0826: F3 [15 CD]  |   DI
      0x0827: 15 [CD 88]  |   DCR D
      0x0828: CD [88 09]  |   CAL 0x0988
      0x0829: 88 [09 3A]  |   ADC B
@@ -2122,7 +2122,7 @@
      0x0849: CD [75 17]  |   CAL 0x1775
      0x084a: 75 [17 D3]  |   MOV M, L
      0x084b: 17 [D3 06]  |   RAL
-     0x084c: D3 [06 CD]  |   XTHL
+     0x084c: D3 [06 CD]  |   OUT 0x06
      0x084d: 06 [CD 04]  |   MVI B, 0xCD
      0x084e: CD [04 18]  |   CAL 0x1804
      0x084f: 04 [18 C3]  |   INR B
@@ -2137,7 +2137,7 @@
      0x0858: BA [1A CD]  |   CMP D
      0x0859: 1A [CD F3]  |   LDAX D
      0x085a: CD [F3 08]  |   CAL 0x08F3
-     0x085b: F3 [08 06]  |   CAL 0x08F3
+     0x085b: F3 [08 06]  |   DI
      0x085c: 08 [06 98]  |   Undefined instruction
      0x085d: 06 [98 DB]  |   MVI B, 0x98
      0x085e: 98 [DB 01]  |   SBB B
@@ -2170,7 +2170,7 @@
      0x0879: 08 [20 47]  |   Undefined instruction
      0x087a: 20 [47 2A]  |   Undefined instruction
      0x087b: 47 [2A 09]  |   MOV B, A
-     0x087c: 2A [09 20]  |   LHDR 0x2009
+     0x087c: 2A [09 20]  |   LHLD 0x2009
      0x087d: 09 [20 EB]  |   DAD B
      0x087e: 20 [EB C3]  |   Undefined instruction
      0x087f: EB [C3 86]  |   XCHG
@@ -2196,7 +2196,7 @@
      0x0893: 0E [0E CD]  |   MVI C, 0x0E
      0x0894: 0E [CD F3]  |   MVI C, 0xCD
      0x0895: CD [F3 08]  |   CAL 0x08F3
-     0x0896: F3 [08 3A]  |   CAL 0x08F3
+     0x0896: F3 [08 3A]  |   DI
      0x0897: 08 [3A 67]  |   Undefined instruction
      0x0898: 3A [67 20]  |   LDA 0x2067
      0x0899: 67 [20 0F]  |   MOV H, A
@@ -2298,7 +2298,7 @@
      0x08f9: 13 [0D C2]  |   INX D
      0x08fa: 0D [C2 F3]  |   DCR C
      0x08fb: C2 [F3 08]  |   JNZ 0x08F3
-     0x08fc: F3 [08 C9]  |   JNZ 0x08F3
+     0x08fc: F3 [08 C9]  |   DI
      0x08fd: 08 [C9 11]  |   Undefined instruction
      0x08fe: C9 [11 00]  |   RET
      0x08ff: 11 [00 1E]  |   LXI D, 0x1E00 
@@ -2316,7 +2316,7 @@
      0x090b: E1 [06 08]  |   POP H
      0x090c: 06 [08 D3]  |   MVI B, 0x08
      0x090d: 08 [D3 06]  |   Undefined instruction
-     0x090e: D3 [06 C3]  |   XTHL
+     0x090e: D3 [06 C3]  |   OUT 0x06
      0x090f: 06 [C3 39]  |   MVI B, 0xC3
      0x0910: C3 [39 14]  |   JMP 0x1439
      0x0911: 39 [14 3A]  |   DAD SP
@@ -2327,7 +2327,7 @@
      0x0916: FE [78 D0]  |   CPI 0x78
      0x0917: 78 [D0 2A]  |   MOV A, B
      0x0918: D0 [2A 91]  |   RNC
-     0x0919: 2A [91 20]  |   LHDR 0x2091
+     0x0919: 2A [91 20]  |   LHLD 0x2091
      0x091a: 91 [20 7D]  |   SUB C
      0x091b: 20 [7D B4]  |   Undefined instruction
      0x091c: 7D [B4 C2]  |   MOV A, L
@@ -2451,7 +2451,7 @@
      0x0992: F1 [20 E5]  |   POP PSW
      0x0993: 20 [E5 2A]  |   Undefined instruction
      0x0994: E5 [2A F2]  |   PUSH H
-     0x0995: 2A [F2 20]  |   LHDR 0x20F2
+     0x0995: 2A [F2 20]  |   LHLD 0x20F2
      0x0996: F2 [20 EB]  |   JP 0xEB20
      0x0997: 20 [EB E1]  |   Undefined instruction
      0x0998: EB [E1 7E]  |   XCHG
@@ -2673,7 +2673,7 @@
      0x0a70: 09 [7E 21]  |   DAD B
      0x0a71: 7E [21 F3]  |   MOV A, M
      0x0a72: 21 [F3 20]  |   LXI H, 0x20F3 
-     0x0a73: F3 [20 36]  |   LXI H, 0x20F3 
+     0x0a73: F3 [20 36]  |   DI
      0x0a74: 20 [36 00]  |   Undefined instruction
      0x0a75: 36 [00 2B]  |   MVI M, 0x00
      0x0a76: 00 [2B 77]  |   NOP
@@ -2691,7 +2691,7 @@
      0x0a82: 32 [C1 20]  |   STA 0x20C1
      0x0a83: C1 [20 D3]  |   POP B
      0x0a84: 20 [D3 06]  |   Undefined instruction
-     0x0a85: D3 [06 3A]  |   XTHL
+     0x0a85: D3 [06 3A]  |   OUT 0x06
      0x0a86: 06 [3A CB]  |   MVI B, 0x3A
      0x0a87: 3A [CB 20]  |   LDA 0x20CB
      0x0a88: CB [20 A7]  |   Undefined instruction
@@ -2793,9 +2793,9 @@
      0x0ae8: 32 [1A AF]  |   STA 0xAF1A
      0x0ae9: 1A [AF D3]  |   LDAX D
      0x0aea: AF [D3 03]  |   XRA A
-     0x0aeb: D3 [03 D3]  |   XTHL
+     0x0aeb: D3 [03 D3]  |   OUT 0x03
      0x0aec: 03 [D3 05]  |   INX B
-     0x0aed: D3 [05 CD]  |   XTHL
+     0x0aed: D3 [05 CD]  |   OUT 0x05
      0x0aee: 05 [CD 82]  |   DCR B
      0x0aef: CD [82 19]  |   CAL 0x1982
      0x0af0: 82 [19 FB]  |   ADD D
@@ -2933,7 +2933,7 @@
      0x0b74: CD [F1 0B]  |   CAL 0x0BF1
      0x0b75: F1 [0B D3]  |   POP PSW
      0x0b76: 0B [D3 06]  |   DCX B
-     0x0b77: D3 [06 CD]  |   XTHL
+     0x0b77: D3 [06 CD]  |   OUT 0x06
      0x0b78: 06 [CD 59]  |   MVI B, 0xCD
      0x0b79: CD [59 0A]  |   CAL 0x0A59
      0x0b7a: 59 [0A CA]  |   MOV E, C
@@ -2970,7 +2970,7 @@
      0x0b99: 90 [1F CD]  |   SUB B
      0x0b9a: 1F [CD F3]  |   RAR
      0x0b9b: CD [F3 08]  |   CAL 0x08F3
-     0x0b9c: F3 [08 3A]  |   CAL 0x08F3
+     0x0b9c: F3 [08 3A]  |   DI
      0x0b9d: 08 [3A EC]  |   Undefined instruction
      0x0b9e: 3A [EC 20]  |   LDA 0x20EC
      0x0b9f: EC [20 FE]  |   CPE 0xFE20
@@ -5126,7 +5126,7 @@
      0x1405: C5 [E5 1A]  |   PUSH B
      0x1406: E5 [1A D3]  |   PUSH H
      0x1407: 1A [D3 04]  |   LDAX D
-     0x1408: D3 [04 DB]  |   XTHL
+     0x1408: D3 [04 DB]  |   OUT 0x04
      0x1409: 04 [DB 03]  |   INR B
      0x140a: DB [03 B6]  |   IN 0x03
      0x140b: 03 [B6 77]  |   INX B
@@ -5135,7 +5135,7 @@
      0x140e: 23 [13 AF]  |   INX H
      0x140f: 13 [AF D3]  |   INX D
      0x1410: AF [D3 04]  |   XRA A
-     0x1411: D3 [04 DB]  |   XTHL
+     0x1411: D3 [04 DB]  |   OUT 0x04
      0x1412: 04 [DB 03]  |   INR B
      0x1413: DB [03 B6]  |   IN 0x03
      0x1414: 03 [B6 77]  |   INX B
@@ -5206,7 +5206,7 @@
      0x1455: C5 [E5 1A]  |   PUSH B
      0x1456: E5 [1A D3]  |   PUSH H
      0x1457: 1A [D3 04]  |   LDAX D
-     0x1458: D3 [04 DB]  |   XTHL
+     0x1458: D3 [04 DB]  |   OUT 0x04
      0x1459: 04 [DB 03]  |   INR B
      0x145a: DB [03 2F]  |   IN 0x03
      0x145b: 03 [2F A6]  |   INX B
@@ -5216,7 +5216,7 @@
      0x145f: 23 [13 AF]  |   INX H
      0x1460: 13 [AF D3]  |   INX D
      0x1461: AF [D3 04]  |   XRA A
-     0x1462: D3 [04 DB]  |   XTHL
+     0x1462: D3 [04 DB]  |   OUT 0x04
      0x1463: 04 [DB 03]  |   INR B
      0x1464: DB [03 2F]  |   IN 0x03
      0x1465: 03 [2F A6]  |   INX B
@@ -5237,7 +5237,7 @@
      0x1474: 7D [E6 07]  |   MOV A, L
      0x1475: E6 [07 D3]  |   ANI 0x07
      0x1476: 07 [D3 02]  |   RLC
-     0x1477: D3 [02 C3]  |   XTHL
+     0x1477: D3 [02 C3]  |   OUT 0x02
      0x1478: 02 [C3 47]  |   STAX B
      0x1479: C3 [47 1A]  |   JMP 0x1A47
      0x147a: 47 [1A C5]  |   MOV B, A
@@ -5273,7 +5273,7 @@
      0x1498: C5 [E5 1A]  |   PUSH B
      0x1499: E5 [1A D3]  |   PUSH H
      0x149a: 1A [D3 04]  |   LDAX D
-     0x149b: D3 [04 DB]  |   XTHL
+     0x149b: D3 [04 DB]  |   OUT 0x04
      0x149c: 04 [DB 03]  |   INR B
      0x149d: DB [03 F5]  |   IN 0x03
      0x149e: 03 [F5 A6]  |   INX B
@@ -5293,7 +5293,7 @@
      0x14ac: 23 [13 AF]  |   INX H
      0x14ad: 13 [AF D3]  |   INX D
      0x14ae: AF [D3 04]  |   XRA A
-     0x14af: D3 [04 DB]  |   XTHL
+     0x14af: D3 [04 DB]  |   OUT 0x04
      0x14b0: 04 [DB 03]  |   INR B
      0x14b1: DB [03 F5]  |   IN 0x03
      0x14b2: 03 [F5 A6]  |   INX B
@@ -5383,7 +5383,7 @@
      0x1506: 62 [15 3A]  |   MOV H, D
      0x1507: 15 [3A 2A]  |   DCR D
      0x1508: 3A [2A 20]  |   LDA 0x202A
-     0x1509: 2A [20 67]  |   LHDR 0x6720
+     0x1509: 2A [20 67]  |   LHLD 0x6720
      0x150a: 20 [67 CD]  |   Undefined instruction
      0x150b: 67 [CD 6F]  |   MOV H, A
      0x150c: CD [6F 15]  |   CAL 0x156F
@@ -5414,7 +5414,7 @@
      0x1525: 3B [1A CD]  |   DCX SP
      0x1526: 1A [CD D3]  |   LDAX D
      0x1527: CD [D3 15]  |   CAL 0x15D3
-     0x1528: D3 [15 3E]  |   XTHL
+     0x1528: D3 [15 3E]  |   OUT 0x15
      0x1529: 15 [3E 10]  |   DCR D
      0x152a: 3E [10 32]  |   MVI A, 0x10
      0x152b: 10 [32 03]  |   Undefined instruction
@@ -5435,7 +5435,7 @@
      0x153a: 20 [35 C0]  |   Undefined instruction
      0x153b: 35 [C0 2A]  |   DCR M
      0x153c: C0 [2A 64]  |   RNZ
-     0x153d: 2A [64 20]  |   LHDR 0x2064
+     0x153d: 2A [64 20]  |   LHLD 0x2064
      0x153e: 64 [20 06]  |   MOV H, H
      0x153f: 20 [06 10]  |   Undefined instruction
      0x1540: 06 [10 CD]  |   MVI B, 0x10
@@ -5592,7 +5592,7 @@
      0x15d7: C5 [E5 1A]  |   PUSH B
      0x15d8: E5 [1A D3]  |   PUSH H
      0x15d9: 1A [D3 04]  |   LDAX D
-     0x15da: D3 [04 DB]  |   XTHL
+     0x15da: D3 [04 DB]  |   OUT 0x04
      0x15db: 04 [DB 03]  |   INR B
      0x15dc: DB [03 77]  |   IN 0x03
      0x15dd: 03 [77 23]  |   INX B
@@ -5600,7 +5600,7 @@
      0x15df: 23 [13 AF]  |   INX H
      0x15e0: 13 [AF D3]  |   INX D
      0x15e1: AF [D3 04]  |   XRA A
-     0x15e2: D3 [04 DB]  |   XTHL
+     0x15e2: D3 [04 DB]  |   OUT 0x04
      0x15e3: 04 [DB 03]  |   INR B
      0x15e4: DB [03 77]  |   IN 0x03
      0x15e5: 03 [77 E1]  |   INX B
@@ -5717,7 +5717,7 @@
      0x1654: 20 [36 01]  |   Undefined instruction
      0x1655: 36 [01 2A]  |   MVI M, 0x01
      0x1656: 01 [2A ED]  |   LXI B, 0xED2A 
-     0x1657: 2A [ED 20]  |   LHDR 0x20ED
+     0x1657: 2A [ED 20]  |   LHLD 0x20ED
      0x1658: ED [20 23]  |   Undefined instruction
      0x1659: 20 [23 7D]  |   Undefined instruction
      0x165a: 23 [7D FE]  |   INX H
@@ -5852,7 +5852,7 @@
      0x16db: 32 [EF 20]  |   STA 0x20EF
      0x16dc: EF [20 D3]  |   RST 5
      0x16dd: 20 [D3 05]  |   Undefined instruction
-     0x16de: D3 [05 CD]  |   XTHL
+     0x16de: D3 [05 CD]  |   OUT 0x05
      0x16df: 05 [CD D1]  |   DCR B
      0x16e0: CD [D1 19]  |   CAL 0x19D1
      0x16e1: D1 [19 C3]  |   POP D
@@ -5973,7 +5973,7 @@
      0x1754: 98 [20 7E]  |   SBB B
      0x1755: 20 [7E D3]  |   Undefined instruction
      0x1756: 7E [D3 05]  |   MOV A, M
-     0x1757: D3 [05 3A]  |   XTHL
+     0x1757: D3 [05 3A]  |   OUT 0x05
      0x1758: 05 [3A 82]  |   DCR B
      0x1759: 3A [82 20]  |   LDA 0x2082
      0x175a: 82 [20 A7]  |   ADD D
@@ -6000,7 +6000,7 @@
      0x176f: 20 [E6 30]  |   Undefined instruction
      0x1770: E6 [30 D3]  |   ANI 0x30
      0x1771: 30 [D3 05]  |   Undefined instruction
-     0x1772: D3 [05 C9]  |   XTHL
+     0x1772: D3 [05 C9]  |   OUT 0x05
      0x1773: 05 [C9 3A]  |   DCR B
      0x1774: C9 [3A 95]  |   RET
      0x1775: 3A [95 20]  |   LDA 0x2095
@@ -6074,7 +6074,7 @@
      0x17b9: 7E [A0 77]  |   MOV A, M
      0x17ba: A0 [77 D3]  |   ANA B
      0x17bb: 77 [D3 05]  |   MOV M, A
-     0x17bc: D3 [05 C9]  |   XTHL
+     0x17bc: D3 [05 C9]  |   OUT 0x05
      0x17bd: 05 [C9 00]  |   DCR B
      0x17be: C9 [00 3A]  |   RET
      0x17bf: 00 [3A 67]  |   NOP
@@ -6172,7 +6172,7 @@
      0x181b: 0E [15 CD]  |   MVI C, 0x15
      0x181c: 15 [CD F3]  |   DCR D
      0x181d: CD [F3 08]  |   CAL 0x08F3
-     0x181e: F3 [08 3E]  |   CAL 0x08F3
+     0x181e: F3 [08 3E]  |   DI
      0x181f: 08 [3E 0A]  |   Undefined instruction
      0x1820: 3E [0A 32]  |   MVI A, 0x0A
      0x1821: 0A [32 6C]  |   LDAX B
@@ -6268,7 +6268,7 @@
      0x187b: 20 [E6 04]  |   Undefined instruction
      0x187c: E6 [04 2A]  |   ANI 0x04
      0x187d: 04 [2A CC]  |   INR B
-     0x187e: 2A [CC 20]  |   LHDR 0x20CC
+     0x187e: 2A [CC 20]  |   LHLD 0x20CC
      0x187f: CC [20 C2]  |   CZ 0xC220
      0x1880: 20 [C2 88]  |   Undefined instruction
      0x1881: C2 [88 18]  |   JNZ 0x1888
@@ -6289,7 +6289,7 @@
      0x1890: 1A [EB C3]  |   LDAX D
      0x1891: EB [C3 D3]  |   XCHG
      0x1892: C3 [D3 15]  |   JMP 0x15D3
-     0x1893: D3 [15 00]  |   XTHL
+     0x1893: D3 [15 00]  |   OUT 0x15
      0x1894: 15 [00 00]  |   DCR D
      0x1895: 00 [00 00]  |   NOP
      0x1896: 00 [00 3E]  |   NOP
@@ -6399,7 +6399,7 @@
      0x18fe: 32 [94 20]  |   STA 0x2094
      0x18ff: 94 [20 D3]  |   SUB H
      0x1900: 20 [D3 03]  |   Undefined instruction
-     0x1901: D3 [03 C9]  |   XTHL
+     0x1901: D3 [03 C9]  |   OUT 0x03
      0x1902: 03 [C9 21]  |   INX B
      0x1903: C9 [21 00]  |   RET
      0x1904: 21 [00 22]  |   LXI H, 0x2200 
@@ -6433,7 +6433,7 @@
      0x1920: E4 [1A C3]  |   CPO 0xC31A
      0x1921: 1A [C3 F3]  |   LDAX D
      0x1922: C3 [F3 08]  |   JMP 0x08F3
-     0x1923: F3 [08 21]  |   JMP 0x08F3
+     0x1923: F3 [08 21]  |   DI
      0x1924: 08 [21 F8]  |   Undefined instruction
      0x1925: 21 [F8 20]  |   LXI H, 0x20F8 
      0x1926: F8 [20 C3]  |   RM
@@ -6467,7 +6467,7 @@
      0x1942: A9 [1F C3]  |   XRA C
      0x1943: 1F [C3 F3]  |   RAR
      0x1944: C3 [F3 08]  |   JMP 0x08F3
-     0x1945: F3 [08 3A]  |   JMP 0x08F3
+     0x1945: F3 [08 3A]  |   DI
      0x1946: 08 [3A EB]  |   Undefined instruction
      0x1947: 3A [EB 20]  |   LDA 0x20EB
      0x1948: EB [20 21]  |   XCHG
@@ -6546,7 +6546,7 @@
      0x1991: 0E [13 C3]  |   MVI C, 0x13
      0x1992: 13 [C3 F3]  |   INX D
      0x1993: C3 [F3 08]  |   JMP 0x08F3
-     0x1994: F3 [08 00]  |   JMP 0x08F3
+     0x1994: F3 [08 00]  |   DI
      0x1995: 08 [00 00]  |   Undefined instruction
      0x1996: 00 [00 00]  |   NOP
      0x1997: 00 [00 00]  |   NOP
@@ -6586,7 +6586,7 @@
      0x19b9: 0E [09 C3]  |   MVI C, 0x09
      0x19ba: 09 [C3 F3]  |   DAD B
      0x19bb: C3 [F3 08]  |   JMP 0x08F3
-     0x19bc: F3 [08 28]  |   JMP 0x08F3
+     0x19bc: F3 [08 28]  |   DI
      0x19bd: 08 [28 13]  |   Undefined instruction
      0x19be: 28 [13 00]  |   Undefined instruction
      0x19bf: 13 [00 08]  |   INX D
@@ -6615,7 +6615,7 @@
      0x19d6: C9 [AF C3]  |   RET
      0x19d7: AF [C3 D3]  |   XRA A
      0x19d8: C3 [D3 19]  |   JMP 0x19D3
-     0x19d9: D3 [19 00]  |   XTHL
+     0x19d9: D3 [19 00]  |   OUT 0x19
      0x19da: 19 [00 3A]  |   DAD D
      0x19db: 00 [3A 94]  |   NOP
      0x19dc: 3A [94 20]  |   LDA 0x2094
@@ -6625,7 +6625,7 @@
      0x19e0: 32 [94 20]  |   STA 0x2094
      0x19e1: 94 [20 D3]  |   SUB H
      0x19e2: 20 [D3 03]  |   Undefined instruction
-     0x19e3: D3 [03 C9]  |   XTHL
+     0x19e3: D3 [03 C9]  |   OUT 0x03
      0x19e4: 03 [C9 21]  |   INX B
      0x19e5: C9 [21 01]  |   RET
      0x19e6: 21 [01 27]  |   LXI H, 0x2701 
@@ -8091,15 +8091,15 @@
      0x1f9a: 08 [0D 0D]  |   Undefined instruction
      0x1f9b: 0D [0D 2A]  |   DCR C
      0x1f9c: 0D [2A 50]  |   DCR C
-     0x1f9d: 2A [50 1F]  |   LHDR 0x1F50
+     0x1f9d: 2A [50 1F]  |   LHLD 0x1F50
      0x1f9e: 50 [1F 0A]  |   MOV D, B
      0x1f9f: 1F [0A 2A]  |   RAR
      0x1fa0: 0A [2A 62]  |   LDAX B
-     0x1fa1: 2A [62 1F]  |   LHDR 0x1F62
+     0x1fa1: 2A [62 1F]  |   LHLD 0x1F62
      0x1fa2: 62 [1F 07]  |   MOV H, D
      0x1fa3: 1F [07 2A]  |   RAR
      0x1fa4: 07 [2A E1]  |   RLC
-     0x1fa5: 2A [E1 1F]  |   LHDR 0x1FE1
+     0x1fa5: 2A [E1 1F]  |   LHLD 0x1FE1
      0x1fa6: E1 [1F FF]  |   POP H
      0x1fa7: 1F [FF 02]  |   RAR
      0x1fa8: FF [02 11]  |   RST 7

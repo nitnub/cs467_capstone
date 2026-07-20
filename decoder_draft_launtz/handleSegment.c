@@ -1,10 +1,16 @@
 #include "handleSegment.h"
+
+/*
+******************* REGISTERS & ASSEMBLY MNEMONICS **************
+*/
+
 char* CPURegisters[] = {"B", "C", "D", "E", "H", "L", "M", "A", "immediate"};
 char *CPURegisterPairs[] = {"BC", "DE", "HL", "SP"};
 char *rotateInstructions[] = {"RLC", "RRC", "RAL", "RAR", "DAA", "CMA", "STC", "CMC"};
 char *ALUInstructions[] = {"ADD","ADC","SUB","SBB","ANA","XRA","ORA","CMP"};
 char *ALUImmInstructions[] = {"ADI", "ACI", "SUI", "SBI", "ANI", "XRI", "ORI", "CPI"};
 char *flagConditionals[] = {"NZ", "Z", "NC", "C", "PO", "PE", "P", "M"};
+
 /*
 ******************* SEGMENT 0 *******************
 */
@@ -61,19 +67,24 @@ void modifyRegisterPair(char* registerPair, char** pairToPrint) {
 * description: get the index value: modulo division by 16
 */
 int getModIndex_16(struct instructionData *currentIns) {
+
+    // check for NULL pointers
     if (currentIns == NULL) {
         printf("error: instruction data not available\n");
         return -1;
     }
-    int modIndex = currentIns->instruction % CATEGORIES;
+    int modIndex = currentIns->instruction % 16;
     return modIndex;
 }
 
 int getModIndex_8(struct instructionData *currentIns) {
+    
+    // check for NULL pointers
     if (currentIns == NULL) {
         printf("error: instruction data not available\n");
         return -1;
     }
+
     int modIndex = currentIns->instruction % 8;
     return modIndex;
 }
@@ -185,13 +196,17 @@ int segment0_0(struct instructionData *currentIns) {
 */
 int segment0_1(struct instructionData *currentIns) {
 
-    char* registerPair = getSeqRegisterPair(currentIns);
+    // get register pair or stack pointer
+    // in this order: [BC, DE, HL, SP]
+    int regPairIndex = getSeqIndex_16(currentIns); 
+    char* registerPair = CPURegisterPairs[regPairIndex];
+
+    // adjust for Intel assembly syntax (ie HL -> H)
     char* printableRegisterPair = malloc(3);
+    modifyRegisterPair(registerPair, &printableRegisterPair);
 
     // insert and print assembly instructions
-    modifyRegisterPair(registerPair, &printableRegisterPair);
-    sprintf(currentIns->assembly, "LXI %s, 0x%02X%02X ", printableRegisterPair, currentIns->operand2, currentIns->operand1);
-    //printf("%s\n", currentIns->assembly);
+    sprintf(currentIns->assembly, "LXI %s, 0x%02X%02X", printableRegisterPair, currentIns->operand2, currentIns->operand1);
 
     // insert help instructions
     sprintf(currentIns->help, 
@@ -214,9 +229,14 @@ int segment0_1(struct instructionData *currentIns) {
 */
 int segment0_2(struct instructionData *currentIns) {
 
-    int immediateCount = 0;
-    char* registerPair = getSeqRegisterPair(currentIns);
-    int regPairIndex = (currentIns->instruction) / CATEGORIES;
+    int immediateCount = 0; // operands used varies between instructions
+
+    // get register pair or stack pointer
+    // in this order: [BC, DE, HL, SP]
+    int regPairIndex = getSeqIndex_16(currentIns); 
+    char* registerPair = CPURegisterPairs[regPairIndex];
+
+    // adjust for Intel assembly syntax (ie HL -> H)
     char* printableRegisterPair = malloc(3);
     modifyRegisterPair(registerPair, &printableRegisterPair);
 
@@ -244,7 +264,6 @@ int segment0_2(struct instructionData *currentIns) {
             // store content of registers HL in memory (imm1 is low part of address, imm2 is high part)
             // addr <- low, addr + 1 <- high
             sprintf(currentIns->assembly, "SHLD 0x%02X%02X", currentIns->operand2, currentIns->operand1);
-            // printf("%s\n", currentIns->assembly);
             // store help instructions
             sprintf(currentIns->help, 
                 "Store H and L directly into 2 bytes of memory addressed by immediate operands.");
@@ -256,7 +275,6 @@ int segment0_2(struct instructionData *currentIns) {
         case 3:
             // store accumulator in memory (N+1 imm: low address, N+2 imm: high address)
             sprintf(currentIns->assembly, "STA 0x%02X%02X", currentIns->operand2, currentIns->operand1);
-            // printf("%s\n", currentIns->assembly);
             // store help instructions
             sprintf(currentIns->help, "Store accumulator in memory (N+1 imm is low address, N+2 is high).");
             // set clock cycles
@@ -277,15 +295,18 @@ int segment0_2(struct instructionData *currentIns) {
 * increment value in register pair
 */
 int segment0_3(struct instructionData *currentIns) {
-    // printf("to implement: dispatch segment 0 mod 0x03\n");
 
-    char* registerPair = getSeqRegisterPair(currentIns);
+    // get register pair or stack pointer
+    // in this order: [BC, DE, HL, SP]
+    int regPairIndex = getSeqIndex_16(currentIns); 
+    char* registerPair = CPURegisterPairs[regPairIndex];
+
+    // adjust for Intel assembly syntax (ie HL -> H)
     char* printableRegisterPair = malloc(3);
     modifyRegisterPair(registerPair, &printableRegisterPair);
 
     // store assembly
     sprintf(currentIns->assembly, "INX %s", printableRegisterPair);
-    // printf("%s\n", currentIns->assembly);
 
     // store help instructions
     sprintf(currentIns->help, "Increment value in register pair %s", printableRegisterPair);
@@ -293,6 +314,7 @@ int segment0_3(struct instructionData *currentIns) {
     // set clock cycles
     currentIns->cycles = 5;
 
+    // free memory and return
     free(printableRegisterPair);
     return 0;
 }
@@ -303,13 +325,14 @@ int segment0_3(struct instructionData *currentIns) {
 */
 int segment0_4(struct instructionData *currentIns) {
 
-    int regPairIndex = (currentIns->instruction) / CATEGORIES;
-    int register_index = regPairIndex * 2;
-    char* reg = CPURegisters[register_index];
+    // get high order register: every other even register:
+    // [B * D * H * M *]
+    int regPairIndex = getSeqIndex_16(currentIns); 
+    int regIndex = regPairIndex * 2;
+    char* reg = CPURegisters[regIndex];
 
     // store assembly
     sprintf(currentIns->assembly, "INR %s", reg);
-    // printf("%s\n", currentIns->assembly);
 
     // store help instructions
     sprintf(currentIns->help, "increment CPU register %s", reg);
@@ -330,13 +353,14 @@ int segment0_4(struct instructionData *currentIns) {
 */
 int segment0_5(struct instructionData *currentIns) {
 
-    int regPairIndex = (currentIns->instruction) / CATEGORIES;
-    int register_index = regPairIndex * 2;
-    char* reg = CPURegisters[register_index];
+    // get high order register: every other even register:
+    // [B * D * H * M *]
+    int regPairIndex = getSeqIndex_16(currentIns); 
+    int regIndex = regPairIndex * 2;
+    char* reg = CPURegisters[regIndex];
 
     // store assembly
     sprintf(currentIns->assembly, "DCR %s", reg);
-    // printf("%s\n", currentIns->assembly);
 
     // store help instructions
     sprintf(currentIns->help, "decrement CPU register %s", reg);
@@ -354,14 +378,14 @@ int segment0_5(struct instructionData *currentIns) {
 */
 int segment0_6(struct instructionData *currentIns) {
 
-    // get register
-    int regPairIndex = (currentIns->instruction) / CATEGORIES;
-    int register_index = regPairIndex * 2;
-    char* reg = CPURegisters[register_index];
+    // get high order register: every other even register:
+    // [B * D * H * M *]
+    int regPairIndex = getSeqIndex_16(currentIns); 
+    int regIndex = regPairIndex * 2;
+    char* reg = CPURegisters[regIndex];
 
     // store assembly
     sprintf(currentIns->assembly, "MVI %s, 0x%02X", reg, currentIns->operand1);
-    // printf("%s\n", currentIns->assembly);
 
     // store help information
     sprintf(currentIns->help, "Load immediate source data into register");
@@ -383,17 +407,17 @@ int segment0_6(struct instructionData *currentIns) {
 */
 int segment0_7(struct instructionData *currentIns) {
 
+    // get even-index rotate & other accumulator/ carry flag instructions
+    // in this order: ["RLC", *, "RAL", *, "DAA", *, "STC", *]
     int seqIndex = getSeqIndex_8(currentIns);
     char* rotateIns = rotateInstructions[seqIndex];
 
     // store as assembly instruction
     sprintf(currentIns->assembly, "%s", rotateIns);
-    // printf("%s\n", currentIns->assembly);
 
     // store help information
     sprintf(currentIns->help, 
         "set carry flag (STC) or adjust accumulator (various): RLC (rotate left), RAL (rot. left through carry), DAA (decimal adjust)");
-    // printf("%s\n", currentIns->help);
 
     // set clock cycles
     currentIns->cycles = 4;
@@ -417,14 +441,17 @@ int segment0_8(struct instructionData *currentIns) {
 */
 int segment0_9(struct instructionData *currentIns) {
     
+    // get register pair or stack pointer
+    // in this order: [BC, DE, HL, SP]
     int seqIndex = getSeqIndex_16(currentIns);
     char* registerPair = CPURegisterPairs[seqIndex];
+
+    // adjust for Intel assembly syntax (ie HL -> H)
     char* printableRegisterPair = malloc(3);
     modifyRegisterPair(registerPair, &printableRegisterPair);
 
     // store assembly instructions
     sprintf(currentIns->assembly, "DAD %s", printableRegisterPair);
-    // printf("%s\n", currentIns->assembly);
 
     // store help information
     sprintf(currentIns->help, "add value in register pair to HL (HL += %s)", registerPair);
@@ -443,8 +470,13 @@ int segment0_9(struct instructionData *currentIns) {
 */
 int segment0_A(struct instructionData *currentIns) {
     int immediateCount = 0;
+    
+    // get register pair or stack pointer
+    // in this order: [BC, DE, HL, SP]
     int seqIndex = getSeqIndex_16(currentIns);
     char* registerPair = CPURegisterPairs[seqIndex];
+
+    // adjust for Intel assembly syntax (ie HL -> H)
     char* printableRegisterPair = malloc(3);
     modifyRegisterPair(registerPair, &printableRegisterPair);
 
@@ -452,7 +484,6 @@ int segment0_A(struct instructionData *currentIns) {
         case 0:
             // LDAX B
             sprintf(currentIns->assembly, "LDAX %s", printableRegisterPair);
-            // printf("%s\n", currentIns->assembly);
             sprintf(currentIns->help, "Load accumulator from address in %s", registerPair);
             currentIns->cycles = 7;
             break;
@@ -466,10 +497,10 @@ int segment0_A(struct instructionData *currentIns) {
             break;
 
         case 2:
-            // LHDR addr
-            sprintf(currentIns->assembly, "LHDR 0x%02X%02X", currentIns->operand2, currentIns->operand1);
+            // LHLD addr
+            sprintf(currentIns->assembly, "LHLD 0x%02X%02X", currentIns->operand2, currentIns->operand1);
             // printf("%s\n", currentIns->assembly);
-            sprintf(currentIns->help, "Load the contents of registers HL into memory at immediate address 0x%02x (high), 0x%02x (low)", 
+            sprintf(currentIns->help, "Load the contents of registers HL from memory at immediate address 0x%02x (high), 0x%02x (low)", 
                     currentIns->operand2, currentIns->operand1 );
             currentIns->cycles = 16;
             immediateCount = 2;
@@ -478,7 +509,6 @@ int segment0_A(struct instructionData *currentIns) {
         case 3:
             // LDA addr
             sprintf(currentIns->assembly, "LDA 0x%02X%02X", currentIns->operand2, currentIns->operand1);
-            // printf("%s\n", currentIns->assembly);
             sprintf(currentIns->help, "load accumulator directly from memory (N+1 low  address, N+2 high address");
             currentIns->cycles = 13;
             immediateCount = 2;
@@ -496,16 +526,26 @@ int segment0_A(struct instructionData *currentIns) {
 * decrement register pair by 1
 */
 int segment0_B(struct instructionData *currentIns) {
+
+    // get register pair or stack pointer
+    // in this order: [BC, DE, HL, SP]
     int seqIndex = getSeqIndex_16(currentIns);
     char* registerPair = CPURegisterPairs[seqIndex];
+
+    // adjust for Intel assembly syntax (ie HL -> H)
     char* printableRegisterPair = malloc(3);
     modifyRegisterPair(registerPair, &printableRegisterPair);
 
+    // store assembly instruction
     sprintf(currentIns->assembly, "DCX %s", printableRegisterPair);
-    // printf("%s\n", currentIns->assembly);
+
+    // store help information
     sprintf(currentIns->help, "Decrement 16-bit register/register pair %s", registerPair);
+
+    // set clock cycles
     currentIns->cycles = 5;
 
+    // free memory and return
     free(printableRegisterPair);
     return 0;
 }
@@ -515,14 +555,22 @@ int segment0_B(struct instructionData *currentIns) {
 * increment value in low-order register
 */
 int segment0_C(struct instructionData *currentIns) {
+
+    // get low order register: every other odd register:
+    // [* C * E * L * A]
     int regIndex = (getSeqIndex_16(currentIns) * 2) + 1;
     char *reg = CPURegisters[regIndex];
 
+    // store assembly instruction
     sprintf(currentIns->assembly, "INR %s", reg);
-    // printf("%s\n", currentIns->assembly);
+
+    // store help information
     sprintf(currentIns->help, "Increment register %s", reg);
+    
+    // store clock cycles
     currentIns->cycles = 5;
 
+    // return
     return 0;
 }
 
@@ -530,14 +578,22 @@ int segment0_C(struct instructionData *currentIns) {
 * segment 0: mod D
 */
 int segment0_D(struct instructionData *currentIns) {
+
+    // get low order register: every other odd register:
+    // [* C * E * L * A]
     int regIndex = (getSeqIndex_16(currentIns) * 2) + 1;
     char *reg = CPURegisters[regIndex];
 
+    // store assembly instruction
     sprintf(currentIns->assembly, "DCR %s", reg);
-    // printf("%s\n", currentIns->assembly);
+
+    // store help information
     sprintf(currentIns->help, "Decrement register %s", reg);
+
+    // store clock cycles
     currentIns->cycles = 5;
 
+    // return
     return 0;
 }
 
@@ -546,11 +602,16 @@ int segment0_D(struct instructionData *currentIns) {
 * load immediate data (1 byte) into CPU register
 */
 int segment0_E(struct instructionData *currentIns) {
+
+    // get low order register: every other odd register:
+    // [* C * E * L * A]
     int regIndex = (getSeqIndex_16(currentIns) * 2) + 1;
     char *reg = CPURegisters[regIndex];
 
+    // store assembly instruction
     sprintf(currentIns->assembly, "MVI %s, 0x%02X", reg, currentIns->operand1);
-    // printf("%s\n", currentIns->assembly);
+
+    // store help information
     sprintf(currentIns->help, "Load immediate byte into %s", reg);
 
     // set clock cycles for loading into memory
@@ -569,21 +630,22 @@ int segment0_E(struct instructionData *currentIns) {
 
 int segment0_F(struct instructionData *currentIns) {
 
+    // get odd-index rotate & other accumulator instructions
+    // in this order: [*, "RRC", *, "RAR", *, "CMA", *, "CMC"]
     int seqIndex = getSeqIndex_8(currentIns);
     char* rotateIns = rotateInstructions[seqIndex];
 
     // store as assembly instruction
     sprintf(currentIns->assembly, "%s", rotateIns);
-    // printf("%s\n", currentIns->assembly);
 
     // store help information
     sprintf(currentIns->help, 
         "complement carry flag (CMC) or adjust accumulator (various):\nRRC (rotate right), RAR (rot. right through carry), CMA (complement)");
-    // printf("%s\n", currentIns->help);
 
     // set clock cycles
     currentIns->cycles = 4;
 
+    // return
     return 0;
 }
 
@@ -591,10 +653,8 @@ int segment0_F(struct instructionData *currentIns) {
 * handler for segment 1: loading data (various location)
 */
 int segment1(struct instructionData *currentIns) {
-    //printf("to implement: dispatch segment 1\n");
 
-    // special case 0x76
-
+    // special case 0x76: HLT
     if (currentIns->instruction == 0x76) {
         // handle HLT
         sprintf(currentIns->assembly, "HLT");
@@ -607,7 +667,6 @@ int segment1(struct instructionData *currentIns) {
 
         // get destination register
         int destIndex = getSeqIndex_8(currentIns);
-        //printf("%d\n", destIndex);
         char *destReg = CPURegisters[destIndex];
 
         // store assembly
@@ -626,7 +685,6 @@ int segment1(struct instructionData *currentIns) {
 
     }
 
-    // printf("%s\n", currentIns->assembly);
     return 0;
 }
 
@@ -658,8 +716,6 @@ int segment2(struct instructionData *currentIns) {
         currentIns->cycles = 4;
     }
 
-    //printf("%s\n", currentIns->assembly);
-    //printf("%s\n", currentIns->help);
     return 0;
 }
 
@@ -672,11 +728,14 @@ int segment2(struct instructionData *currentIns) {
 * conditional return from subroutine if flag is clear
 */
 int segment3_0(struct instructionData *currentIns) {
+
+    // get "if clear" (even) conditional flag suffix in order:
+    // "NZ", *, "NC", *, "PO", *, "P", *
     int conditionalIndex = getSeqIndex_8(currentIns);
     char* flag = flagConditionals[conditionalIndex];
 
     sprintf(currentIns->assembly, "R%s", flag);
-    // printf("%s\n", currentIns->assembly);
+
     sprintf(currentIns->help, 
             "Return from subroutine if flag is clear\n(NZ = not zero, NC = not carry, PO = parity is odd (even parity clear), P = positive (sign clear))");
 
@@ -719,6 +778,9 @@ int segment3_1(struct instructionData *currentIns) {
 * conditional jump if flag is clear
 */
 int segment3_2(struct instructionData *currentIns) {
+
+    // get "if clear" (even) conditional flag suffix in order:
+    // "NZ", *, "NC", *, "PO", *, "P", *
     int conditionalIndex = getSeqIndex_8(currentIns);
     char* flag = flagConditionals[conditionalIndex];
 
@@ -736,7 +798,7 @@ int segment3_2(struct instructionData *currentIns) {
 int segment3_3(struct instructionData *currentIns) {
 
     char* ops[] = {"JMP", "OUT", "XTHL", "DI"};
-    int opIndex = getSeqIndex_8(currentIns);
+    int opIndex = getSeqIndex_16(currentIns);
     int instructionCount = 0;
 
     switch (opIndex) {
@@ -781,14 +843,20 @@ int segment3_3(struct instructionData *currentIns) {
 * conditional call subroutine if flag is clear
 */
 int segment3_4(struct instructionData *currentIns) {
+
+    // get "if clear" (even) conditional flag suffix in order:
+    // "NZ", *, "NC", *, "PO", *, "P", *
     int conditionalIndex = getSeqIndex_8(currentIns);
     char* flag = flagConditionals[conditionalIndex];
 
+    // store assembly instruction
     sprintf(currentIns->assembly, "C%s 0x%02X%02X", flag, currentIns->operand2, currentIns->operand1);
-    // printf("%s\n", currentIns->assembly);
+
+    // store help information
     sprintf(currentIns->help, 
             "Call subroutine if flag is clear\n(NZ = not zero, NC = not carry, PO = parity is odd (even parity clear), P = positive (sign clear))");
 
+    // store clock cycles
     currentIns->cycles = 17;
     currentIns->cyclesFalse = 11;
 
@@ -806,6 +874,7 @@ int segment3_5(struct instructionData *currentIns) {
     char* registerPair = CPURegisterPairs[pairIndex];
     char* printableRegisterPair = malloc(4);
     
+    // handle program status word
     if (pairIndex == 3) {
         strcpy(printableRegisterPair, "PSW\0");
         sprintf(currentIns->help, "Push program status word (accumulator, flags) to the stack");
@@ -816,10 +885,13 @@ int segment3_5(struct instructionData *currentIns) {
         sprintf(currentIns->help, "Push 16 bytes from stack to register pair %s", registerPair);
     }
 
+    // store assembly instruction
     sprintf(currentIns->assembly, "PUSH %s", printableRegisterPair);
+
+    // set clock cycles
     currentIns->cycles = 11;
 
-    // printf("%s\n", currentIns->assembly);
+    // free memory and return
     free(printableRegisterPair);
     return 0;
 
@@ -830,6 +902,9 @@ int segment3_5(struct instructionData *currentIns) {
 * ALU operations with immediate data
 */
 int segment3_6(struct instructionData *currentIns) {
+
+    // get even ALU operation
+    // in the following order: ["ADI", "ACI", "SUI", "SBI", "ANI", "XRI", "ORI", "CPI"]
     int opIndex = (getSeqIndex_16(currentIns) * 2);
     char* op = ALUImmInstructions[opIndex];
     int helpSource = 8;
@@ -838,9 +913,6 @@ int segment3_6(struct instructionData *currentIns) {
     handleALUHelp(currentIns, &opIndex, &helpSource);
 
     currentIns->cycles = 7;
-
-    // printf("%s\n", currentIns->assembly);
-    // printf("%s\n", currentIns->help);
 
     // return number of extra bytes used: 1
     return 1;
@@ -858,9 +930,6 @@ int segment3_7(struct instructionData *currentIns) {
     sprintf(currentIns->help, "Call reset subroutine %d", resetIndex);
     currentIns->cycles = 7;
 
-    // printf("%s\n", currentIns->assembly);
-    // printf("%s\n", currentIns->help);
-    
     return 0;
 }
 
@@ -920,7 +989,6 @@ int segment3_9(struct instructionData *currentIns) {
             break;
     }
 
-    // printf("%s\n", currentIns->assembly);
     return 0;
 }
 
@@ -958,7 +1026,6 @@ int segment3_B(struct instructionData *currentIns) {
         case 0:
             // undefined
             sprintf(currentIns->assembly, "Undefined instruction");
-            printf("Invalid instruction: 0x%02x\n", currentIns->instruction);
             return -1;
             break;
 
@@ -985,9 +1052,6 @@ int segment3_B(struct instructionData *currentIns) {
             break;
     }
 
-
-    // printf("%s\n", currentIns->assembly);
-    // printf("%s\n", currentIns->help);
     return immediateBytes;
 }
 
@@ -1018,7 +1082,7 @@ int segment3_D(struct instructionData *currentIns) {
 
     // 0xCD is the only valid instruction in this group (unconditional call)
     if (currentIns->instruction == 0xCD) {
-        sprintf(currentIns->assembly, "CAL 0x%02X%02X", currentIns->operand2, currentIns->operand1);
+        sprintf(currentIns->assembly, "CALL 0x%02X%02X", currentIns->operand2, currentIns->operand1);
         sprintf(currentIns->help, "Unconditional call subroutine at immediate address");
         currentIns->cycles = 17;
         // printf("%s\n", currentIns->assembly);
@@ -1037,17 +1101,21 @@ int segment3_D(struct instructionData *currentIns) {
 * ALU operations with immediate data
 */
 int segment3_E(struct instructionData *currentIns) {
+
+    // get odd ALU operation
+    // in the following order: [*, "ACI", *, "SBI", *, "XRI", *, "CPI"]
     int opIndex = (getSeqIndex_16(currentIns) * 2 + 1);
     char* op = ALUImmInstructions[opIndex];
     int helpSource = 8;
 
+    // store assembly operation
     sprintf(currentIns->assembly, "%s 0x%02X", op, currentIns->operand1);
+
+    // store help information
     handleALUHelp(currentIns, &opIndex, &helpSource);
 
+    // set clock cycles
     currentIns->cycles = 7;
-
-    // printf("%s\n", currentIns->assembly);
-    // printf("%s\n", currentIns->help);
 
     // number of extra bytes
     return 1;
@@ -1063,9 +1131,6 @@ int segment3_F(struct instructionData *currentIns) {
     sprintf(currentIns->assembly, "RST %d", resetIndex);
     sprintf(currentIns->help, "Call reset subroutine %d", resetIndex);
     currentIns->cycles = 7;
-
-    // printf("%s\n", currentIns->assembly);
-    // printf("%s\n", currentIns->help);
 
     return 0;
 }
