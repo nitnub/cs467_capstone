@@ -24,6 +24,8 @@ int setupInstruction(struct instructionData* currentIns, int opcode){
 
     currentIns->s->regs16[SP] = 0x2400;
     currentIns->s->regs16[PC] = 0x0080;
+
+    currentIns->s->flags[CARRY] = 0x00;
   
     return 0;
 }
@@ -110,6 +112,73 @@ int test_09(struct instructionData *currentIns, int opcode) {
 }
 
 /*
+*   test_0A: 0x0A (load accumulator from address in BC)
+*/
+int test_0A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, getReg8(currentIns->s, B), getReg8(currentIns->s, C), 0xBC);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0xBC);
+}
+
+/*
+*   test_0B: decrement register pair BC
+*/
+int test_0B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg16(currentIns->s, BC) == 0x1010);
+}
+
+/*
+*   test_0C: increment register C
+*/
+int test_0C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, C) == 0x12);
+}
+
+/*
+*   test_0D: decrement register C
+*/
+int test_0D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, C) == 0x10);
+}
+
+/*
+*   test_0E: put immediate value into register C
+*/
+int test_0E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, C) == 0x18);
+}
+
+/*
+*   test_0F: rotate accumulator right
+*/
+int test_0F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value (0x17 -> 0x83)
+    assert(getReg8(currentIns->s, A) == 0x8B);
+}
+
+/*
 *   test_11: 0x11 (loads immediate data x2 into DE)
 */
 int test_11(struct instructionData *currentIns, int opcode) {
@@ -187,6 +256,74 @@ int test_19(struct instructionData *currentIns, int opcode) {
     dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x2628);
+}
+
+/*
+*   test_1A: 0x1A (load accumulator from address in DE)
+*/
+int test_1A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, getReg8(currentIns->s, D), getReg8(currentIns->s, E), 0xDE);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0xDE);
+}
+
+/*
+*   test_1B: decrement register pair DE
+*/
+int test_1B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg16(currentIns->s, DE) == 0x1212);
+}
+
+/*
+*   test_1C: increment register E
+*/
+int test_1C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, E) == 0x14);
+}
+
+/*
+*   test_1D: decrement register E
+*/
+int test_1D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, E) == 0x12);
+}
+
+/*
+*   test_1E: put immediate value into register E
+*/
+int test_1E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, E) == 0x18);
+}
+
+/*
+*   test_1F: rotate accumulator right through carry
+*/
+int test_1F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, CARRY, 0x00);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value (0x17 -> 0x83)
+    assert(getReg8(currentIns->s, A) == 0x0B);
 }
 
 /*
@@ -270,6 +407,73 @@ int test_29(struct instructionData *currentIns, int opcode) {
     dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x282A);
+}
+
+/*
+*   test_2A: 0x2A load registers H and L from memory (imm1: low memory address, imm2: high address)
+*/
+int test_2A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x21, 0x18, 0x05); // load low byte into memory at 0x2118
+    memStore(currentIns->s, 0x21, 0x19, 0x06); // load high byte into memory at 0x2119
+    dispatchLevel2(currentIns);
+
+    assert(getReg16(currentIns->s, HL) == 0x0605);
+}
+
+/*
+*   test_2B: decrement register pair HL
+*/
+int test_2B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg16(currentIns->s, HL) == 0x1414);
+}
+
+/*
+*   test_2C: increment register L
+*/
+int test_2C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, L) == 0x16);
+}
+
+/*
+*   test_2D: decrement register L
+*/
+int test_2D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, L) == 0x14);
+}
+
+/*
+*   test_2E: put immediate value into register L
+*/
+int test_2E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, L) == 0x18);
+}
+
+/*
+*   test_2F: complement the accumulator
+*/
+int test_2F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0xE8);
 }
 
 /*
@@ -358,6 +562,72 @@ int test_39(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, HL) == 0x3815);
 }
 
+/*
+*   test_3A: 0x3A load accumulator from immediate address
+*/
+int test_3A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x21, 0x18, 0x0A); // load low byte into memory at 0x2118
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x0A);
+}
+
+/*
+*   test_3B: decrement stack pointer
+*/
+int test_3B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg16(currentIns->s, SP) == 0x23FF);
+}
+
+/*
+*   test_3C: increment register A
+*/
+int test_3C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x18);
+}
+
+/*
+*   test_3D: decrement register A
+*/
+int test_3D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x16);
+}
+
+/*
+*   test_3E: put immediate value into register A
+*/
+int test_3E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x18);
+}
+
+/*
+*   test_3F: complement the carry flag
+*/
+int test_3F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+}
+
 int main (void) {
 
     pthread_mutex_init(&cpu_test.ioInputLock, NULL);
@@ -372,6 +642,12 @@ int main (void) {
     test_06(&ins, 0x06);
     test_07(&ins, 0x07);
     test_09(&ins, 0x09);    // 8 is undefined
+    test_0A(&ins, 0x0A);
+    test_0B(&ins, 0x0B);
+    test_0C(&ins, 0x0C);
+    test_0D(&ins, 0x0D);
+    test_0E(&ins, 0x0E);
+    test_0F(&ins, 0x0F);
 
     test_11(&ins, 0x11);
     test_12(&ins, 0x12);
@@ -381,6 +657,12 @@ int main (void) {
     test_16(&ins, 0x16);
     test_17(&ins, 0x17);    // 18 is undefined
     test_19(&ins, 0x19);
+    test_1A(&ins, 0x1A);
+    test_1B(&ins, 0x1B);
+    test_1C(&ins, 0x1C);
+    test_1D(&ins, 0x1D);
+    test_1E(&ins, 0x1E);
+    test_1F(&ins, 0x1F);
 
     test_21(&ins, 0x21);
     test_22(&ins, 0x22);
@@ -390,6 +672,12 @@ int main (void) {
     test_26(&ins, 0x26);
     test_27(&ins, 0x27);
     test_29(&ins, 0x29);    // 28 is undefined
+    test_2A(&ins, 0x2A);
+    test_2B(&ins, 0x2B);
+    test_2C(&ins, 0x2C);
+    test_2D(&ins, 0x2D);
+    test_2E(&ins, 0x2E);
+    test_2F(&ins, 0x2F);
 
     test_31(&ins, 0x31);
     test_32(&ins, 0x32);
@@ -399,6 +687,12 @@ int main (void) {
     test_36(&ins, 0x36);
     test_37(&ins, 0x37);    // 38 is undefined
     test_39(&ins, 0x39);
+    test_3A(&ins, 0x3A);
+    test_3B(&ins, 0x3B);
+    test_3C(&ins, 0x3C);
+    test_3D(&ins, 0x3D);
+    test_3E(&ins, 0x3E);
+    test_3F(&ins, 0x3F);
 
     return 0; 
 }

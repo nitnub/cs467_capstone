@@ -557,6 +557,15 @@ int segment0_A(struct instructionData *currentIns) {
             sprintf(currentIns->assembly, "LDAX %s", printableRegisterPair);
             sprintf(currentIns->help, "Load accumulator from address in %s", registerPair);
             currentIns->cycles = 7;
+
+            // execute instruction: get address
+            uint16_t address = getReg16(currentIns->s, seqIndex);
+            uint8_t high0 = highFrom16Bit(address);
+            uint8_t low0 = lowFrom16Bit(address);
+            // get byte from memory
+            uint8_t value0 = memFetch(currentIns->s, high0, low0);
+            // load into accumulator
+            setReg8(currentIns->s, A, value0);
             break;
 
         case 1:
@@ -565,6 +574,15 @@ int segment0_A(struct instructionData *currentIns) {
             // printf("%s\n", currentIns->assembly);
             sprintf(currentIns->help, "Load accumulator from address in %s", registerPair);
             currentIns->cycles = 7;
+
+            // execute instruction: get address
+            uint16_t address1 = getReg16(currentIns->s, seqIndex);
+            uint8_t high1 = highFrom16Bit(address1);
+            uint8_t low1 = lowFrom16Bit(address1);
+            // get byte from memory
+            uint8_t value1 = memFetch(currentIns->s, high1, low1);
+            // load into accumulator
+            setReg8(currentIns->s, A, value1);
             break;
 
         case 2:
@@ -575,6 +593,20 @@ int segment0_A(struct instructionData *currentIns) {
                     currentIns->operand2, currentIns->operand1 );
             currentIns->cycles = 16;
             immediateCount = 2;
+
+            // execute instruction
+            // fetch low byte
+            uint8_t valueLow = memFetch(currentIns->s, currentIns->operand2, currentIns->operand1);
+
+            // fetch high byte
+            uint16_t address2 = convert8To16(currentIns->operand2, currentIns->operand1);
+            address2 +=1;   // increment as a 16-bit address in case of wraparound
+            uint8_t valueHigh = memFetch(currentIns->s, highFrom16Bit(address2), lowFrom16Bit(address2));
+
+            // populate bytes into registers
+            setReg8(currentIns->s, L, valueLow);
+            setReg8(currentIns->s, H, valueHigh);
+
             break;
 
         case 3:
@@ -583,6 +615,11 @@ int segment0_A(struct instructionData *currentIns) {
             sprintf(currentIns->help, "load accumulator directly from memory (N+1 low  address, N+2 high address");
             currentIns->cycles = 13;
             immediateCount = 2;
+
+            // execute instruction: fetch from memory and pop into accumulator
+            uint8_t value3 = memFetch(currentIns->s, currentIns->operand2, currentIns->operand1);
+            setReg8(currentIns->s, A, value3);
+
             break;
     }
 
@@ -616,6 +653,9 @@ int segment0_B(struct instructionData *currentIns) {
     // set clock cycles
     currentIns->cycles = 5;
 
+    // execute instruction
+    aluSubImm16NoFlags (currentIns->s, seqIndex, 0x01);
+
     // free memory and return
     free(printableRegisterPair);
     return 0;
@@ -641,6 +681,11 @@ int segment0_C(struct instructionData *currentIns) {
     // store clock cycles
     currentIns->cycles = 5;
 
+    // execute instruction
+    uint8_t value = getReg8(currentIns->s, regIndex) + 1;
+    setReg8(currentIns->s, regIndex, value);
+    aluFlags_arithmetic(currentIns->s, regIndex, value);
+
     // return
     return 0;
 }
@@ -663,6 +708,11 @@ int segment0_D(struct instructionData *currentIns) {
 
     // store clock cycles
     currentIns->cycles = 5;
+
+    // execute instruction
+    uint8_t value = getReg8(currentIns->s, regIndex) - 1;
+    setReg8(currentIns->s, regIndex, value);
+    aluFlags_arithmetic(currentIns->s, regIndex, value);
 
     // return
     return 0;
@@ -694,6 +744,9 @@ int segment0_E(struct instructionData *currentIns) {
         currentIns->cycles = 7;
     }
 
+    // execute instruction
+    setReg8(currentIns->s, regIndex, currentIns->operand1);
+
     // return number of extra bytes used: 1
     return 1;
 }
@@ -715,6 +768,9 @@ int segment0_F(struct instructionData *currentIns) {
 
     // set clock cycles
     currentIns->cycles = 4;
+
+    // execute instruction
+    accum_op_array[seqIndex](currentIns->s);
 
     // return
     return 0;
