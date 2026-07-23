@@ -55,6 +55,11 @@ enum flags {
     NO_FLAG
 };
 
+enum portDirection {
+    IN,
+    OUT
+};
+
 typedef struct {
     uint8_t currentOpcode;              // current opocde 
     uint8_t interruptBuffer;            // buffer for interrupt input
@@ -87,11 +92,13 @@ typedef struct {
 uint8_t getReg8(state *currentState, int regIndex);
 uint16_t getReg16(state *currentState, int regIndex);
 uint8_t getFlag(state *currentState, int flagIndex);
+uint8_t getPort(state *currentState, int portIndex, uint8_t portDirection);
 
 /* register & flag setters */
 int setReg8(state *currentState, int regIndex, uint8_t value);
 int setReg16(state *currentState, int regPairIndex, uint16_t value);
 int setFlag(state *currentState, int flagIndex, uint8_t value);
+int setPort(state *currentState, int portIndex, uint8_t portDirection, uint8_t value);
 
 /* Conversion &  Utility functions */
 uint16_t convert8To16(uint8_t high, uint8_t low);

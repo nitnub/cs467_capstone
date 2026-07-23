@@ -92,6 +92,38 @@ uint8_t getFlag(state *currentState, int flagIndex) {
 }
 
 /*
+*   function: getPort
+*   Retrieves the value for port no. portIndex in direction specified
+*   by the portDirection
+*
+*   @param: currentState, a pointer to the cpu state
+*   @param: portIndex, an integer between 0x00 and 0xFF representing
+*           the port number in either direction
+*   @param: portDirection, an unsigned 1-byte integer representing
+*           a boolean indicating direction (0 is IN, nonzero is OUT) 
+*/
+uint8_t getPort(state *currentState, int portIndex, uint8_t portDirection) {
+    if (currentState == NULL) {
+        perror("Error: null pointer to current state\n");
+        return -1;
+    }
+
+    if (portIndex < 0x00 || portIndex > 0xFF) {
+        perror("getPort: index out of range\n");
+        return -1;
+    }
+
+    // return an input port
+    if (portDirection == 0) {
+        return currentState->inp[portIndex];
+    }
+    // return an output port
+    else {
+        return currentState->outp[portIndex];
+    }
+}
+
+/*
 * ********************** SET VALUE IN CPU *************************
 */
 
@@ -215,6 +247,38 @@ int setFlag(state *currentState, int flagIndex, uint8_t value) {
     }
     else {
         currentState->flags[flagIndex] = 0x00;
+    }
+    return 0;
+}
+
+/*
+*   function: setPort
+*   Sets the input or output port designated by portIndex and portDirection with
+*   the number in value.
+*
+*   @param: currentState, a pointer to the current state of the cpu
+*   @param: portIndex, an integer representing the port number
+*   @param: portDirection, an unsigned integer representing a boolean value that
+*           indicates direction (0 is input, nonzero is output)
+*   @param: value, an unsigned 8-bit integer representing the value to be inserted
+*           into a given port.
+*/
+int setPort(state *currentState, int portIndex, uint8_t portDirection, uint8_t value) {
+    if (currentState == NULL) {
+        perror("Error: null pointer to current state\n");
+        return -1;
+    }
+
+    if (portIndex < 0x00 || portIndex > 0xFF) {
+        perror("getPort: index out of range\n");
+        return -1;
+    }
+
+    if (portDirection == 0) {
+        currentState->inp[portIndex] = value;
+    }
+    else {
+        currentState->outp[portIndex] = value;
     }
     return 0;
 }

@@ -5,6 +5,7 @@
 struct instructionData ins;
 state cpu_test;
 
+
 int setupInstruction(struct instructionData* currentIns, int opcode){
 
     // set up instruction values for testing
@@ -29,6 +30,9 @@ int setupInstruction(struct instructionData* currentIns, int opcode){
   
     return 0;
 }
+
+
+
 
 /*
 *   test_01: 0x01 (loads immediate data x2 into BC)
@@ -628,6 +632,29 @@ int test_3F(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x01);
 }
 
+/*
+*   test_D3: OUT (output instruction)
+*/
+int test_D3(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getPort(currentIns->s, 0x18, OUT) == 0x17);
+    return 0;
+}
+
+/*
+*   test_DB: IN (input instruction)
+*/
+int test_DB(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setPort(currentIns->s, 0x18, IN, 0x54);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x54);
+    return 0;
+}
+
 int main (void) {
 
     pthread_mutex_init(&cpu_test.ioInputLock, NULL);
@@ -694,5 +721,8 @@ int main (void) {
     test_3E(&ins, 0x3E);
     test_3F(&ins, 0x3F);
 
+
+    test_D3(&ins, 0xD3);
+    test_DB(&ins, 0xDB);
     return 0; 
 }

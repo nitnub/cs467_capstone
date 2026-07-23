@@ -944,6 +944,9 @@ int segment3_3(struct instructionData *currentIns) {
             sprintf(currentIns->help, "Output (port)");
             currentIns->cycles = 10;
             instructionCount = 1;
+
+            // execute instruction
+            uint8_t value1 = setPort(currentIns->s, currentIns->operand1, OUT, getReg8(currentIns->s, A));
             break;
 
         case 2:
@@ -1162,6 +1165,10 @@ int segment3_B(struct instructionData *currentIns) {
             sprintf(currentIns->help, "Input from port 0x%02x", currentIns->operand1);
             currentIns->cycles = 10;
             immediateBytes = 1;
+
+            // execute instruction
+            uint8_t value = getPort(currentIns->s, currentIns->operand1, IN);
+            setReg8(currentIns->s, A, value);
             break;
 
         case 2:
