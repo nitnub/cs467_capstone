@@ -810,6 +810,21 @@ int segment1(struct instructionData *currentIns) {
             currentIns->cycles = 5;
         }
 
+        // execute code 
+        // if source is memory, grab from memory address in HL, put it in M buffer
+        if (sourceIndex == M) {
+            uint8_t value = memFetch(currentIns->s, getReg8(currentIns->s, H), getReg8(currentIns->s, L));
+            setReg8(currentIns->s, M, value);
+        }
+
+        // move
+        setReg8(currentIns->s, destIndex, getReg8(currentIns->s, sourceIndex));
+
+        // handle if destination is memory
+        if (destIndex == M) {
+            memStore(currentIns->s, getReg8(currentIns->s, H), getReg8(currentIns->s, L), getReg8(currentIns->s, M));
+        }
+
     }
 
     return 0;

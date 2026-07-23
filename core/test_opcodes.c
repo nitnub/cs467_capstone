@@ -584,7 +584,6 @@ int test_3B(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     dispatchLevel2(currentIns);
 
-    // check accumulator for value
     assert(getReg16(currentIns->s, SP) == 0x23FF);
 }
 
@@ -595,7 +594,6 @@ int test_3C(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     dispatchLevel2(currentIns);
 
-    // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x18);
 }
 
@@ -606,7 +604,6 @@ int test_3D(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     dispatchLevel2(currentIns);
 
-    // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x16);
 }
 
@@ -617,7 +614,6 @@ int test_3E(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     dispatchLevel2(currentIns);
 
-    // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x18);
 }
 
@@ -628,8 +624,724 @@ int test_3F(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     dispatchLevel2(currentIns);
 
-    // check accumulator for value
     assert(getFlag(currentIns->s, CARRY) == 0x01);
+}
+
+/* 
+*   test 0x40: mov B, B
+*/
+int test_40(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, B) == 0x10);
+}
+
+/* 
+*   test 0x40: mov B, C
+*/
+int test_41(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, B) == 0x11);
+}
+
+/* 
+*   test 0x42: mov B, D
+*/
+int test_42(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, B) == 0x12);
+}
+
+/* 
+*   test 0x43: mov B, E
+*/
+int test_43(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, B) == 0x13);
+}
+
+/* 
+*   test 0x44: mov B, H
+*/
+int test_44(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, B) == 0x14);
+}
+
+/* 
+*   test 0x45: mov B, L
+*/
+int test_45(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, B) == 0x15);
+}
+
+/* 
+*   test 0x46: mov B, M (tests move from memory)
+*/
+int test_46(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x27);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, B) == 0x27);
+}
+
+/* 
+*   test 0x47: mov B, A
+*/
+int test_47(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, B) == 0x17);
+}
+
+/* 
+*   test 0x48: mov C, B
+*/
+int test_48(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, C) == 0x10);
+}
+
+/* 
+*   test 0x49: mov C, C
+*/
+int test_49(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, C) == 0x11);
+}
+
+/* 
+*   test 0x4A: mov C, D
+*/
+int test_4A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, C) == 0x12);
+}
+
+/* 
+*   test 0x4B: mov C, E 
+*/
+int test_4B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, C) == 0x13);
+}
+
+/* 
+*   test 0x4C: mov C, H 
+*/
+int test_4C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, C) == 0x14);
+}
+
+/* 
+*   test 0x4D: mov C, L 
+*/
+int test_4D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, C) == 0x15);
+}
+
+/* 
+*   test 0x4E: mov C, M (tests move from memory)
+*/
+int test_4E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x37);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, C) == 0x37);
+}
+
+/* 
+*   test 0x4F: mov C, A
+*/
+int test_4F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, C) == 0x17);
+}
+
+/* 
+*   test 0x50: mov D, B
+*/
+int test_50(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, D) == 0x10);
+}
+
+/* 
+*   test 0x51: mov D, C
+*/
+int test_51(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, D) == 0x11);
+}
+
+/* 
+*   test 0x52: mov D, D
+*/
+int test_52(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, D) == 0x12);
+}
+
+/* 
+*   test 0x53: mov D, E
+*/
+int test_53(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, D) == 0x13);
+}
+
+/* 
+*   test 0x54: mov D, H
+*/
+int test_54(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, D) == 0x14);
+}
+
+/* 
+*   test 0x55: mov D, L
+*/
+int test_55(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, D) == 0x15);
+}
+
+/* 
+*   test 0x56: mov D, M (sets store in memory)
+*/
+int test_56(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x47);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, D) == 0x47);
+}
+
+/* 
+*   test 0x57: mov D, A (sets store in memory)
+*/
+int test_57(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, D) == 0x17);
+}
+
+/* 
+*   test 0x58: mov E, B (sets store in memory)
+*/
+int test_58(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, E) == 0x10);
+}
+
+/* 
+*   test 0x59: mov E, C (sets store in memory)
+*/
+int test_59(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, E) == 0x11);
+}
+
+/* 
+*   test 0x5A: mov E, D (sets store in memory)
+*/
+int test_5A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, E) == 0x12);
+}
+
+/* 
+*   test 0x5B: mov E, E (sets store in memory)
+*/
+int test_5B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, E) == 0x13);
+}
+
+/* 
+*   test 0x5C: mov E, H (sets store in memory)
+*/
+int test_5C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, E) == 0x14);
+}
+
+/* 
+*   test 0x5D: mov E, L (sets store in memory)
+*/
+int test_5D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, E) == 0x15);
+}
+
+/* 
+*   test 0x5E: mov E, M (tests move to memory)
+*/
+int test_5E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x57);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, E) == 0x57);
+}
+
+/* 
+*   test 0x5F: mov E, A 
+*/
+int test_5F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, E) == 0x17);
+}
+
+
+/* 
+*   test 0x60: mov H, B
+*/
+int test_60(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, H) == 0x10);
+}
+
+/* 
+*   test 0x61: mov H, C
+*/
+int test_61(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, H) == 0x11);
+}
+
+
+/* 
+*   test 0x62: mov H, D
+*/
+int test_62(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, H) == 0x12);
+}
+
+/* 
+*   test 0x63: mov H, E
+*/
+int test_63(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, H) == 0x13);
+}
+
+/* 
+*   test 0x64: mov H, H
+*/
+int test_64(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, H) == 0x14);
+}
+
+/* 
+*   test 0x65: mov H, L
+*/
+int test_65(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, H) == 0x15);
+}
+
+/* 
+*   test 0x66: mov H, M
+*/
+int test_66(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x67);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, H) == 0x67);
+}
+
+
+/* 
+*   test 0x67: mov H, A
+*/
+int test_67(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, H) == 0x17);
+}
+
+/* 
+*   test 0x68: mov L, B
+*/
+int test_68(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, L) == 0x10);
+}
+
+/* 
+*   test 0x69: mov L, C
+*/
+int test_69(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, L) == 0x11);
+}
+
+/* 
+*   test 0x6A: mov L, D
+*/
+int test_6A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, L) == 0x12);
+}
+
+/* 
+*   test 0x6B: mov L, E
+*/
+int test_6B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, L) == 0x13);
+}
+
+/* 
+*   test 0x6C: mov L, H
+*/
+int test_6C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, L) == 0x14);
+}
+
+/* 
+*   test 0x6D: mov L, L
+*/
+int test_6D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, L) == 0x15);
+}
+
+/* 
+*   test 0x6E: mov L, M
+*/
+int test_6E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x21);
+    dispatchLevel2(currentIns);
+
+    // check register for value
+    assert(getReg8(currentIns->s, L) == 0x21);
+}
+
+/* 
+*   test 0x6F: mov L, A
+*/
+int test_6F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x17);
+}
+
+/* 
+*   test 0x70: mov M, B
+*/
+int test_70(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
+    
+    // check accumulator for value
+    assert(res = 0x10);
+}
+
+/* 
+*   test 0x71: mov M, C
+*/
+int test_71(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
+    
+    // check accumulator for value
+    assert(res = 0x11);
+}
+
+/* 
+*   test 0x72: mov M, D
+*/
+int test_72(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
+    
+    // check accumulator for value
+    assert(res = 0x12);
+}
+
+/* 
+*   test 0x73: mov M, E
+*/
+int test_73(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
+    
+    // check accumulator for value
+    assert(res = 0x13);
+}
+
+/* 
+*   test 0x74: mov M, H
+*/
+int test_74(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
+    
+    // check accumulator for value
+    assert(res = 0x14);
+}
+
+/* 
+*   test 0x75: mov M, L
+*/
+int test_75(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
+    
+    // check accumulator for value
+    assert(res = 0x15);
+}
+
+/* 
+*   test 0x77: mov M, A
+*/
+int test_77(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
+    
+    // check accumulator for value
+    assert(res = 0x17);
+}
+
+/* 
+*   test 0x78: mov A, B
+*/
+int test_78(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x10);
+}
+
+/* 
+*   test 0x79: mov A, C
+*/
+int test_79(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x11);
+}
+
+/* 
+*   test 0x7A: mov A, D
+*/
+int test_7A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x12);
+}
+
+/* 
+*   test 0x79: mov A, E
+*/
+int test_7B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x13);
+}
+
+/* 
+*   test 0x7C: mov A, H
+*/
+int test_7C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x14);
+}
+
+/* 
+*   test 0x7D: mov A, L
+*/
+int test_7D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x15);
+}
+
+/* 
+*   test 0x7E: mov A, M
+*/
+int test_7E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x52);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x52);
+}
+
+/* 
+*   test 0x7F: mov A, M
+*/
+int test_7F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check accumulator for value
+    assert(getReg8(currentIns->s, A) == 0x17);
 }
 
 /*
@@ -721,6 +1433,72 @@ int main (void) {
     test_3E(&ins, 0x3E);
     test_3F(&ins, 0x3F);
 
+    test_40(&ins, 0x40);
+    test_41(&ins, 0x41);
+    test_42(&ins, 0x42);
+    test_43(&ins, 0x43);
+    test_44(&ins, 0x44);
+    test_45(&ins, 0x45);
+    test_46(&ins, 0x46);
+    test_47(&ins, 0x47);
+    test_48(&ins, 0x48);
+    test_49(&ins, 0x49);
+    test_4A(&ins, 0x4A);
+    test_4B(&ins, 0x4B);
+    test_4C(&ins, 0x4C);
+    test_4D(&ins, 0x4D);
+    test_4E(&ins, 0x4E);
+    test_4F(&ins, 0x4F);
+
+    test_50(&ins, 0x50);
+    test_51(&ins, 0x51);
+    test_52(&ins, 0x52);
+    test_53(&ins, 0x53);
+    test_54(&ins, 0x54);
+    test_55(&ins, 0x55);
+    test_56(&ins, 0x56);
+    test_57(&ins, 0x57);
+    test_58(&ins, 0x58);
+    test_59(&ins, 0x59);
+    test_5A(&ins, 0x5A);
+    test_5B(&ins, 0x5B);
+    test_5C(&ins, 0x5C);
+    test_5D(&ins, 0x5D);
+    test_5E(&ins, 0x5E);
+    test_5F(&ins, 0x5F);
+
+    test_60(&ins, 0x60);
+    test_61(&ins, 0x61);
+    test_62(&ins, 0x62);
+    test_63(&ins, 0x63);
+    test_64(&ins, 0x64);
+    test_65(&ins, 0x65);
+    test_66(&ins, 0x66);
+    test_67(&ins, 0x67);
+    test_68(&ins, 0x68);
+    test_69(&ins, 0x69);
+    test_6A(&ins, 0x6A);
+    test_6B(&ins, 0x6B);
+    test_6C(&ins, 0x6C);
+    test_6D(&ins, 0x6D);
+    test_6E(&ins, 0x6E);
+    test_6F(&ins, 0x6F);
+
+    test_70(&ins, 0x70);
+    test_71(&ins, 0x71);
+    test_72(&ins, 0x72);
+    test_73(&ins, 0x73);
+    test_74(&ins, 0x74);
+    test_75(&ins, 0x75);
+    test_77(&ins, 0x77);
+    test_78(&ins, 0x78);
+    test_79(&ins, 0x79);
+    test_7A(&ins, 0x7A);
+    test_7B(&ins, 0x7B);
+    test_7C(&ins, 0x7C);
+    test_7D(&ins, 0x7D);
+    test_7E(&ins, 0x7E);
+    test_7F(&ins, 0x7F);
 
     test_D3(&ins, 0xD3);
     test_DB(&ins, 0xDB);
