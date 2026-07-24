@@ -83,7 +83,19 @@ static acc_i accum_op_array[] = {rotate_left,
                                 set_carry,
                                 complement_carry};
 
+/* return, call and jump */
+int returnFrom(state *currentState, int flagIndex, uint8_t condition);
+int jumpTo(state *currentState, int flagIndex, uint8_t condition, uint8_t highAddr, uint8_t lowAddr);
+int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t highAddr, uint8_t lowAddr);
+
+/* input / output instructions */
+int handleDI (state *currentState);
+int handleEI (state *currentState);
+
 /* miscellaneous instructions */
 int handleXTHL (state *currentState);
+int handlePCHL (state *currentState);
+int handleSPHL (state *currentState);
+int handleXCHG (state *currentState);
 
 #endif

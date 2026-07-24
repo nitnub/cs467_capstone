@@ -63,28 +63,17 @@ enum portDirection {
 typedef struct {
     uint8_t currentOpcode;              // current opocde 
     uint8_t interruptBuffer;            // buffer for interrupt input
-    uint8_t interruptReady;             // boolean. Is an interrupt ready
+    uint8_t interruptReady;             // boolean. Is cpu interrupt-enabled
 } process_r;  
-
-typedef struct {
-    pthread_mutex_t enableInt;
-    pthread_mutex_t cyclesAccess;
-    int interruptInit;
-    int shutdownCondition;
-    uint64_t refresh_cycles;
-} interrupt_r;
 
 typedef struct {
     uint8_t regs8[9];                   // 8 bit registers: B, C, D, E, H, L, (memory buffer), A, (operand buffer) 
     uint16_t regs16[6];                 // 16 bit registers: BC buffer, DE buffer, HL buffer, SP, PC, PSW buffer
     uint8_t flags[5];                   // status flags: Z, C, P, S, AC
-    interrupt_r interrupts;             // handle interrupts
     process_r currentOp;                // currentOp and pending interrupt vectors
     uint8_t outp[PORT_COUNT];           // output ports
     uint8_t inp[PORT_COUNT];            // input ports
     unsigned char memory[MEM_SIZE];     // memory
-    pthread_mutex_t ioOutpLock;         // lock on output ports -- to avoid race conditions
-    pthread_mutex_t ioInputLock;        // lock on input ports -- to avoid race conditions
 } state;
 
 
@@ -93,12 +82,14 @@ uint8_t getReg8(state *currentState, int regIndex);
 uint16_t getReg16(state *currentState, int regIndex);
 uint8_t getFlag(state *currentState, int flagIndex);
 uint8_t getPort(state *currentState, int portIndex, uint8_t portDirection);
+uint8_t getInterruptStatus(state *currentState);
 
 /* register & flag setters */
 int setReg8(state *currentState, int regIndex, uint8_t value);
 int setReg16(state *currentState, int regPairIndex, uint16_t value);
 int setFlag(state *currentState, int flagIndex, uint8_t value);
 int setPort(state *currentState, int portIndex, uint8_t portDirection, uint8_t value);
+int setInterruptStatus(state *currentState, uint8_t value);
 
 /* Conversion &  Utility functions */
 uint16_t convert8To16(uint8_t high, uint8_t low);

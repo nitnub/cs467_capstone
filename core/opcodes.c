@@ -359,6 +359,11 @@ int doubleAdd (state *currentState, int regPairIndex) {
 */
 int alu_add (state* currentState, int sourceIndex) {
 
+    // retrieve memory if needed
+    if (sourceIndex == M) {
+        setReg8(currentState, M, memFetch(currentState, getReg8(currentState, H), getReg8(currentState, L)));
+    }
+
     // access CPU & perform calculation
     uint8_t sourceVal = getReg8(currentState, sourceIndex);
     uint8_t destVal = getReg8(currentState, A);
@@ -383,6 +388,11 @@ int alu_add (state* currentState, int sourceIndex) {
 */
 int alu_add_carry (state* currentState, int sourceIndex) {
 
+    // retrieve memory if needed
+    if (sourceIndex == M) {
+        setReg8(currentState, M, memFetch(currentState, getReg8(currentState, H), getReg8(currentState, L)));
+    }
+
     // access CPU & perform calculation
     uint8_t originalSource = getReg8(currentState, sourceIndex); // preserve low nibble
     uint16_t sourceVal = originalSource + getFlag(currentState, CARRY);
@@ -406,6 +416,11 @@ int alu_add_carry (state* currentState, int sourceIndex) {
 *   @param: sourceIndex, an integer representing the index of the source (operand) register
 */
 int alu_sub (state* currentState, int sourceIndex) {
+
+    // retrieve memory if needed
+    if (sourceIndex == M) {
+        setReg8(currentState, M, memFetch(currentState, getReg8(currentState, H), getReg8(currentState, L)));
+    }
 
     // access the CPU and perform calculations
     uint8_t sourceVal = getReg8(currentState, sourceIndex);
@@ -432,6 +447,11 @@ int alu_sub (state* currentState, int sourceIndex) {
 */
 int alu_sub_carry (state* currentState, int sourceIndex) {
 
+    // retrieve memory if needed
+    if (sourceIndex == M) {
+        setReg8(currentState, M, memFetch(currentState, getReg8(currentState, H), getReg8(currentState, L)));
+    }
+
     uint8_t originalSource = getReg8(currentState, sourceIndex); // preserve low nibble
     uint16_t sourceVal = originalSource + getFlag(currentState, CARRY);
     uint8_t destVal = getReg8(currentState, A);
@@ -454,6 +474,12 @@ int alu_sub_carry (state* currentState, int sourceIndex) {
 *   @param: sourceIndex, an integer representing the index of the source (operand) register
 */
 int alu_and (state* currentState, int sourceIndex) {
+
+    // retrieve memory if needed
+    if (sourceIndex == M) {
+        setReg8(currentState, M, memFetch(currentState, getReg8(currentState, H), getReg8(currentState, L)));
+    }
+
     uint8_t sourceVal = getReg8(currentState, sourceIndex);
     uint8_t destVal = getReg8(currentState, A);
     uint8_t result = sourceVal & destVal;
@@ -472,6 +498,12 @@ int alu_and (state* currentState, int sourceIndex) {
 *   @param: sourceIndex, an integer representing the index of the source (operand) register
 */
 int alu_xor (state* currentState, int sourceIndex) {
+
+    // retrieve memory if needed
+    if (sourceIndex == M) {
+        setReg8(currentState, M, memFetch(currentState, getReg8(currentState, H), getReg8(currentState, L)));
+    }
+
     uint8_t sourceVal = getReg8(currentState, sourceIndex);
     uint8_t destVal = getReg8(currentState, A);
 
@@ -490,6 +522,12 @@ int alu_xor (state* currentState, int sourceIndex) {
 *   @param: sourceIndex, an integer representing the index of the source (operand) register
 */
 int alu_or (state* currentState, int sourceIndex) {
+
+    // retrieve memory if needed
+    if (sourceIndex == M) {
+        setReg8(currentState, M, memFetch(currentState, getReg8(currentState, H), getReg8(currentState, L)));
+    }
+
     uint8_t sourceVal = getReg8(currentState, sourceIndex);
     uint8_t destVal = getReg8(currentState, A);
 
@@ -509,6 +547,11 @@ int alu_or (state* currentState, int sourceIndex) {
 *   @param: sourceIndex, an integer representing the index of the source (operand) register
 */
 int alu_compare (state* currentState, int sourceIndex) {
+
+    // retrieve memory if needed
+    if (sourceIndex == M) {
+        setReg8(currentState, M, memFetch(currentState, getReg8(currentState, H), getReg8(currentState, L)));
+    }
 
     // access the CPU and perform calculations
     uint8_t sourceVal = getReg8(currentState, sourceIndex);
@@ -730,7 +773,7 @@ int returnFrom(state *currentState, int flagIndex, uint8_t condition) {
         return 0;
     }
 
-    return -1;
+    return 1;
 }
 
 /*
@@ -758,7 +801,7 @@ int jumpTo(state *currentState, int flagIndex, uint8_t condition, uint8_t highAd
         return 0;
     }
 
-    return -1;
+    return 1;
 }
 
 /*
@@ -788,7 +831,7 @@ int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t high
         
         return 0;
     }
-    return -1;
+    return 1;
 }
 
 /* 
@@ -807,9 +850,7 @@ int handleIN(state *currentState, uint8_t port) {
 
     // loads the accumulator with input byte at appropriate port
     // this is going to have to get a lock
-    pthread_mutex_lock(&currentState->ioInputLock);
     setReg8(currentState, A, currentState->inp[port]);
-    pthread_mutex_unlock(&currentState->ioInputLock);
     return 0;
 }
 
@@ -825,9 +866,7 @@ int handleIN(state *currentState, uint8_t port) {
 int handleOUT(state *currentState, uint8_t port) {
     uint8_t outByte = getReg8(currentState, A);
 
-    pthread_mutex_lock(&currentState->ioOutpLock);
     currentState->outp[port] = outByte;
-    pthread_mutex_unlock(&currentState->ioOutpLock);
 
     return 0;
 }
@@ -837,15 +876,15 @@ int handleOUT(state *currentState, uint8_t port) {
 **************************** INTERRUPTS ****************************
 */
 
-/* TODO: handle EI */
+/* handle EI */
 int handleEI (state *currentState) {
-    printf("EI handler not enabled yet\n");
+    setInterruptStatus(currentState, 1);
     return 0;
 }
 
-/* TODO: handle DI */
+/* handle DI */
 int handleDI (state *currentState) {
-    printf("DI handler not enabled yet\n");
+    setInterruptStatus(currentState, 0);
     return 0;
 }
 

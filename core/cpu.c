@@ -92,6 +92,21 @@ uint8_t getFlag(state *currentState, int flagIndex) {
 }
 
 /*
+*   function: getInterruptStatus
+*   checks if the CPU is currently accepting interrupts
+*   0 indicates disabled, nonzero indicates enabled
+*   returns 0xFF if state object paramter is a NULL pointer
+*/
+uint8_t getInterruptStatus(state *currentState) {
+    if (currentState == NULL) {
+        perror("Error: index to cpu state was NULL\n");
+        return 0xFF;
+    }
+
+    return currentState->currentOp.interruptReady;
+}
+
+/*
 *   function: getPort
 *   Retrieves the value for port no. portIndex in direction specified
 *   by the portDirection
@@ -283,6 +298,31 @@ int setPort(state *currentState, int portIndex, uint8_t portDirection, uint8_t v
     return 0;
 }
 
+/*
+*   function: setInterruptStatus
+*   sets the interrupt status to appropriate value (0 indicates disabled,
+*   nonzero indicates enabled)
+*
+*   @param: currentState, a pointer to the current state
+*   @param: uint8_t, an unsigned integer representing the desired value
+*   to set (0 = disable interrupts, nonzero = enable)
+*
+*   @returns 0 if successful, -1 if there is an error
+*/
+int setInterruptStatus(state *currentState, uint8_t value) {
+    if (currentState == NULL) {
+        perror("Error: index to cpu state was NULL\n");
+        return -1;
+    }
+    if (value == 0) {
+        currentState->currentOp.interruptReady = 0;
+    }
+    else {
+        currentState->currentOp.interruptReady = 1;
+    }
+
+    return 0;
+}
 
 /*
 *   function: convert8To16

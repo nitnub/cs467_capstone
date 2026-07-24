@@ -858,6 +858,9 @@ int segment2(struct instructionData *currentIns) {
         currentIns->cycles = 4;
     }
 
+    // execute instruction
+    alu_op_array[opIndex](currentIns->s, sourceIndex);
+
     return 0;
 }
 
@@ -873,6 +876,8 @@ int segment3_0(struct instructionData *currentIns) {
 
     // get "if clear" (even) conditional flag suffix in order:
     // "NZ", *, "NC", *, "PO", *, "P", *
+    // note that this is different from the flag index used by the CPU/opcode module
+    // which is shorter and requires a conversion: [ZERO, CARRY, PARITY, SIGN, NO_FLAG]
     int conditionalIndex = getSeqIndex_8(currentIns);
     char* flag = flagConditionals[conditionalIndex];
 
@@ -883,6 +888,16 @@ int segment3_0(struct instructionData *currentIns) {
 
     currentIns->cycles = 11;
     currentIns->cyclesFalse = 5;
+
+    // execute instruction
+    int flagIndex = conditionalIndex / 2; // convert
+    int result = returnFrom(currentIns->s, flagIndex, 0); // 0 jumps when clear
+
+    // if no jump, update cycles
+    if (result > 0) {
+        currentIns->cycles = currentIns->cyclesFalse;
+    }
+
     return 0;
 }
 
@@ -910,7 +925,9 @@ int segment3_1(struct instructionData *currentIns) {
     sprintf(currentIns->assembly, "POP %s", printableRegisterPair);
     currentIns->cycles = 10;
 
-    // printf("%s\n", currentIns->assembly);
+    // execute instruction
+    stackPopValues(currentIns->s, pairIndex);
+
     free(printableRegisterPair);
     return 0;
 }
@@ -931,7 +948,11 @@ int segment3_2(struct instructionData *currentIns) {
     sprintf(currentIns->help, 
             "Jump if flag is clear\n(NZ = not zero, NC = not carry, PO = parity is odd (even parity clear), P = positive (sign clear))");
 
-    currentIns->cycles = 11;
+    currentIns->cycles = 10;
+
+    // execute instruction
+    int flagIndex = conditionalIndex / 2; // convert
+    int result = jumpTo(currentIns->s, flagIndex, 0, currentIns->operand2, currentIns->operand1);
 
     // extra instructions used: 2
     return 2;
@@ -951,6 +972,9 @@ int segment3_3(struct instructionData *currentIns) {
             sprintf(currentIns->help, "Unconditional jump");
             currentIns->cycles = 10;
             instructionCount = 2;
+
+            // execute instruction
+            jumpTo(currentIns->s, NO_FLAG, 0, currentIns->operand2, currentIns->operand1);
             break;
 
         case 1:
@@ -969,6 +993,9 @@ int segment3_3(struct instructionData *currentIns) {
             sprintf(currentIns->assembly, "%s", ops[opIndex]);
             sprintf(currentIns->help, "swap contents of registers H & L with the stack");
             currentIns->cycles = 18;
+
+            // execute instruction
+            handleXTHL(currentIns->s);
             break;
 
         case 3:
@@ -976,6 +1003,9 @@ int segment3_3(struct instructionData *currentIns) {
             sprintf(currentIns->assembly, "%s", ops[opIndex]);
             sprintf(currentIns->help, "disable interrupts");
             currentIns->cycles = 4;
+
+            // execute instruction
+            handleDI(currentIns->s);
             break;
     }
 
@@ -1005,6 +1035,15 @@ int segment3_4(struct instructionData *currentIns) {
     currentIns->cycles = 17;
     currentIns->cyclesFalse = 11;
 
+    // execute instruction
+    int flagIndex= conditionalIndex / 2;
+    int result = callProc(currentIns->s, flagIndex, 0, currentIns->operand2, currentIns->operand1);
+
+    // set cycles to correct number for calls that do not occur
+    if (result > 0) {
+        currentIns->cycles = currentIns->cyclesFalse;
+    }
+
     // return number of extra bytes used: 2
     return 2;
 }
@@ -1023,6 +1062,7 @@ int segment3_5(struct instructionData *currentIns) {
     if (pairIndex == 3) {
         strcpy(printableRegisterPair, "PSW\0");
         sprintf(currentIns->help, "Push program status word (accumulator, flags) to the stack");
+        pairIndex = 5;
     }
     else {
         memset(printableRegisterPair, '\0', 4 * sizeof(char));
@@ -1035,6 +1075,9 @@ int segment3_5(struct instructionData *currentIns) {
 
     // set clock cycles
     currentIns->cycles = 11;
+
+    // execute instruction
+    stackPushFromRegister(currentIns->s, pairIndex);
 
     // free memory and return
     free(printableRegisterPair);
@@ -1059,6 +1102,13 @@ int segment3_6(struct instructionData *currentIns) {
 
     currentIns->cycles = 7;
 
+    // execute instruction
+    // load immediate data into I pseudoregister
+    setReg8(currentIns->s, I, currentIns->operand1);
+
+    // call the appropriate method
+    alu_op_array[opIndex](currentIns->s, 8);
+
     // return number of extra bytes used: 1
     return 1;
 }
@@ -1074,6 +1124,10 @@ int segment3_7(struct instructionData *currentIns) {
     sprintf(currentIns->assembly, "RST %d", resetIndex);
     sprintf(currentIns->help, "Call reset subroutine %d", resetIndex);
     currentIns->cycles = 7;
+
+    // execute instruction
+    uint8_t vector = resetIndex * 0x08;
+    callProc(currentIns->s, NO_FLAG, 0, 0x00, vector);
 
     return 0;
 }
@@ -1093,6 +1147,16 @@ int segment3_8(struct instructionData *currentIns) {
 
     currentIns->cycles = 11;
     currentIns->cyclesFalse = 5;
+
+    // execute instruction
+    int flagIndex = conditionalIndex / 2; // convert
+    int result = returnFrom(currentIns->s, flagIndex, 1); // 1 jumps when set
+
+    // if no jump, update cycles
+    if (result > 0) {
+        currentIns->cycles = currentIns->cyclesFalse;
+    }
+
     return 0;
 }
 
@@ -1112,6 +1176,9 @@ int segment3_9(struct instructionData *currentIns) {
             // unconditional return
             sprintf(currentIns->help, "Unconditional return from subroutine");
             currentIns->cycles = 10;
+
+            // execute instruction
+            int result = returnFrom(currentIns->s, NO_FLAG, 0);
             break;
 
         case 1:
@@ -1125,12 +1192,19 @@ int segment3_9(struct instructionData *currentIns) {
             // load program counter from HL
             sprintf(currentIns->help, "Load program counter with register pair HL");
             currentIns->cycles = 5;
+
+            // execute instruction
+            setReg16(currentIns->s, PC, getReg16(currentIns->s, HL));
+
             break;
 
         case 3:
             // load stack pointer from HL
             sprintf(currentIns->help, "Load stack pointer with register pair HL");
             currentIns->cycles = 5;
+
+            // execute instruction
+            setReg16(currentIns->s, SP, getReg16(currentIns->s, HL));
             break;
     }
 
@@ -1152,6 +1226,10 @@ int segment3_A(struct instructionData *currentIns) {
             "Jump if flag is set\n(Z = zero, C = carry, PE = parity is even, M = negative (sign set))");
 
     currentIns->cycles = 10;
+
+    // execute instruction
+    int flagIndex = (conditionalIndex / 2); // convert
+    int result = jumpTo(currentIns->s, flagIndex, 1, currentIns->operand2, currentIns->operand1);
 
     // return extra bytes used: 2
     return 2;
@@ -1191,6 +1269,10 @@ int segment3_B(struct instructionData *currentIns) {
             sprintf(currentIns->assembly, "%s", ops[opIndex]);
             sprintf(currentIns->help, "Contents of DE swapped with HL");
             currentIns->cycles = 4;
+
+            // execute instrurction
+            handleXCHG(currentIns->s);
+
             break;
 
         case 3:
@@ -1198,6 +1280,10 @@ int segment3_B(struct instructionData *currentIns) {
             sprintf(currentIns->assembly, "%s", ops[opIndex]);
             sprintf(currentIns->help, "Enable interrupts");
             currentIns->cycles = 4;
+
+            // execute instruction
+            handleEI(currentIns->s);
+
             break;
     }
 
@@ -1220,6 +1306,15 @@ int segment3_C(struct instructionData *currentIns) {
     currentIns->cycles = 11;
     currentIns->cyclesFalse = 5;
 
+    // execute instruction
+    int flagIndex= conditionalIndex / 2;
+    int result = callProc(currentIns->s, flagIndex, 1, currentIns->operand2, currentIns->operand1);
+
+    // set cycles to correct number for calls that do not occur
+    if (result > 0) {
+        currentIns->cycles = currentIns->cyclesFalse;
+    }
+
     // number of extra bytes used
     return 2;
 }
@@ -1235,6 +1330,9 @@ int segment3_D(struct instructionData *currentIns) {
         sprintf(currentIns->help, "Unconditional call subroutine at immediate address");
         currentIns->cycles = 17;
         // printf("%s\n", currentIns->assembly);
+
+        // execute instruction
+        int result = callProc(currentIns->s, NO_FLAG, 0, currentIns->operand2, currentIns->operand1);
 
         // number of extra bytes: 2
         return 2;
@@ -1266,6 +1364,13 @@ int segment3_E(struct instructionData *currentIns) {
     // set clock cycles
     currentIns->cycles = 7;
 
+    // execute instruction
+    // load immediate data into I pseudoregister
+    setReg8(currentIns->s, I, currentIns->operand1);
+
+    // call the appropriate method
+    alu_op_array[opIndex](currentIns->s, 8);
+
     // number of extra bytes
     return 1;
 }
@@ -1280,6 +1385,10 @@ int segment3_F(struct instructionData *currentIns) {
     sprintf(currentIns->assembly, "RST %d", resetIndex);
     sprintf(currentIns->help, "Call reset subroutine %d", resetIndex);
     currentIns->cycles = 7;
+
+    // execute instruction
+    uint8_t vector = resetIndex * 0x08;
+    callProc(currentIns->s, NO_FLAG, 0, 0x00, vector);
 
     return 0;
 }

@@ -1344,6 +1344,1329 @@ int test_7F(struct instructionData *currentIns, int opcode) {
     assert(getReg8(currentIns->s, A) == 0x17);
 }
 
+/* 
+*   test 0x80: ADD B
+*/
+int test_80(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x27);
+}
+
+/* 
+*   test 0x81: ADD C
+*/
+int test_81(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x28);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00); // carry is not set
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x82: ADD D
+*/
+int test_82(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x29);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00); // carry is not set
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x83: ADD E
+*/
+int test_83(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2A);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00); // carry is not set
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x84: ADD H
+*/
+int test_84(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2B);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x85: ADD L
+*/
+int test_85(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2C);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x86: ADD M 
+*/
+int test_86(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0xFF);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x16);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01); 
+}
+
+/* 
+*   test 0x87: ADD A
+*/
+int test_87(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2E);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x88: ADC B
+*/
+int test_88(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x28);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x89: ADC C
+*/
+int test_89(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x29);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x8A: ADC D
+*/
+int test_8A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2A);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x8B: ADC E
+*/
+int test_8B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2B);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x8C: ADC H
+*/
+int test_8C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2C);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x8D: ADC L
+*/
+int test_8D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2D);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x8E: ADC M 
+*/
+int test_8E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    memStore(currentIns->s, 0x14, 0x15, 0xFD);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x15);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01); 
+}
+
+/* 
+*   test 0x8F: ADC A
+*/
+int test_8F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2F);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x90: SUB B
+*/
+int test_90(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x07);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x91: SUB C
+*/
+int test_91(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x06);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x92: SUB D
+*/
+int test_92(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x05);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x93: SUB E
+*/
+int test_93(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x04);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x94: SUB H
+*/
+int test_94(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x03);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x95: SUB L
+*/
+int test_95(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x02);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x96: SUB M
+*/
+int test_96(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    memStore(currentIns->s, 0x14, 0x15, 0xFF);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x18);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01); 
+}
+
+/* 
+*   test 0x97: SUB A
+*/
+int test_97(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x00);
+    assert(getFlag(currentIns->s, ZERO) == 0x01);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x98: SBB B
+*/
+int test_98(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x06);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x99: SBB C
+*/
+int test_99(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x05);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x9A: SBB D
+*/
+int test_9A(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x04);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x9B: SBB E
+*/
+int test_9B(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x03);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x9C: SBB H
+*/
+int test_9C(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x02);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x9D: SBB L
+*/
+int test_9D(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x01);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x9E: SBB M
+*/
+int test_9E(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x16);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x00);
+    assert(getFlag(currentIns->s, ZERO) == 0x01);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0x9F: SBB A
+*/
+int test_9F(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0xFF);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x01); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);  // ( (registerA & 0x0F) + ~(value_subtracted) & 0x0F ) > 0x0F
+}
+
+/* 
+*   test 0xA0: ANA B
+*/
+int test_A0(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x10);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA1: ANA C
+*/
+int test_A1(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x11);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA2: ANA D
+*/
+int test_A2(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x12);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA3: ANA E
+*/
+int test_A3(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x13);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA4: ANA H
+*/
+int test_A4(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x14);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA5: ANA L
+*/
+int test_A5(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x15);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA6: ANA M
+*/
+int test_A6(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x00);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x00);
+    assert(getFlag(currentIns->s, ZERO) == 0x01);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA7: ANA A
+*/
+int test_A7(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA8: XRA B
+*/
+int test_A8(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x07);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xA9: XRA C
+*/
+int test_A9(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x06);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xAA: XRA D
+*/
+int test_AA(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x05);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xAB: XRA E
+*/
+int test_AB(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x04);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xAC: XRA H
+*/
+int test_AC(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x03);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xAD: XRA L
+*/
+int test_AD(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x02);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xAE: XRA M
+*/
+int test_AE(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0xFF);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0xE8);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x01); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xAF: XRA A
+*/
+int test_AF(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x00);
+    assert(getFlag(currentIns->s, ZERO) == 0x01);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB0: ORA B
+*/
+int test_B0(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB1: ORA C
+*/
+int test_B1(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB2: ORA D
+*/
+int test_B2(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB3: ORA E
+*/
+int test_B3(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB4: ORA H
+*/
+int test_B4(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB5: ORA L
+*/
+int test_B5(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB6: ORA M 
+*/
+int test_B6(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    memStore(currentIns->s, 0x14, 0x15, 0x80);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x97);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x01); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB7: ORA A
+*/
+int test_B7(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xB8: CMP B
+*/
+int test_B8(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0xB9: CMP C
+*/
+int test_B9(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0xBA: CMP D
+*/
+int test_BA(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0xBB: CMP E
+*/
+int test_BB(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0xBC: SUB H
+*/
+int test_BC(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0xBD: CMP L
+*/
+int test_BD(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0xBE: CMP M
+*/
+int test_BE(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    memStore(currentIns->s, 0x14, 0x15, 0xFF);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01); 
+}
+
+/* 
+*   test 0xBF: CMP A
+*/
+int test_BF(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x01);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+}
+
+/* 
+*   test 0xC0: RNZ (test 1 - returns)
+*/
+int test_C0(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, ZERO, 0);    // clear zero flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xC0: RNZ (test 2 - does not return)
+*/
+int test_C02(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, ZERO, 1);    // set zero flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    setReg16(currentIns->s, PC, 0x8020);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x8020);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x23FE);
+    // assert that cycles updated in instruction object
+    assert(currentIns->cycles == currentIns->cyclesFalse);
+}
+
+/* 
+*   test 0xC1: POP BC
+*/
+int test_C1(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in register par
+    assert(getReg16(currentIns->s, BC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xC2: JNZ
+*/
+int test_C2(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, ZERO, 0);    // clear zero flag
+    dispatchLevel2(currentIns);
+
+    // check that immediate operands are now the address in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+}
+
+/*
+*   test_C3: JMP (output instruction)
+*/
+int test_C3(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    return 0;
+}
+
+/* 
+*   test 0xC4: CNZ 
+*/
+int test_C4(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, ZERO, 0);    // clear zero flag
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xC5: PUSH BC
+*/
+int test_C5(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE); // low byte
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF); // high byte
+
+    assert(stackTop == getReg8(currentIns->s, C)); // low byte
+    assert(stackSecond == getReg8(currentIns->s, B)); // high byte
+}
+
+/* 
+*   test 0xC6: ADI imm
+*/
+int test_C6(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x2F);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xC7: RST 0
+*/
+int test_C7(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0000);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+}
+
+/* 
+*   test 0xC8: RZ (return if zero is set)
+*/
+int test_C8(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, ZERO, 1);    // set zero flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xC9: RET (unconditional return)
+*/
+int test_C9(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xCA: JZ (jump if zero flag is set)
+*/
+int test_CA(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, ZERO, 1);    // set zero flag
+    dispatchLevel2(currentIns);
+
+    // check that immediate operands are now the address in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+}
+
+/* 
+*   test 0xCC: CZ (conditional call if zero is set)
+*/
+int test_CC(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, ZERO, 1);    // set zero flag
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xCD: CALL (unconditional call)
+*/
+int test_CD(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xCE: ACI imm (add w/ carry immediate)
+*/
+int test_CE(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x30);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xCF: RST 1
+*/
+int test_CF(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0008);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+}
+
+/* 
+*   test 0xD0: RNC (test 1 - returns)
+*/
+int test_D0(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, CARRY, 0);    // clear carry flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xD0: RNC (test 2 - does not return)
+*/
+int test_D02(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, CARRY, 1);    // set carry flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    setReg16(currentIns->s, PC, 0x8020);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x8020);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x23FE);
+    // check that cycles is correct for no jump
+    assert(currentIns->cycles == currentIns->cyclesFalse);
+}
+
+/* 
+*   test 0xD1: POP DE
+*/
+int test_D1(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in register par
+    assert(getReg16(currentIns->s, DE) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xD2: JNC
+*/
+int test_D2(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, CARRY, 0);    // clear carry flag
+    dispatchLevel2(currentIns);
+
+    // check that immediate operands are now the address in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+}
+
 /*
 *   test_D3: OUT (output instruction)
 */
@@ -1353,6 +2676,97 @@ int test_D3(struct instructionData *currentIns, int opcode) {
 
     assert(getPort(currentIns->s, 0x18, OUT) == 0x17);
     return 0;
+}
+
+/* 
+*   test 0xd4: CNC
+*/
+int test_D4(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, CARRY, 0);    // clear carry flag
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xD5: PUSH DE
+*/
+int test_D5(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE); // low byte
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF); // high byte
+
+    assert(stackTop == getReg8(currentIns->s, E)); // low byte
+    assert(stackSecond == getReg8(currentIns->s, D)); // high byte
+}
+
+/* 
+*   test 0xD6: SUI imm
+*/
+int test_D6(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0xFF);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x01); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+}
+
+/* 
+*   test 0xD7: RST 2
+*/
+int test_D7(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0010);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+}
+
+/* 
+*   test 0xD8: RC (return if parity is set)
+*/
+int test_D8(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, CARRY, 1);    // set carry flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xDA: JC (jump if carry flag is set)
+*/
+int test_DA(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, CARRY, 1);    // set parity flag
+    dispatchLevel2(currentIns);
+
+    // check that immediate operands are now the address in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
 }
 
 /*
@@ -1367,10 +2781,533 @@ int test_DB(struct instructionData *currentIns, int opcode) {
     return 0;
 }
 
+/* 
+*   test 0xDC: CC (conditional call if carry is set)
+*/
+int test_DC(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, CARRY, 1);    // set parity flag
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xDE: SBI imm (subtract w/ carry immediate)
+*/
+int test_DE(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    set_carry(currentIns->s);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0xFE);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x01); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+}
+
+/* 
+*   test 0xDF: RST 3
+*/
+int test_DF(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0018);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+}
+
+/* 
+*   test 0xE0: RPO (test 1 - returns)
+*/
+int test_E0(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, PARITY, 0);    // clear parity flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xE0: RPO (test 2 - does not return)
+*/
+int test_E02(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, PARITY, 1);    // set parity flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    setReg16(currentIns->s, PC, 0x8020);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x8020);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x23FE);
+    // check that cycles is correct for no jump
+    assert(currentIns->cycles == currentIns->cyclesFalse);
+}
+
+/* 
+*   test 0xE1: POP HL
+*/
+int test_E1(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in register par
+    assert(getReg16(currentIns->s, HL) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xE2: JPO
+*/
+int test_E2(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, PARITY, 0);    // clear parity flag
+    dispatchLevel2(currentIns);
+
+    // check that immediate operands are now the address in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+}
+
+/*
+*   test_E3: XTHL
+*/
+int test_E3(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    stackPushValues(currentIns->s, 0x03, 0x03);
+    dispatchLevel2(currentIns);
+
+    assert(getReg16(currentIns->s, HL) == 0x0303);
+    return 0;
+}
+
+/* 
+*   test 0xE4: CPO
+*/
+int test_E4(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, PARITY, 0);    // clear carry flag
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xE5: PUSH HL
+*/
+int test_E5(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE); // low byte
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF); // high byte
+
+    assert(stackTop == getReg8(currentIns->s, L)); // low byte
+    assert(stackSecond == getReg8(currentIns->s, H)); // high byte
+}
+
+/* 
+*   test 0xE6: ANI imm
+*/
+int test_E6(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x10);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+}
+
+/* 
+*   test 0xE7: RST 4
+*/
+int test_E7(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0020);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+}
+
+/* 
+*   test 0xE8: RP (return if parity is set)
+*/
+int test_E8(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, PARITY, 1);    // set sign flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xE9: PCHL put HL in program counter
+*/
+int test_E9(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg16(currentIns->s, PC) == getReg16(currentIns->s, HL));
+}
+
+/* 
+*   test 0xEA: JP (jump if parity flag is set)
+*/
+int test_EA(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, PARITY, 1);    // set parity flag
+    dispatchLevel2(currentIns);
+
+    // check that immediate operands are now the address in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+}
+
+/* 
+*   test 0xEB: XCHG (DE and HL are swapped)
+*/
+int test_EB(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg16(currentIns->s, HL) == 0x1213);
+    assert(getReg16(currentIns->s, DE) == 0x1415);
+}
+
+/* 
+*   test 0xEC: CM (conditional call if parity is set)
+*/
+int test_EC(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, PARITY, 1);    // set parity flag
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xEE: XRI imm (compare imediate)
+*/
+int test_EE(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x0F);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xEF: RST 5
+*/
+int test_EF(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0028);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+}
+
+/* 
+*   test 0xF0: RP (test 1 - returns)
+*/
+int test_F0(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, SIGN, 0);    // clear sign flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xF0: RP (test 2 - does not return)
+*/
+int test_F02(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, SIGN, 1);    // set sign flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    setReg16(currentIns->s, PC, 0x8020);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x8020);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x23FE);
+    // check that cycles is correct for no jump
+    assert(currentIns->cycles == currentIns->cyclesFalse);
+}
+
+/* 
+*   test 0xF1: POP PSW, stackPushFromRegister [for PSW]
+*/
+int test_F1(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    // store program status word
+    uint16_t pswval = getReg16(currentIns->s, PSW);
+
+    // check push has decremented stack & put PSW on stack
+    stackPushFromRegister(currentIns->s, PSW);  // push psw
+    assert(memFetch(currentIns->s, 0x23, 0xFF) == (flagsToPSW(currentIns->s) & 0xFF00) >> 8);
+    assert(memFetch(currentIns->s, 0x23, 0xFE) == getReg8(currentIns->s, A));
+
+    dispatchLevel2(currentIns);
+
+    // check that address is now in register pair
+    assert(getReg16(currentIns->s, PSW) == pswval);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xF2: JP
+*/
+int test_F2(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, SIGN, 0);    // clear sign flag
+    dispatchLevel2(currentIns);
+
+    // check that immediate operands are now the address in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+}
+
+/*
+*   test_F3: DI (disable interrupt)
+*/
+int test_F3(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    stackPushValues(currentIns->s, 0x03, 0x03);
+    dispatchLevel2(currentIns);
+
+    assert(currentIns->s->currentOp.interruptReady == 0x00);
+    return 0;
+}
+
+/* 
+*   test 0xF4: CP
+*/
+int test_F4(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, SIGN, 0);    // clear sign flag
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xF5: PUSH PSW
+*/
+int test_F5(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE); // low byte
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF); // high byte
+
+    assert(stackTop == lowFrom16Bit(getReg16(currentIns->s, PSW))); // low byte
+    assert(stackSecond == highFrom16Bit(getReg16(currentIns->s, PSW))); // high byte
+}
+
+
+/* 
+*   test 0xF6: ORI imm
+*/
+int test_F6(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x1F);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x00);
+    assert(getFlag(currentIns->s, PARITY) == 0x00); 
+    assert(getFlag(currentIns->s, SIGN) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+}
+
+/* 
+*   test 0xF7: RST 6
+*/
+int test_F7(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0030);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+}
+
+/* 
+*   test 0xF8: RTS
+*/
+int test_F8(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, SIGN, 1);    // set sign flag
+    stackPushValues(currentIns->s, 0x01, 0x02); // push value to stack
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0102);
+    // check that stack pointer has incremented
+    assert(getReg16(currentIns->s, SP) == 0x2400);
+}
+
+/* 
+*   test 0xF9: SPHL (push HL to the stack)
+*/
+int test_F9(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg16(currentIns->s, SP) == getReg16(currentIns->s, HL));
+}
+
+/* 
+*   test 0xFA: JM (jump if sign flag is set)
+*/
+int test_FA(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, SIGN, 1);    // clear sign flag
+    dispatchLevel2(currentIns);
+
+    // check that immediate operands are now the address in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+}
+
+/*
+*   test_FB: EI (enable interrupt)
+*/
+int test_FB(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(currentIns->s->currentOp.interruptReady == 0x01);
+    return 0;
+}
+
+/* 
+*   test 0xF4: CM (conditional call if sign is set)
+*/
+int test_FC(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    setFlag(currentIns->s, SIGN, 1);    // clear sign flag
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x2118);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+
+    // check pop of return address back to the program counter
+    stackPopValues(currentIns->s, PC);
+    assert(getReg16(currentIns->s, PC) == 0x0080);
+}
+
+/* 
+*   test 0xFE: CPI imm (compare imediate)
+*/
+int test_FE(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    assert(getReg8(currentIns->s, A) == 0x17);
+    assert(getFlag(currentIns->s, ZERO) == 0x00);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
+    assert(getFlag(currentIns->s, PARITY) == 0x01); 
+    assert(getFlag(currentIns->s, SIGN) == 0x01); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+}
+
+/* 
+*   test 0xFF: RST 7
+*/
+int test_FF(struct instructionData *currentIns, int opcode) {
+    setupInstruction(currentIns, opcode);
+    dispatchLevel2(currentIns);
+
+    // check that address is now in program counter
+    assert(getReg16(currentIns->s, PC) == 0x0038);
+    uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
+    uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
+    assert(stackSecond == 0x00); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
+}
+
 int main (void) {
 
-    pthread_mutex_init(&cpu_test.ioInputLock, NULL);
-    pthread_mutex_init(&cpu_test.ioOutpLock, NULL);
     memset(&cpu_test.memory, 0, MEM_SIZE);
 
     test_01(&ins, 0x01);    // 0 is NOP
@@ -1500,7 +3437,140 @@ int main (void) {
     test_7E(&ins, 0x7E);
     test_7F(&ins, 0x7F);
 
+    test_80(&ins, 0x80);
+    test_81(&ins, 0x81);
+    test_82(&ins, 0x82);
+    test_83(&ins, 0x83);
+    test_84(&ins, 0x84);
+    test_85(&ins, 0x85);
+    test_86(&ins, 0x86);
+    test_87(&ins, 0x87);
+    test_88(&ins, 0x88);
+    test_89(&ins, 0x89);
+    test_8A(&ins, 0x8A);
+    test_8B(&ins, 0x8B);
+    test_8C(&ins, 0x8C);
+    test_8D(&ins, 0x8D);
+    test_8E(&ins, 0x8E);
+    test_8F(&ins, 0x8F);
+
+    test_90(&ins, 0x90);
+    test_91(&ins, 0x91);
+    test_92(&ins, 0x92);
+    test_93(&ins, 0x93);
+    test_94(&ins, 0x94);
+    test_95(&ins, 0x95);
+    test_96(&ins, 0x96);
+    test_97(&ins, 0x97);
+    test_98(&ins, 0x98);
+    test_99(&ins, 0x99);
+    test_9A(&ins, 0x9A);
+    test_9B(&ins, 0x9B);
+    test_9C(&ins, 0x9C);
+    test_9D(&ins, 0x9D);
+    test_9E(&ins, 0x9E);
+    test_9F(&ins, 0x9F);
+
+    test_A0(&ins, 0xA0);
+    test_A1(&ins, 0xA1);
+    test_A2(&ins, 0xA2);
+    test_A3(&ins, 0xA3);
+    test_A4(&ins, 0xA4);
+    test_A5(&ins, 0xA5);
+    test_A6(&ins, 0xA6);
+    test_A7(&ins, 0xA7);
+    test_A8(&ins, 0xA8);
+    test_A9(&ins, 0xA9);
+    test_AA(&ins, 0xAA);
+    test_AB(&ins, 0xAB);
+    test_AC(&ins, 0xAC);
+    test_AD(&ins, 0xAD);
+    test_AE(&ins, 0xAE);
+    test_AF(&ins, 0xAF);
+
+    test_B0(&ins, 0xB0);
+    test_B1(&ins, 0xB1);
+    test_B2(&ins, 0xB2);
+    test_B3(&ins, 0xB3);
+    test_B4(&ins, 0xB4);
+    test_B5(&ins, 0xB5);
+    test_B6(&ins, 0xB6);
+    test_B7(&ins, 0xB7);
+    test_B8(&ins, 0xB8);
+    test_B9(&ins, 0xB9);
+    test_BA(&ins, 0xBA);
+    test_BB(&ins, 0xBB);
+    test_BC(&ins, 0xBC);
+    test_BD(&ins, 0xBD);
+    test_BE(&ins, 0xBE);
+    test_BF(&ins, 0xBF);
+
+    test_C0(&ins, 0xC0);
+    test_C02(&ins, 0xC0);
+    test_C1(&ins, 0xC1);
+    test_C2(&ins, 0xC2);
+    test_C3(&ins, 0xC3);
+    test_C4(&ins, 0xC4);
+    test_C5(&ins, 0xC5);
+    test_C6(&ins, 0xC6);
+    test_C7(&ins, 0xC7);
+    test_C8(&ins, 0xC8);
+    test_C9(&ins, 0xC9);
+    test_CA(&ins, 0xCA);
+    test_CC(&ins, 0xCC);
+    test_CD(&ins, 0xCD);
+    test_CE(&ins, 0xCE);
+    test_CF(&ins, 0xCF);
+
+    test_D0(&ins, 0xD0);
+    test_D02(&ins, 0xD0);
+    test_D1(&ins, 0xD1);
+    test_D2(&ins, 0xD2);
     test_D3(&ins, 0xD3);
+    test_D4(&ins, 0xD4);
+    test_D5(&ins, 0xD5);
+    test_D6(&ins, 0xD6);
+    test_D7(&ins, 0xD7);
+    test_D8(&ins, 0xD8);    // d9 is undefined
+    test_DA(&ins, 0xDA);
     test_DB(&ins, 0xDB);
+    test_DC(&ins, 0xDC);
+    test_DE(&ins, 0xDE);    // dd is undefined
+    test_DF(&ins, 0xDF); 
+
+    test_E0(&ins, 0xE0);
+    test_E02(&ins, 0xE0);
+    test_E1(&ins, 0xE1);
+    test_E2(&ins, 0xE2);
+    test_E3(&ins, 0xE3);
+    test_E4(&ins, 0xE4);
+    test_E5(&ins, 0xE5);
+    test_E6(&ins, 0xE6);
+    test_E7(&ins, 0xE7);
+    test_E8(&ins, 0xE8);
+    test_E9(&ins, 0xE9);
+    test_EA(&ins, 0xEA);
+    test_EB(&ins, 0xEB);
+    test_EC(&ins, 0xEC);
+    test_EE(&ins, 0xEE);    // ED is undefined
+    test_EF(&ins, 0xEF);
+
+    test_F0(&ins, 0xF0);
+    test_F02(&ins, 0xF0);
+    test_F1(&ins, 0xF1);
+    test_F2(&ins, 0xF2);
+    test_F3(&ins, 0xF3);
+    test_F4(&ins, 0xF4);
+    test_F5(&ins, 0xF5);
+    test_F6(&ins, 0xF6);
+    test_F7(&ins, 0xF7);
+    test_F8(&ins, 0xF8);
+    test_F9(&ins, 0xF9);
+    test_FA(&ins, 0xFA);
+    test_FB(&ins, 0xFB);
+    test_FC(&ins, 0xFC);
+    test_FE(&ins, 0xFE); // FD is undefined
+    test_FF(&ins, 0xFF);
+
     return 0; 
 }
