@@ -23,6 +23,6 @@ Including both headers in the same file fails at compile time:
 ./../core/cpu.h:84:9: note: previous declaration is here
 ```
 
-This isn't a bug in either file individually — both are correct and tested on their own. It only surfaces the moment something needs *both* modules together in one build, which is exactly what `keyboard_demo.c` does (real CPU dispatch + real keyboard input).
+This isn't a bug in either file individually. It only surfaces the moment something needs *both* modules together in one build, as in `keyboard_demo.c`.
 
-**Workaround in use:** `controller_renamed.c`/`.h` — a copy of `controller.c`/`.h` with only `getPort`->`getControllerPort` and `setPort`->`setControllerPort` renamed. Nothing else changed; same logic, same tests would still pass against it. `keyboard_demo.c` builds against this renamed copy instead of the original.
+**Workaround in use:** `controller_renamed.c`/`.h` — a copy of `controller.c`/`.h` with only `getPort`->`getControllerPort` and `setPort`->`setControllerPort` renamed. Nothing else changed.
