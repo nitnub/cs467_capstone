@@ -7,7 +7,7 @@
  *                 -> ROM's IN instruction reads it
  *
  * Build:
- *   gcc -Wall -Wextra -o keyboard_demo keyboard_demo.c controller.c \
+ *   gcc -Wall -Wextra -o keyboard_demo keyboard_demo.c controller_renamed.c \
  *       audio_startup.c ../core/cpu.c ../core/opcodes.c ../core/handleSegment.c ../core/handler.c \
  *       $(pkg-config --cflags --libs sdl2 SDL2_mixer) -lm -lpthread
  *
@@ -31,19 +31,12 @@
 
 static uint8_t port3_prev = 0;
 
-// The controller module's own port array. Kept separate from the CPU's
-// inp[] so the controller stays independent of the CPU's internals.
-//The two are synced once per frame in sync_input_ports() below.
+// The controller module's own port array.
+// Separate from cpuState.inp[] - synced over in sync_input_ports()
+
 static uint8_t controllerPorts[3];
 
-/*
- * Maps one SDL key to one controller bit.
- *
- * Uses setClearBit() directly to allow each key set or clear only its own bit
- * and leaves the rest of the byte untouched.
- *
- * pressed == 1 on key down, 0 on key up
- */
+// one key = one bit; setClearBit so other held keys aren't disturbed
 static void handle_key(SDL_Keycode key, uint8_t pressed)
 {
     switch (key)
@@ -73,9 +66,7 @@ static int poll_keyboard(void)
         {
             if (e.key.keysym.sym == SDLK_ESCAPE) return 0;
 
-            // Ignore auto-repeat (inspired from live electronic music practice)
-            // holding a key generates a stream of KEYDOWN events,
-            // but the bit is already set from the first one.
+            // no auto-repeat (old habit from live electronic music) - bit's set already
             if (!e.key.repeat) handle_key(e.key.keysym.sym, 1);
         }
         else if (e.type == SDL_KEYUP)
@@ -86,12 +77,8 @@ static int poll_keyboard(void)
     return 1;
 }
 
-/*
- * Copies the controller's port bytes into the CPU's input ports.
- * Called once per frame.
- * The CPU only ever sees input at these sync points, not the moment a
- * key is physically pressed.
- */
+
+// pushes controllerPorts into cpuState.inp[] -- once/frame, not per-instr
 static void sync_input_ports(state *cpuState)
 {
     //controller state, within CPU port
@@ -132,8 +119,8 @@ int main(int argc, char **argv)
         sdlAudioCleanup(&audio, EXIT_FAILURE);
     }
 
-    // A window is required to receive keyboard events, so with no window there is
-    // no keyboard input at all. Only for demo'ing key triggering audio
+    // need a window for SDL to send key events at all - just for this demo
+    
     SDL_Window *window = SDL_CreateWindow("SI sound trigger test",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
