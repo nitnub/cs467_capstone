@@ -87,13 +87,15 @@ static void sync_input_ports(state *cpuState)
 }
 
 // For audio triggering demo
- 
 static void poll_sound(state *cpuState, Audio *audio)
 {
+    // Read the current value of port 3.
     uint8_t value = getPort(cpuState, 3, OUT); //needs to be CPU's getPort
+    
+    // Full byte status of what just turned on, compare now vs a moment ago
     uint8_t rising = value & ~port3_prev;
 
-    if (rising & 0x02)
+    if (rising & 0x02) // check for this particular bit (bit 1 = shot)
     {
         printf("  -> shot fired, playing shoot.wav\n");
         Mix_PlayChannel(-1, audio->shot_sound, 0);
@@ -120,7 +122,6 @@ int main(int argc, char **argv)
     }
 
     // need a window for SDL to send key events at all - just for this demo
-    
     SDL_Window *window = SDL_CreateWindow("SI sound trigger test",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
@@ -131,6 +132,7 @@ int main(int argc, char **argv)
         sdlAudioCleanup(&audio, EXIT_FAILURE);
     }
 
+    // Read the toy ROM from disk.
     static state cpuState;
     memset(&cpuState, 0, sizeof(cpuState));
 
@@ -157,7 +159,8 @@ int main(int argc, char **argv)
 
     setReg16(&cpuState, PC, 0x0000);
     setReg16(&cpuState, SP, 0x2400);
-
+    
+    // 3000 is a rough stand-in for half a frame of 60Hz frame's worth of CPU work
     const long INSTRUCTIONS_PER_HALF_FRAME = 3000;
     int running = 1;
 
@@ -169,15 +172,22 @@ int main(int argc, char **argv)
 
         for (long i = 0; i < INSTRUCTIONS_PER_HALF_FRAME; i++)
         {
+            // saving the current PC in local variable
             uint16_t pc = getReg16(&cpuState, PC);
-
+    
+            // Fetch the opcode and the two bytes that follow it.      
             struct instructionData currentIns;
+            // Clear the struct to avoid garbage values
             memset(&currentIns, 0, sizeof(currentIns));
+            // Fetch the opcode byte at pc
             currentIns.instruction = cpuState.memory[pc];
+            // Fetch the two bytes after the opcode (if any)
             currentIns.operand1 = cpuState.memory[(uint16_t)(pc + 1)];
             currentIns.operand2 = cpuState.memory[(uint16_t)(pc + 2)];
             currentIns.s = &cpuState;
-
+            
+            // From Lia: dispatchLevel2 returns should return the number of operands 
+            // that were used (0, 1, or 2).
             int numOperands = dispatchLevel2(&currentIns);
             if (numOperands < 0)
             {
@@ -186,7 +196,7 @@ int main(int argc, char **argv)
                 SDL_DestroyWindow(window);
                 sdlAudioCleanup(&audio, EXIT_FAILURE);
             }
-
+            // if PC is still where it was before dispatch ran, advance past this instruction    
             uint16_t pc_after_dispatch = getReg16(&cpuState, PC);
             if (pc_after_dispatch == pc)
             {
