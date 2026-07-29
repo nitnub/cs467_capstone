@@ -234,6 +234,9 @@ int setReg16(state *currentState, int regPairIndex, uint16_t value) {
             currentState->flags[AUX_CARRY] = PSWToFlag(AUX_CARRY, value);
             return 0;
             break;
+        default:
+            return -1;
+            break;
     }
 }
 

@@ -822,6 +822,9 @@ int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t high
 
     if (flagIndex == NO_FLAG || getFlag(currentState, flagIndex) == condition) {
         
+        // TODO: modifying PC within opcode - out of alignment with broader philosophy?
+        // increment pc before pushing  
+        setReg16(currentState, PC, getReg16(currentState, PC) + 3);
         // push program counter to stack
         stackPushFromRegister(currentState, PC);
         // convert address to 16-bit number
