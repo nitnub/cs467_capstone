@@ -39,8 +39,9 @@ int setupInstruction(struct instructionData* currentIns, int opcode){
 */
 int test_01(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     assert(getReg16(currentIns->s, BC) == 0x2118);
+    assert(r == 2);
     return 0;
 }
 
@@ -49,9 +50,11 @@ int test_01(struct instructionData *currentIns, int opcode) {
 */
 int test_02(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(memFetch(currentIns->s, 0x10, 0x11) == 0x17);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -59,9 +62,11 @@ int test_02(struct instructionData *currentIns, int opcode) {
 */
 int test_03(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, BC) == 0x1012);
+    assert(r == 0);
+    return 0;
 }
 
 
@@ -70,9 +75,11 @@ int test_03(struct instructionData *currentIns, int opcode) {
 */
 int test_04(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, B) == 0x11);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -80,9 +87,11 @@ int test_04(struct instructionData *currentIns, int opcode) {
 */
 int test_05(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, B) == 0x0F);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -90,9 +99,11 @@ int test_05(struct instructionData *currentIns, int opcode) {
 */
 int test_06(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, B) == 0x18);
+    assert(r == 1);
+    return 0;
 }
 
 /*
@@ -100,9 +111,11 @@ int test_06(struct instructionData *currentIns, int opcode) {
 */
 int test_07(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x2E);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -110,9 +123,11 @@ int test_07(struct instructionData *currentIns, int opcode) {
 */
 int test_09(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x2426);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -121,10 +136,12 @@ int test_09(struct instructionData *currentIns, int opcode) {
 int test_0A(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     memStore(currentIns->s, getReg8(currentIns->s, B), getReg8(currentIns->s, C), 0xBC);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0xBC);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -132,10 +149,12 @@ int test_0A(struct instructionData *currentIns, int opcode) {
 */
 int test_0B(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg16(currentIns->s, BC) == 0x1010);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -143,10 +162,12 @@ int test_0B(struct instructionData *currentIns, int opcode) {
 */
 int test_0C(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, C) == 0x12);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -154,10 +175,12 @@ int test_0C(struct instructionData *currentIns, int opcode) {
 */
 int test_0D(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, C) == 0x10);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -165,10 +188,13 @@ int test_0D(struct instructionData *currentIns, int opcode) {
 */
 int test_0E(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, C) == 0x18);
+    // dispatcher should return 1
+    assert(r == 1);
+    return 0;
 }
 
 /*
@@ -176,10 +202,12 @@ int test_0E(struct instructionData *currentIns, int opcode) {
 */
 int test_0F(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value (0x17 -> 0x83)
     assert(getReg8(currentIns->s, A) == 0x8B);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -187,8 +215,10 @@ int test_0F(struct instructionData *currentIns, int opcode) {
 */
 int test_11(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     assert(getReg16(currentIns->s, DE) == 0x2118);
+    assert(r == 2);
+    return 0;
 }
 
 /*
@@ -196,9 +226,11 @@ int test_11(struct instructionData *currentIns, int opcode) {
 */
 int test_12(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(memFetch(currentIns->s, 0x12, 0x13) == 0x17);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -206,9 +238,11 @@ int test_12(struct instructionData *currentIns, int opcode) {
 */
 int test_13(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, DE) == 0x1214);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -216,19 +250,23 @@ int test_13(struct instructionData *currentIns, int opcode) {
 */
 int test_14(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, D) == 0x13);
+    assert(r == 0);
+    return 0;
 }
 
 /*
-*   test_15: 0x05 (decrement value in register D)
+*   test_15: 0x15 (decrement value in register D)
 */
 int test_15(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     
     assert(getReg8(currentIns->s, D) == 0x11);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -236,9 +274,11 @@ int test_15(struct instructionData *currentIns, int opcode) {
 */
 int test_16(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, D) == 0x18);
+    assert(r == 1);
+    return 0;
 }
 
 /*
@@ -247,9 +287,11 @@ int test_16(struct instructionData *currentIns, int opcode) {
 int test_17(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     set_carry(currentIns->s);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x2F);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -257,9 +299,11 @@ int test_17(struct instructionData *currentIns, int opcode) {
 */
 int test_19(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x2628);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -268,10 +312,12 @@ int test_19(struct instructionData *currentIns, int opcode) {
 int test_1A(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     memStore(currentIns->s, getReg8(currentIns->s, D), getReg8(currentIns->s, E), 0xDE);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0xDE);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -279,10 +325,12 @@ int test_1A(struct instructionData *currentIns, int opcode) {
 */
 int test_1B(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg16(currentIns->s, DE) == 0x1212);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -290,10 +338,12 @@ int test_1B(struct instructionData *currentIns, int opcode) {
 */
 int test_1C(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, E) == 0x14);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -301,10 +351,12 @@ int test_1C(struct instructionData *currentIns, int opcode) {
 */
 int test_1D(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, E) == 0x12);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -312,10 +364,13 @@ int test_1D(struct instructionData *currentIns, int opcode) {
 */
 int test_1E(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, E) == 0x18);
+    // dispatcher should return 1
+    assert(r == 1);
+    return 0;
 }
 
 /*
@@ -324,10 +379,12 @@ int test_1E(struct instructionData *currentIns, int opcode) {
 int test_1F(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     setFlag(currentIns->s, CARRY, 0x00);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value (0x17 -> 0x83)
     assert(getReg8(currentIns->s, A) == 0x0B);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -335,8 +392,10 @@ int test_1F(struct instructionData *currentIns, int opcode) {
 */
 int test_21(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     assert(getReg16(currentIns->s, HL) == 0x2118);
+    assert(r == 2);
+    return 0;
 }
 
 /*
@@ -344,12 +403,14 @@ int test_21(struct instructionData *currentIns, int opcode) {
 */
 int test_22(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     uint8_t res1 = memFetch(currentIns->s, (uint8_t) currentIns->operand2, (uint8_t) currentIns->operand1);
     uint8_t res2 = memFetch(currentIns->s, (uint8_t) currentIns->operand2, (uint8_t) currentIns->operand1 + 1);
     assert(res1 == 0x15); // low byte, contents of register L
     assert(res2 == 0x14); // high byte, contents of register H
+    assert(r == 2);
+    return 0;
 }
 
 /*
@@ -357,9 +418,11 @@ int test_22(struct instructionData *currentIns, int opcode) {
 */
 int test_23(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x1416);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -367,9 +430,11 @@ int test_23(struct instructionData *currentIns, int opcode) {
 */
 int test_24(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, H) == 0x15);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -377,9 +442,11 @@ int test_24(struct instructionData *currentIns, int opcode) {
 */
 int test_25(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     
     assert(getReg8(currentIns->s, H) == 0x13);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -387,9 +454,11 @@ int test_25(struct instructionData *currentIns, int opcode) {
 */
 int test_26(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, H) == 0x18);
+    assert(r == 1);
+    return 0;
 }
 
 /*
@@ -398,9 +467,11 @@ int test_26(struct instructionData *currentIns, int opcode) {
 int test_27(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     setReg8(currentIns->s, A, 0x3A);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x40);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -408,9 +479,11 @@ int test_27(struct instructionData *currentIns, int opcode) {
 */
 int test_29(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x282A);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -420,9 +493,11 @@ int test_2A(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     memStore(currentIns->s, 0x21, 0x18, 0x05); // load low byte into memory at 0x2118
     memStore(currentIns->s, 0x21, 0x19, 0x06); // load high byte into memory at 0x2119
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x0605);
+    assert(r == 2);
+    return 0;
 }
 
 /*
@@ -430,10 +505,12 @@ int test_2A(struct instructionData *currentIns, int opcode) {
 */
 int test_2B(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg16(currentIns->s, HL) == 0x1414);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -441,10 +518,12 @@ int test_2B(struct instructionData *currentIns, int opcode) {
 */
 int test_2C(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, L) == 0x16);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -452,10 +531,12 @@ int test_2C(struct instructionData *currentIns, int opcode) {
 */
 int test_2D(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, L) == 0x14);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -463,10 +544,12 @@ int test_2D(struct instructionData *currentIns, int opcode) {
 */
 int test_2E(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, L) == 0x18);
+    assert(r == 1);
+    return 0;
 }
 
 /*
@@ -474,10 +557,12 @@ int test_2E(struct instructionData *currentIns, int opcode) {
 */
 int test_2F(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0xE8);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -485,8 +570,11 @@ int test_2F(struct instructionData *currentIns, int opcode) {
 */
 int test_31(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
+
     assert(getReg16(currentIns->s, SP) == 0x2118);
+    assert(r == 2);
+    return 0;
 }
 
 /*
@@ -494,10 +582,12 @@ int test_31(struct instructionData *currentIns, int opcode) {
 */
 int test_32(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     uint8_t res1 = memFetch(currentIns->s, (uint8_t) currentIns->operand2, (uint8_t) currentIns->operand1);
     assert(res1 == 0x17); // accumulator
+    assert(r == 2);
+    return 0;
 }
 
 /*
@@ -505,9 +595,11 @@ int test_32(struct instructionData *currentIns, int opcode) {
 */
 int test_33(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, SP) == 0x2401);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -518,10 +610,12 @@ int test_34(struct instructionData *currentIns, int opcode) {
 
     // put 6 in memory at HL
     memStore(currentIns->s, 0x14, 0x15, 0x06); 
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
     
     assert(res == 0x07);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -530,9 +624,11 @@ int test_34(struct instructionData *currentIns, int opcode) {
 int test_35(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     memStore(currentIns->s, 0x14, 0x15, 0x06); 
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
     assert(res == 0x05);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -540,9 +636,11 @@ int test_35(struct instructionData *currentIns, int opcode) {
 */
 int test_36(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
     assert(res == 0x18);
+    assert(r == 1);
+    return 0;
 }
 
 /*
@@ -550,10 +648,12 @@ int test_36(struct instructionData *currentIns, int opcode) {
 */
 int test_37(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
     uint8_t carry = getFlag(currentIns->s, CARRY);
 
     assert(carry == 1);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -561,9 +661,11 @@ int test_37(struct instructionData *currentIns, int opcode) {
 */
 int test_39(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x3815);
+    assert(r == 0);
+    return 0;
 }
 
 /*
@@ -572,9 +674,11 @@ int test_39(struct instructionData *currentIns, int opcode) {
 int test_3A(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     memStore(currentIns->s, 0x21, 0x18, 0x0A); // load low byte into memory at 0x2118
-    dispatchLevel2(currentIns);
+    int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x0A);
+    assert(r == 2);
+    return 0;
 }
 
 /*
@@ -2446,11 +2550,13 @@ int test_C4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    //printf("CNZ stackTop: %02X\n", stackTop);
+    assert(stackTop == 0x83); // low byte of return address [+3]
+
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -2494,7 +2600,7 @@ int test_C7(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 }
 
 /* 
@@ -2551,11 +2657,11 @@ int test_CC(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -2570,11 +2676,11 @@ int test_CD(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -2605,7 +2711,7 @@ int test_CF(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 }
 
 /* 
@@ -2691,11 +2797,11 @@ int test_D4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -2739,7 +2845,7 @@ int test_D7(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 }
 
 /* 
@@ -2794,11 +2900,11 @@ int test_DC(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -2829,7 +2935,7 @@ int test_DF(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 }
 
 /* 
@@ -2916,11 +3022,11 @@ int test_E4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -2964,7 +3070,7 @@ int test_E7(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 }
 
 /* 
@@ -3028,11 +3134,11 @@ int test_EC(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -3062,7 +3168,7 @@ int test_EF(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 }
 
 /* 
@@ -3156,11 +3262,11 @@ int test_F4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -3205,7 +3311,7 @@ int test_F7(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 }
 
 /* 
@@ -3269,11 +3375,11 @@ int test_FC(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0080);
+    assert(getReg16(currentIns->s, PC) == 0x0083);
 }
 
 /* 
@@ -3303,7 +3409,7 @@ int test_FF(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x80); // low byte of return address
+    assert(stackTop == 0x83); // low byte of return address
 }
 
 int main (void) {
