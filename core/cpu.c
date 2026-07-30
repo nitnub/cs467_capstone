@@ -63,6 +63,8 @@ uint16_t getReg16(state *currentState, int regIndex) {
         case PC: return currentState->regs16[regIndex]; break;
         case PSW: return flagsToPSW(currentState); break;
     }
+    
+    return 0xFFFF;
 }
 
 /*
