@@ -41,6 +41,10 @@ int test_01(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     int r = dispatchLevel2(currentIns);
     assert(getReg16(currentIns->s, BC) == 0x2118);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -53,6 +57,10 @@ int test_02(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(memFetch(currentIns->s, 0x10, 0x11) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -65,6 +73,10 @@ int test_03(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, BC) == 0x1012);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -78,6 +90,10 @@ int test_04(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, B) == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -90,6 +106,10 @@ int test_05(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, B) == 0x0F);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -102,6 +122,10 @@ int test_06(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, B) == 0x18);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -114,6 +138,10 @@ int test_07(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x2E);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -126,6 +154,10 @@ int test_09(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x2426);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -140,6 +172,10 @@ int test_0A(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0xBC);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -153,6 +189,10 @@ int test_0B(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg16(currentIns->s, BC) == 0x1010);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -166,6 +206,10 @@ int test_0C(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, C) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -179,6 +223,10 @@ int test_0D(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, C) == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -192,7 +240,9 @@ int test_0E(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, C) == 0x18);
-    // dispatcher should return 1
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -206,6 +256,10 @@ int test_0F(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value (0x17 -> 0x83)
     assert(getReg8(currentIns->s, A) == 0x8B);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -217,6 +271,10 @@ int test_11(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     int r = dispatchLevel2(currentIns);
     assert(getReg16(currentIns->s, DE) == 0x2118);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -229,6 +287,10 @@ int test_12(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(memFetch(currentIns->s, 0x12, 0x13) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -241,6 +303,10 @@ int test_13(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, DE) == 0x1214);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -253,6 +319,10 @@ int test_14(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, D) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -265,6 +335,10 @@ int test_15(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
     
     assert(getReg8(currentIns->s, D) == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -277,6 +351,10 @@ int test_16(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, D) == 0x18);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -290,6 +368,10 @@ int test_17(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x2F);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -302,6 +384,10 @@ int test_19(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x2628);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -316,6 +402,10 @@ int test_1A(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0xDE);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -329,6 +419,10 @@ int test_1B(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg16(currentIns->s, DE) == 0x1212);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -342,6 +436,10 @@ int test_1C(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, E) == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -355,6 +453,10 @@ int test_1D(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, E) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -368,7 +470,9 @@ int test_1E(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, E) == 0x18);
-    // dispatcher should return 1
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -383,6 +487,10 @@ int test_1F(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value (0x17 -> 0x83)
     assert(getReg8(currentIns->s, A) == 0x0B);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -394,6 +502,10 @@ int test_21(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     int r = dispatchLevel2(currentIns);
     assert(getReg16(currentIns->s, HL) == 0x2118);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -409,6 +521,10 @@ int test_22(struct instructionData *currentIns, int opcode) {
     uint8_t res2 = memFetch(currentIns->s, (uint8_t) currentIns->operand2, (uint8_t) currentIns->operand1 + 1);
     assert(res1 == 0x15); // low byte, contents of register L
     assert(res2 == 0x14); // high byte, contents of register H
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 16);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -421,6 +537,10 @@ int test_23(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x1416);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -433,6 +553,10 @@ int test_24(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, H) == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -445,6 +569,10 @@ int test_25(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
     
     assert(getReg8(currentIns->s, H) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -457,6 +585,10 @@ int test_26(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, H) == 0x18);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -470,6 +602,10 @@ int test_27(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x40);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -482,6 +618,10 @@ int test_29(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x282A);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -496,6 +636,10 @@ int test_2A(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x0605);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 16);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -509,6 +653,10 @@ int test_2B(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg16(currentIns->s, HL) == 0x1414);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -522,6 +670,9 @@ int test_2C(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, L) == 0x16);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -535,6 +686,10 @@ int test_2D(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, L) == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -548,6 +703,10 @@ int test_2E(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, L) == 0x18);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -561,6 +720,10 @@ int test_2F(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0xE8);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -573,6 +736,10 @@ int test_31(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, SP) == 0x2118);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -586,6 +753,10 @@ int test_32(struct instructionData *currentIns, int opcode) {
 
     uint8_t res1 = memFetch(currentIns->s, (uint8_t) currentIns->operand2, (uint8_t) currentIns->operand1);
     assert(res1 == 0x17); // accumulator
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 13);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -598,6 +769,10 @@ int test_33(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, SP) == 0x2401);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -614,6 +789,10 @@ int test_34(struct instructionData *currentIns, int opcode) {
     uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
     
     assert(res == 0x07);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -627,6 +806,10 @@ int test_35(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
     uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
     assert(res == 0x05);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -639,6 +822,10 @@ int test_36(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
     uint8_t res = memFetch(currentIns->s, 0x14, 0x15);
     assert(res == 0x18);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -652,6 +839,10 @@ int test_37(struct instructionData *currentIns, int opcode) {
     uint8_t carry = getFlag(currentIns->s, CARRY);
 
     assert(carry == 1);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -664,6 +855,10 @@ int test_39(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x3815);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -677,6 +872,10 @@ int test_3A(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x0A);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 13);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -689,6 +888,10 @@ int test_3B(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, SP) == 0x23FF);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -701,6 +904,10 @@ int test_3C(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x18);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -713,6 +920,10 @@ int test_3D(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x16);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -725,6 +936,9 @@ int test_3E(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x18);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -737,6 +951,10 @@ int test_3F(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getFlag(currentIns->s, CARRY) == 0x01);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -750,6 +968,11 @@ int test_40(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, B) == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+
+    // assert no operands to skip
     assert(r == 0);
     return 0;
 }
@@ -763,6 +986,11 @@ int test_41(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, B) == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+
+    // assert no operands to skip
     assert(r == 0);
     return 0;
 }
@@ -776,6 +1004,10 @@ int test_42(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, B) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+
     assert(r == 0);
     return 0;
 }
@@ -789,6 +1021,9 @@ int test_43(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, B) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -802,6 +1037,9 @@ int test_44(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, B) == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -815,6 +1053,9 @@ int test_45(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, B) == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -829,6 +1070,9 @@ int test_46(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, B) == 0x27);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
     assert(r == 0);
     return 0;
 }
@@ -842,6 +1086,9 @@ int test_47(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, B) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -855,6 +1102,9 @@ int test_48(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, C) == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -868,6 +1118,9 @@ int test_49(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, C) == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -881,6 +1134,9 @@ int test_4A(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, C) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -894,6 +1150,9 @@ int test_4B(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, C) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -907,6 +1166,9 @@ int test_4C(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, C) == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -920,6 +1182,9 @@ int test_4D(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, C) == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -934,6 +1199,9 @@ int test_4E(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, C) == 0x37);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
     assert(r == 0);
     return 0;
 }
@@ -947,6 +1215,9 @@ int test_4F(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, C) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert (r == 0);
     return 0;
 }
@@ -960,6 +1231,9 @@ int test_50(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, D) == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -973,6 +1247,9 @@ int test_51(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, D) == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -986,6 +1263,9 @@ int test_52(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, D) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -999,6 +1279,9 @@ int test_53(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, D) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -1012,6 +1295,8 @@ int test_54(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, D) == 0x14);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -1025,6 +1310,9 @@ int test_55(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, D) == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -1039,6 +1327,9 @@ int test_56(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, D) == 0x47);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
     assert(r == 0);
     return 0;
 }
@@ -1052,6 +1343,9 @@ int test_57(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, D) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -1065,6 +1359,9 @@ int test_58(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, E) == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -1078,6 +1375,9 @@ int test_59(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, E) == 0x11);
+    
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
     assert(r == 0);
     return 0;
 }
@@ -1091,6 +1391,10 @@ int test_5A(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, E) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1104,6 +1408,10 @@ int test_5B(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, E) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1117,6 +1425,10 @@ int test_5C(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, E) == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1130,6 +1442,10 @@ int test_5D(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, E) == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1144,6 +1460,10 @@ int test_5E(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, E) == 0x57);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1157,6 +1477,10 @@ int test_5F(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, E) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1171,6 +1495,10 @@ int test_60(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, H) == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1184,6 +1512,10 @@ int test_61(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, H) == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1198,6 +1530,10 @@ int test_62(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, H) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1211,6 +1547,10 @@ int test_63(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, H) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1224,6 +1564,10 @@ int test_64(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, H) == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1237,6 +1581,10 @@ int test_65(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, H) == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1251,6 +1599,10 @@ int test_66(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, H) == 0x67);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1265,6 +1617,10 @@ int test_67(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, H) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1278,6 +1634,10 @@ int test_68(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, L) == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r ==0);
     return 0;
 }
@@ -1291,6 +1651,10 @@ int test_69(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, L) == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1304,6 +1668,10 @@ int test_6A(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, L) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1317,6 +1685,10 @@ int test_6B(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, L) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1330,6 +1702,10 @@ int test_6C(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, L) == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1343,6 +1719,10 @@ int test_6D(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, L) == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1357,6 +1737,10 @@ int test_6E(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, L) == 0x21);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1370,6 +1754,10 @@ int test_6F(struct instructionData *currentIns, int opcode) {
 
     // check register for value
     assert(getReg8(currentIns->s, A) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1384,6 +1772,10 @@ int test_70(struct instructionData *currentIns, int opcode) {
     
     // check memory for value
     assert(res == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1399,6 +1791,10 @@ int test_71(struct instructionData *currentIns, int opcode) {
     
     // check memory for value
     assert(res == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1414,6 +1810,10 @@ int test_72(struct instructionData *currentIns, int opcode) {
     
     // check memory for value
     assert(res == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1429,6 +1829,10 @@ int test_73(struct instructionData *currentIns, int opcode) {
     
     // check memory for value
     assert(res == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1444,6 +1848,10 @@ int test_74(struct instructionData *currentIns, int opcode) {
     
     // check memory for value
     assert(res == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1459,6 +1867,10 @@ int test_75(struct instructionData *currentIns, int opcode) {
     
     // check memory for value
     assert(res == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1469,6 +1881,9 @@ int test_75(struct instructionData *currentIns, int opcode) {
 int test_76(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     int r = dispatchLevel2(currentIns);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1484,6 +1899,10 @@ int test_77(struct instructionData *currentIns, int opcode) {
     
     // check accumulator for value
     assert(res == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1497,6 +1916,10 @@ int test_78(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x10);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1510,6 +1933,10 @@ int test_79(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x11);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert (r == 0);
     return 0;
 }
@@ -1523,6 +1950,10 @@ int test_7A(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x12);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1536,6 +1967,10 @@ int test_7B(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x13);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1549,6 +1984,10 @@ int test_7C(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x14);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1562,6 +2001,10 @@ int test_7D(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x15);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1576,12 +2019,16 @@ int test_7E(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x52);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
 
 /* 
-*   test 0x7F: mov A, M
+*   test 0x7F: mov A, A
 */
 int test_7F(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
@@ -1589,6 +2036,10 @@ int test_7F(struct instructionData *currentIns, int opcode) {
 
     // check accumulator for value
     assert(getReg8(currentIns->s, A) == 0x17);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1601,6 +2052,10 @@ int test_80(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x27);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1618,6 +2073,10 @@ int test_81(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1635,6 +2094,10 @@ int test_82(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1652,6 +2115,10 @@ int test_83(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1669,6 +2136,10 @@ int test_84(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1686,6 +2157,10 @@ int test_85(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1704,6 +2179,10 @@ int test_86(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x01); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1721,6 +2200,10 @@ int test_87(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1739,6 +2222,10 @@ int test_88(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1757,6 +2244,10 @@ int test_89(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1775,6 +2266,10 @@ int test_8A(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1793,6 +2288,10 @@ int test_8B(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1811,6 +2310,10 @@ int test_8C(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1829,6 +2332,10 @@ int test_8D(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1848,6 +2355,10 @@ int test_8E(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x01); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1866,6 +2377,10 @@ int test_8F(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1884,6 +2399,10 @@ int test_90(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1902,6 +2421,10 @@ int test_91(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1920,6 +2443,10 @@ int test_92(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1938,6 +2465,10 @@ int test_93(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1955,7 +2486,11 @@ int test_94(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1974,6 +2509,10 @@ int test_95(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -1992,7 +2531,11 @@ int test_96(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x01);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2010,7 +2553,11 @@ int test_97(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+    
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2028,7 +2575,11 @@ int test_98(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2046,7 +2597,11 @@ int test_99(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2064,7 +2619,11 @@ int test_9A(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2082,7 +2641,11 @@ int test_9B(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2100,7 +2663,11 @@ int test_9C(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2118,7 +2685,11 @@ int test_9D(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2137,7 +2708,11 @@ int test_9E(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2156,6 +2731,10 @@ int test_9F(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x01); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);  // ( (registerA & 0x0F) + ~(value_subtracted) & 0x0F ) > 0x0F
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2174,6 +2753,10 @@ int test_A0(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2192,6 +2775,10 @@ int test_A1(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2210,6 +2797,10 @@ int test_A2(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2228,6 +2819,10 @@ int test_A3(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2246,6 +2841,10 @@ int test_A4(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2264,6 +2863,10 @@ int test_A5(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2283,6 +2886,10 @@ int test_A6(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2301,6 +2908,10 @@ int test_A7(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2319,6 +2930,10 @@ int test_A8(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2337,6 +2952,10 @@ int test_A9(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2355,6 +2974,10 @@ int test_AA(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2373,6 +2996,10 @@ int test_AB(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2391,6 +3018,10 @@ int test_AC(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2409,6 +3040,10 @@ int test_AD(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2428,6 +3063,10 @@ int test_AE(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x01); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2446,6 +3085,10 @@ int test_AF(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2464,6 +3107,10 @@ int test_B0(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2482,6 +3129,10 @@ int test_B1(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2500,6 +3151,10 @@ int test_B2(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2518,6 +3173,10 @@ int test_B3(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2536,6 +3195,10 @@ int test_B4(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2554,6 +3217,10 @@ int test_B5(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2573,6 +3240,10 @@ int test_B6(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x01); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2591,6 +3262,10 @@ int test_B7(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2609,6 +3284,10 @@ int test_B8(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2626,7 +3305,11 @@ int test_B9(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2645,6 +3328,10 @@ int test_BA(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2662,7 +3349,11 @@ int test_BB(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2680,7 +3371,11 @@ int test_BC(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2699,6 +3394,10 @@ int test_BD(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2717,7 +3416,11 @@ int test_BE(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x01);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2735,7 +3438,11 @@ int test_BF(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, CARRY) == 0x00);
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
-    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00); 
+    assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2753,6 +3460,9 @@ int test_C0(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0); // program counter should be updated
     return 0;
 }
@@ -2773,6 +3483,9 @@ int test_C02(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, SP) == 0x23FE);
     // assert that cycles updated in instruction object
     assert(currentIns->cycles == currentIns->cyclesFalse);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2789,6 +3502,9 @@ int test_C1(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, BC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2803,6 +3519,10 @@ int test_C2(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x2118);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0); // program counter should be updated
     return 0;
 }
@@ -2817,6 +3537,10 @@ int test_C2_2(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x0080);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2); // should jump over address
     return 0;
 }
@@ -2829,6 +3553,9 @@ int test_C3(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, PC) == 0x2118);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2846,13 +3573,16 @@ int test_C4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    //printf("CNZ stackTop: %02X\n", stackTop);
     assert(stackTop == 0x83); // low byte of return address [+3]
 
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2868,7 +3598,9 @@ int test_C4_2(struct instructionData *currentIns, int opcode) {
     // check that program counter does not change
     assert(getReg16(currentIns->s, PC) == 0x0080);
 
-    // check that we will jump over 2 operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -2885,6 +3617,10 @@ int test_C5(struct instructionData *currentIns, int opcode) {
 
     assert(stackTop == getReg8(currentIns->s, C)); // low byte
     assert(stackSecond == getReg8(currentIns->s, B)); // high byte
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2902,6 +3638,10 @@ int test_C6(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -2919,6 +3659,10 @@ int test_C7(struct instructionData *currentIns, int opcode) {
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
     assert(stackTop == 0x83); // low byte of return address
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2936,6 +3680,9 @@ int test_C8(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2952,6 +3699,9 @@ int test_C9(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -2966,6 +3716,9 @@ int test_CA(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x2118);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0); // if success, no need to skip bytes
     return 0;
 }
@@ -2980,6 +3733,9 @@ int test_CA_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2); // if failure, skip two bytes
     return 0;
 }
@@ -3002,6 +3758,10 @@ int test_CC(struct instructionData *currentIns, int opcode) {
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3017,7 +3777,9 @@ int test_CC_2(struct instructionData *currentIns, int opcode) {
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
 
-    // check that we will skip immediate operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -3039,6 +3801,10 @@ int test_CD(struct instructionData *currentIns, int opcode) {
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3058,7 +3824,9 @@ int test_CE(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
 
-    // check that we will skip single operand
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -3076,6 +3844,10 @@ int test_CF(struct instructionData *currentIns, int opcode) {
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
     assert(stackTop == 0x83); // low byte of return address
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3093,6 +3865,9 @@ int test_D0(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3113,6 +3888,10 @@ int test_D02(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, SP) == 0x23FE);
     // check that cycles is correct for no jump
     assert(currentIns->cycles == currentIns->cyclesFalse);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3129,6 +3908,9 @@ int test_D1(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, DE) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3143,8 +3925,9 @@ int test_D2(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x2118);
-
-    // we jump, so no operands should be skipped
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3160,6 +3943,9 @@ int test_D2_2(struct instructionData *currentIns, int opcode) {
     // check that program counter does not change
     assert(getReg16(currentIns->s, PC) == 0x0080);
 
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     // we do not jump, so two operands should be skipped
     assert(r == 2);
     return 0;
@@ -3173,6 +3959,9 @@ int test_D3(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getPort(currentIns->s, 0x18, OUT) == 0x17);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -3195,6 +3984,10 @@ int test_D4(struct instructionData *currentIns, int opcode) {
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3210,7 +4003,9 @@ int test_D4_2(struct instructionData *currentIns, int opcode) {
     // check that program counter does not change
     assert(getReg16(currentIns->s, PC) == 0x0080);
 
-    // check that we will skip operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -3227,6 +4022,10 @@ int test_D5(struct instructionData *currentIns, int opcode) {
 
     assert(stackTop == getReg8(currentIns->s, E)); // low byte
     assert(stackSecond == getReg8(currentIns->s, D)); // high byte
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3244,6 +4043,10 @@ int test_D6(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x01); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -3261,6 +4064,10 @@ int test_D7(struct instructionData *currentIns, int opcode) {
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
     assert(stackTop == 0x83); // low byte of return address
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3278,6 +4085,9 @@ int test_D8(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3293,6 +4103,9 @@ int test_D8_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3307,6 +4120,10 @@ int test_DA(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x2118);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3321,6 +4138,10 @@ int test_DA_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter does not change
     assert(getReg16(currentIns->s, PC) == 0x0080);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -3334,6 +4155,9 @@ int test_DB(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg8(currentIns->s, A) == 0x54);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -3356,6 +4180,10 @@ int test_DC(struct instructionData *currentIns, int opcode) {
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3370,8 +4198,9 @@ int test_DC_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter does not change
     assert(getReg16(currentIns->s, PC) == 0x0080);
-
-    // check that we are prepared to skip operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -3390,6 +4219,10 @@ int test_DE(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x01); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -3407,6 +4240,9 @@ int test_DF(struct instructionData *currentIns, int opcode) {
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
     assert(stackTop == 0x83); // low byte of return address
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3424,6 +4260,9 @@ int test_E0(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3444,6 +4283,9 @@ int test_E02(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, SP) == 0x23FE);
     // check that cycles is correct for no jump
     assert(currentIns->cycles == currentIns->cyclesFalse);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3460,6 +4302,9 @@ int test_E1(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, HL) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3474,6 +4319,10 @@ int test_E2(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x2118);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3489,6 +4338,8 @@ int test_E2_2(struct instructionData *currentIns, int opcode) {
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
 
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
     // check that we will jump over operands
     assert(r == 2);
     return 0;
@@ -3503,6 +4354,9 @@ int test_E3(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, HL) == 0x0303);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 18);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3525,6 +4379,10 @@ int test_E4(struct instructionData *currentIns, int opcode) {
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3539,7 +4397,9 @@ int test_E4_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
-    // check that we will jump over operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -3556,6 +4416,9 @@ int test_E5(struct instructionData *currentIns, int opcode) {
 
     assert(stackTop == getReg8(currentIns->s, L)); // low byte
     assert(stackSecond == getReg8(currentIns->s, H)); // high byte
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3573,6 +4436,10 @@ int test_E6(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -3590,6 +4457,10 @@ int test_E7(struct instructionData *currentIns, int opcode) {
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
     assert(stackTop == 0x83); // low byte of return address
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3607,6 +4478,9 @@ int test_E8(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3622,6 +4496,9 @@ int test_E8_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3634,6 +4511,9 @@ int test_E9(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, PC) == getReg16(currentIns->s, HL));
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3648,6 +4528,10 @@ int test_EA(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x2118);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3662,8 +4546,9 @@ int test_EA_2(struct instructionData *currentIns, int opcode) {
 
     // check that the program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
-
-    // check that we are prepared to jump operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -3677,6 +4562,10 @@ int test_EB(struct instructionData *currentIns, int opcode) {
 
     assert(getReg16(currentIns->s, HL) == 0x1213);
     assert(getReg16(currentIns->s, DE) == 0x1415);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3699,6 +4588,10 @@ int test_EC(struct instructionData *currentIns, int opcode) {
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3714,7 +4607,9 @@ int test_EC_2(struct instructionData *currentIns, int opcode) {
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
 
-    // check that we are prepared to skip operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -3732,6 +4627,10 @@ int test_EE(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -3749,6 +4648,10 @@ int test_EF(struct instructionData *currentIns, int opcode) {
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
     assert(stackTop == 0x83); // low byte of return address
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3766,6 +4669,9 @@ int test_F0(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3786,6 +4692,9 @@ int test_F02(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, SP) == 0x23FE);
     // check that cycles is correct for no jump
     assert(currentIns->cycles == currentIns->cyclesFalse);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return values
     assert(r == 0);
     return 0;
 }
@@ -3809,6 +4718,9 @@ int test_F1(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PSW) == pswval);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3823,6 +4735,9 @@ int test_F2(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x2118);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3838,7 +4753,9 @@ int test_F2_2(struct instructionData *currentIns, int opcode) {
     // check that program counter does not change
     assert(getReg16(currentIns->s, PC) == 0x0080);
 
-    // check that we will jump over operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -3852,6 +4769,9 @@ int test_F3(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(currentIns->s->currentOp.interruptReady == 0x00);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3874,6 +4794,9 @@ int test_F4(struct instructionData *currentIns, int opcode) {
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3889,6 +4812,8 @@ int test_F4_2(struct instructionData *currentIns, int opcode) {
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
 
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
     // check that we are prepared to jump operands
     assert(r == 2);
     return 0;
@@ -3906,6 +4831,9 @@ int test_F5(struct instructionData *currentIns, int opcode) {
 
     assert(stackTop == lowFrom16Bit(getReg16(currentIns->s, PSW))); // low byte
     assert(stackSecond == highFrom16Bit(getReg16(currentIns->s, PSW))); // high byte
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3924,6 +4852,10 @@ int test_F6(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x00); 
     assert(getFlag(currentIns->s, SIGN) == 0x00); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x00);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -3941,6 +4873,9 @@ int test_F7(struct instructionData *currentIns, int opcode) {
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
     assert(stackTop == 0x83); // low byte of return address
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3958,6 +4893,9 @@ int test_F8(struct instructionData *currentIns, int opcode) {
     assert(getReg16(currentIns->s, PC) == 0x0102);
     // check that stack pointer has incremented
     assert(getReg16(currentIns->s, SP) == 0x2400);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3973,6 +4911,9 @@ int test_F8_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter has not changed
     assert(getReg16(currentIns->s, PC) == 0x0080);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3985,6 +4926,9 @@ int test_F9(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(getReg16(currentIns->s, SP) == getReg16(currentIns->s, HL));
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 5);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -3999,6 +4943,9 @@ int test_FA(struct instructionData *currentIns, int opcode) {
 
     // check that immediate operands are now the address in program counter
     assert(getReg16(currentIns->s, PC) == 0x2118);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -4013,7 +4960,10 @@ int test_FA_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter doesn't change
     assert(getReg16(currentIns->s, PC) == 0x0080);
-    // should be prepared to skip past operands
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 10);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -4026,6 +4976,9 @@ int test_FB(struct instructionData *currentIns, int opcode) {
     int r = dispatchLevel2(currentIns);
 
     assert(currentIns->s->currentOp.interruptReady == 0x01);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 4);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -4048,6 +5001,9 @@ int test_FC(struct instructionData *currentIns, int opcode) {
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
     assert(getReg16(currentIns->s, PC) == 0x0083);
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 17);
+    // check return value
     assert(r == 0);
     return 0;
 }
@@ -4062,7 +5018,9 @@ int test_FC_2(struct instructionData *currentIns, int opcode) {
 
     // check that program counter has not change
     assert(getReg16(currentIns->s, PC) == 0x0080);
-    // we should be prepared to jump 2 operands
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 2);
     return 0;
 }
@@ -4080,6 +5038,10 @@ int test_FE(struct instructionData *currentIns, int opcode) {
     assert(getFlag(currentIns->s, PARITY) == 0x01); 
     assert(getFlag(currentIns->s, SIGN) == 0x01); 
     assert(getFlag(currentIns->s, AUX_CARRY) == 0x01);
+
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 7);
+    // check return value
     assert(r == 1);
     return 0;
 }
@@ -4097,6 +5059,9 @@ int test_FF(struct instructionData *currentIns, int opcode) {
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
     assert(stackTop == 0x83); // low byte of return address
+    // check cycles for correct processor state count
+    assert(currentIns->cycles == 11);
+    // check return value
     assert(r == 0);
     return 0;
 }
