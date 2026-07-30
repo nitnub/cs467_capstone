@@ -405,7 +405,12 @@ int segment0_5(struct instructionData *currentIns) {
     sprintf(currentIns->help, "decrement CPU register %s", reg);
 
     // set clock cycles
-    currentIns->cycles = 5;
+    if (regIndex == M) {
+        currentIns->cycles = 10;
+    }
+    else {
+        currentIns->cycles = 5;
+    }
 
     // execute instruction
     uint8_t value = getReg8(currentIns->s, regIndex) - 1;
@@ -451,7 +456,7 @@ int segment0_6(struct instructionData *currentIns) {
     if (!strcmp(reg, "M")) {
         currentIns->cycles = 10;
     } else {
-        currentIns->cycles = 5;
+        currentIns->cycles = 7;
     }
 
     // execute instruction for most registers
@@ -785,6 +790,7 @@ int segment1(struct instructionData *currentIns) {
     if (currentIns->instruction == 0x76) {
         // handle HLT
         sprintf(currentIns->assembly, "HLT");
+        currentIns->cycles = 7;
     } 
     else {
 
@@ -1122,7 +1128,7 @@ int segment3_7(struct instructionData *currentIns) {
 
     sprintf(currentIns->assembly, "RST %d", resetIndex);
     sprintf(currentIns->help, "Call reset subroutine %d", resetIndex);
-    currentIns->cycles = 7;
+    currentIns->cycles = 11;
 
     // execute instruction
     uint8_t vector = resetIndex * 0x08;
@@ -1302,8 +1308,8 @@ int segment3_C(struct instructionData *currentIns) {
     sprintf(currentIns->help, 
             "Call subroutine if flag is set\n(Z = zero, C = carry, PE = parity is even, M = negative (sign set))");
 
-    currentIns->cycles = 11;
-    currentIns->cyclesFalse = 5;
+    currentIns->cycles = 17;
+    currentIns->cyclesFalse = 11;
 
     // execute instruction
     int flagIndex= conditionalIndex / 2;
@@ -1382,7 +1388,7 @@ int segment3_F(struct instructionData *currentIns) {
 
     sprintf(currentIns->assembly, "RST %d", resetIndex);
     sprintf(currentIns->help, "Call reset subroutine %d", resetIndex);
-    currentIns->cycles = 7;
+    currentIns->cycles = 11;
 
     // execute instruction
     uint8_t vector = resetIndex * 0x08;
