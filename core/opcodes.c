@@ -138,6 +138,7 @@ int set_carry(state* currentState) {
 */
 int complement_carry(state* currentState) {
     setFlag(currentState, CARRY, complementFlag(getFlag(currentState, CARRY)));
+    return 0;
 }
 
 /*
@@ -175,6 +176,8 @@ int moveRegToReg8(state *currentState, int sourceIndex, int destIndex) {
         perror("Error moving value from register to register\n");
         return -1;
     }
+
+    return 0;
 }
 
 /* 
@@ -406,6 +409,8 @@ int alu_add_carry (state* currentState, int sourceIndex) {
 
     // set accumulator with result
     setReg8(currentState, A, (uint8_t) result);
+
+    return 0;
 }
 
 /* 
@@ -712,10 +717,6 @@ int handleAuxCarryAnd (state *currentState, uint8_t sourceVal, uint8_t destVal) 
 */
 int aluFlags_arithmetic (state *currentState, int sourceIndex, uint8_t result) {
     
-    // get source and destination values
-    uint8_t sourceVal = getReg8(currentState, sourceIndex);
-    uint8_t destVal = getReg8(currentState, A);
-
     handleZero_arithmetic(currentState, result);
     handleParity(currentState, result);
     handleSign(currentState, result);
@@ -738,9 +739,6 @@ int aluFlags_arithmetic (state *currentState, int sourceIndex, uint8_t result) {
 *   @param: result, an unsigned 8-bit integer representing the result of an arithmetic operation.
 */
 int aluFlags_logic (state *currentState, int sourceIndex, uint8_t result) {
-
-    uint8_t sourceVal = getReg8(currentState, sourceIndex);
-    uint8_t destVal = getReg8(currentState, A);
 
     // clears the carry flag
     setFlag(currentState, CARRY, 0);
@@ -801,7 +799,7 @@ int jumpTo(state *currentState, int flagIndex, uint8_t condition, uint8_t highAd
         return 0;
     }
 
-    return 1;
+    return 2; // returns 2 if no jump (to jump over address)
 }
 
 /*
@@ -822,7 +820,6 @@ int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t high
 
     if (flagIndex == NO_FLAG || getFlag(currentState, flagIndex) == condition) {
         
-        // TODO: modifying PC within opcode - out of alignment with broader philosophy?
         // increment pc before pushing  
         setReg16(currentState, PC, getReg16(currentState, PC) + 3);
         // push program counter to stack
@@ -834,7 +831,8 @@ int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t high
         
         return 0;
     }
-    return 1;
+    // return 2 to jump over immediate bytes if call does not happen
+    return 2;
 }
 
 /* 

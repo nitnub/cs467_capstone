@@ -53,7 +53,7 @@ char* getSeqRegisterPair(struct instructionData *currentIns) {
 */
 void modifyRegisterPair(char* registerPair, char** pairToPrint) {
 
-    if (pairToPrint != NULL && registerPair != "SP") {
+    if (pairToPrint != NULL && strcmp(registerPair, "SP")) {
         sprintf(*pairToPrint, "%c", registerPair[0]);
     }
     else if (pairToPrint != NULL) {
@@ -954,8 +954,8 @@ int segment3_2(struct instructionData *currentIns) {
     int flagIndex = conditionalIndex / 2; // convert
     int result = jumpTo(currentIns->s, flagIndex, 0, currentIns->operand2, currentIns->operand1);
 
-    // extra instructions used: 2
-    return 2;
+    // return 0 if jump or 2 if no jump
+    return result;
 
 }
 int segment3_3(struct instructionData *currentIns) {
@@ -971,10 +971,9 @@ int segment3_3(struct instructionData *currentIns) {
             sprintf(currentIns->assembly, "%s 0x%02X%02X", ops[opIndex], currentIns->operand2, currentIns->operand1);
             sprintf(currentIns->help, "Unconditional jump");
             currentIns->cycles = 10;
-            instructionCount = 2;
-
+            
             // execute instruction
-            jumpTo(currentIns->s, NO_FLAG, 0, currentIns->operand2, currentIns->operand1);
+            instructionCount = jumpTo(currentIns->s, NO_FLAG, 0, currentIns->operand2, currentIns->operand1);
             break;
 
         case 1:
@@ -985,7 +984,7 @@ int segment3_3(struct instructionData *currentIns) {
             instructionCount = 1;
 
             // execute instruction
-            uint8_t value1 = setPort(currentIns->s, currentIns->operand1, OUT, getReg8(currentIns->s, A));
+            setPort(currentIns->s, currentIns->operand1, OUT, getReg8(currentIns->s, A));
             break;
 
         case 2:
@@ -1045,7 +1044,7 @@ int segment3_4(struct instructionData *currentIns) {
     }
 
     // return number of extra bytes used: 2
-    return 2;
+    return result;
 }
 
 /*
@@ -1178,7 +1177,7 @@ int segment3_9(struct instructionData *currentIns) {
             currentIns->cycles = 10;
 
             // execute instruction
-            int result = returnFrom(currentIns->s, NO_FLAG, 0);
+            returnFrom(currentIns->s, NO_FLAG, 0);
             break;
 
         case 1:
@@ -1232,7 +1231,7 @@ int segment3_A(struct instructionData *currentIns) {
     int result = jumpTo(currentIns->s, flagIndex, 1, currentIns->operand2, currentIns->operand1);
 
     // return extra bytes used: 2
-    return 2;
+    return result;
 }
 
 /*
@@ -1316,7 +1315,7 @@ int segment3_C(struct instructionData *currentIns) {
     }
 
     // number of extra bytes used
-    return 2;
+    return result;
 }
 
 /*
@@ -1334,8 +1333,7 @@ int segment3_D(struct instructionData *currentIns) {
         // execute instruction
         int result = callProc(currentIns->s, NO_FLAG, 0, currentIns->operand2, currentIns->operand1);
 
-        // number of extra bytes: 2
-        return 2;
+        return result;
     }
 
     sprintf(currentIns->assembly, "Undefined instruction");
