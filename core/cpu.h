@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <pthread.h>
 #include <stdio.h>
+#include "../spike_documents_nb/shift_register/shiftRegister.h"   // TODO: adjust to final path
 
 #define MEM_SIZE 65536
 
@@ -73,6 +74,7 @@ typedef struct {
     process_r currentOp;                // currentOp and pending interrupt vectors
     uint8_t outp[PORT_COUNT];           // output ports
     uint8_t inp[PORT_COUNT];            // input ports
+    ShiftRegister_t shiftReg;           // shift register
     unsigned char memory[MEM_SIZE];     // memory
 } state;
 
