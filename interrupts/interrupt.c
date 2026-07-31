@@ -1,245 +1,133 @@
 #include "interrupt.h"
 
-// declare threads for the interrupt loop
-pthread_t threadpool[20];
+pthread_mutex_t timelock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t timer = PTHREAD_COND_INITIALIZER;
 
-pthread_t interruptLoop, t3;
-int r1, r2;
 
-/*
-* function simulates a time delay before the CPU calls EI instruction
+/* 
+*   function: waitCycles
+*   delays to make up the extra time the Intel 8080 would have taken for each cycle state
 */
-void test_enable_cycle(struct cpu* cpu) {
-    enableInterrupt(cpu);
-}
-
-/*
-* fuction: enableInterrupt
-* start or enable interrupt cycle in the CPU
-*/
-void enableInterrupt(struct cpu* cpu) {
-
-    // change: void enableInterrupt(struct cpu* cpu)
-
-     // start interrupt loop if needed
-    if (((struct cpu*) cpu)->interruptInit == 0) {
-
-        // printf("enable interrupt called start loop\n");
-
-        ((struct cpu*)cpu)->interruptInit = 1;
-
-        if (pthread_create(&t3, NULL, startInterruptLoop, (void *) cpu)) {
-            perror("Error: spinning off thread for startInterruptLoop\n");
-        }
-        
-        pthread_detach(t3);
-    } 
+int waitCycles(void) {
     
-    // otherwise, release mutex lock
-    else {
-        pthread_mutex_unlock(&((struct cpu*)cpu)->enableInt);
+    // initialize wait time
+    struct timespec cycleWait;
+    cycleWait.tv_sec = 0;
+    cycleWait.tv_nsec = MIDSCREEN;
+
+    // wait the time expected for half of screen refresh cycle
+    clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+
+    return 0;
+}
+
+/*
+*   function: triggerInterrupt
+*   Trigger and interrupt when we reach roughly the middle and end of screen refresh
+*   For space invaders, interrupts are: 
+*           -- Midscreen: 0xCF [RST 1] 
+*           -- VBLANK: 0xD7 [RST 2]
+*/
+int triggerInterrupt(process_r *cpu, uint8_t vector) {
+
+    if (cpu->interruptEnabled != 0) {
+        // place vector into the buffer
+        memset(&cpu->interruptBuffer, vector, sizeof(uint8_t));
+        memset(&cpu->interruptReady, 0x01, sizeof(uint8_t));
     }
 
+    return 0;
 }
 
-
-/*
-* start and detach the CPU's interrupt loop
-* this also locks the mutex, starting the loop in locked mode
+/* 
+*   function: processInterrupt
+*   When an interrupt vector is ready, move it into the currentOpcode slot for processing.
+*   Then clear the buffer and turn off the ready flag.
 */
-void* startInterruptLoop(void* cpu) {
+int processInterrupt(process_r *cpu) {
 
-    // clear the shutdownCondition for interrupt loop
-    ((struct cpu*) cpu)->shutdownCondition = 0;
- 
-    // spin off thread to run interrupts
-    if (pthread_create(&interruptLoop, NULL, interruptCycle, (void *) cpu)) {
-        perror("ERROR creating thread: interrupt loop\n");
+    // check if there is an interrupt ready.
+    // if so, place the vector into the current opcode position
+    // and then clear buffer
+    if (cpu->interruptReady != 0x00){
+        //printf("interrupt ran for %02X\n", cpu->interruptBuffer);
+        memset(&cpu->currentOpcode, cpu->interruptBuffer, sizeof(uint8_t));
+        memset(&cpu->interruptBuffer, 0x00, sizeof(uint8_t));
+        memset(&cpu->interruptReady, 0x00, sizeof(uint8_t));
     }
 
-    // detatch thread and return
-    pthread_detach(interruptLoop);
-    return NULL;
+    return 0;
 }
 
 /*
-*  set the CPU's shutdownCondition to 1 [true]
-*  stops the interrupt loop
-*/
-void stopInterruptLoop(struct cpu* cpu) {
-
-    cpu->shutdownCondition = 1;
-}
-
-/*
-*   function: callMidscreenInterrupt
-*       Execute midscreen interrupt
-*       vector path: opcode 0xCF [RST 1]
-*/
-void* callMidscreenInterrupt(void *args) {
-
-    // obtain lock (this is locked when interrupts are disabled)
-    pthread_mutex_lock(&((struct cpu*) args)->enableInt);
-
-    // TESTING -- TODO: remove and replace relevant assert
-    ((struct cpu*) args)->mid_call+=1;
-
-    // todo: insert instruction into CPU
-    sleep(.001);
-
-    // TODO: remove. Interrupts should not be enabled until EI command is processed
-    test_enable_cycle((struct cpu*) args);
-    return NULL;
-}
-
-
-/*
-*   function: callVblankInterrupt
-*       Executes VBLANK interrupt
-*       vector path: opcode 0xD7 [RST 2]
-*/
-void* callVblankInterrupt(void *args) {
-
-    // obtain lock (this is locked when interrupts are disabled)
-    pthread_mutex_lock(&((struct cpu*) args)->enableInt);
-
-    // for testing TODO: remove this and rewrite test
-    ((struct cpu*) args)->vblank_call+=1;
-
-    // todo: insert instruction into CPU
-    sleep(.001);
-
-    // TODO: remove. Interrupts should not be enabled until EI command is processed
-    test_enable_cycle((struct cpu*) args);
-
-    return NULL;
-}
-
-
-/*
-*   function: interruptCycle
-*   timed 60hz interrupt cycle spins off two interrupts in their own thread
-*           a midscan interupt to vector 0xCF
-*           an end-of-scan (VBLANK) interrupt to vector 0xD7
+*   function: processorLoop
+*   simulates the timing of a main game loop (60hz monitor refresh with 2 Mhz processor
+*   by setting interrupts at set intervals
 *
-*   this function uses nanosleep in the time.h library to pause
+*   @param: state *processor, a pointer to the cpu structure
+*   @param: size_t testingCycles: the number of screen refresh cycles we plan to test
+*
+*   @returns: double elapsed, the number of seconds it took to process testingCycles
+*
+*   NOTE: processor timing
+*       The intel 8080 runs at 2 Mhz (2 million cpu states per second)
+*
+*       1 processor state should take 500 nanoseconds. It is difficult to wait such a granular time,
+*       so this loop adds up the number of states passed and waits when an interrupt is called
+*
+*   NOTE: monitor refresh rate:
+*       The Space Invaders arcade game monitor refreshed at a rate of 60 hz.
+*       This is why VBLANK is set for 16,666,667 nanoseconds (this is equivalent to 1/60 seconds)
+*
 */
-void* interruptCycle (void* cpu) {
+double processorLoop(state *processor, size_t testingCycles) {
 
-    //printf("interruptCycle called\n");
-    //((struct cpu*) cpu)->refresh_cycles = 0;
+    // simulate nanoseconds passing
+    long ticks = 0;
 
-    double run_seconds = 0.0;
-    double run_rate;
-    int totalNano = 0;
-    struct timespec startTime, finishTime;          // CRITICAL: for interrupt timing
-    struct timespec monitorStart, monitorEnd;       // TESTING:  for timing cycle
+    // turn on midscreen interrupt
+    uint8_t needMidscreen = 1;
 
-    // TESTING: variable is changed by interrupt handler call
-    // TODO: should be changed to something relevant when functions implemented
-    ((struct cpu*) cpu)->mid_call = 0;
-    ((struct cpu*) cpu)->vblank_call = 0; 
+    // intialize and start clock for testing
+    struct timespec startTime, loopTime, instructionStart; 
+    double elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &startTime);
 
-    while (((struct cpu*) cpu)->shutdownCondition == 0) {
+    // initialize number of refresh cycles for testing
+    size_t i = testingCycles;
 
-        clock_gettime(CLOCK_MONOTONIC, &monitorStart);
+    while (i > 0) {
+      
+        /* toy instruction execution -- simulates stepCPU or similar */
+        int cycles = 10;    // after dispatch, we get cycles from struct instructionData
+        ticks += (STATETIME*cycles); // ticks keeps track of nanoseconds "spent"
 
-        // get thread index
-        pthread_mutex_lock(&((struct cpu*) cpu)->cyclesAccess);
-        int index1 = ((struct cpu*) cpu)->refresh_cycles % 20;
-        pthread_mutex_unlock(&((struct cpu*) cpu)->cyclesAccess);
-        int index2 = (index1 + 10) % 20;
+        if (ticks > VBLANK) 
+        {
+            /* trigger VBLANK interrupt*/
+            triggerInterrupt(&processor->currentOp, 0xD7);
+            waitCycles();
+            ticks = 0; // resets "timer" count
+            needMidscreen = 1;
 
-        // timing for pause between start of screen refresh and midcycle interrupt
-        struct timespec m_rem, midscreen_wait = {0,MIDSCREEN_SLEEP_NANOSECONDS};
-
-        // start timing midcycle interrupt
-        clock_gettime(CLOCK_MONOTONIC, &startTime);
-
-            // pause for MIDSCREEN_SLEEP_NANOSECONDS (defined in header)
-            while (nanosleep(&midscreen_wait, &m_rem) == -1) {
-                midscreen_wait = m_rem;
-            }
-        
-            // call midscreen interrupt handler & spin off thread
-            r1 = pthread_create(&threadpool[index1], NULL, callMidscreenInterrupt, cpu);
-
-        // finish timing midcycle interrupt & save
-        clock_gettime(CLOCK_MONOTONIC, &finishTime);
-        long elapsed = finishTime.tv_nsec - startTime.tv_nsec + (finishTime.tv_sec - startTime.tv_sec) * 1e9;
-        
-        // timing for pause between midcycle interrupt and VBLANK / end of refresh interrupt
-        struct timespec v_rem, vblank_wait = {0, CYCLETIME - elapsed};
-
-        // pause for CYCLETIME - elapsed nanoseconds [CYCLETIME is defined in header]
-        while (nanosleep(&vblank_wait, &v_rem) == -1) {
-            vblank_wait = v_rem;
+            i -= 1; // count down the screen refresh cycles for testing    
         }
 
-        // call VBLANK interrupt handler and spin off thread
-        r2 = pthread_create(&threadpool[index2], NULL, callVblankInterrupt, cpu);
-
-        // increment number of refresh cycles (for testing)
-        pthread_mutex_lock(&((struct cpu*) cpu)->cyclesAccess);
-        ((struct cpu*) cpu)->refresh_cycles += 1;
-        pthread_mutex_unlock(&((struct cpu*) cpu)->cyclesAccess);
-
-        // detach threads
-        pthread_detach(threadpool[index1]);
-        pthread_detach(threadpool[index2]);
-
-        clock_gettime(CLOCK_MONOTONIC, &monitorEnd);
- 
-        /*
-        * ******************************************************** 
-        * utility time information for testing and diagnostics 
-        * for timed timing: test_interrupt_cycle() located in test_interrupt.c
-        *
-        * printf("%ld\n", ((struct cpu*) cpu)->refresh_cycles);
-        * int nseconds = ((monitorEnd.tv_nsec - monitorStart.tv_nsec) + (1e9 * (monitorEnd.tv_sec - monitorStart.tv_sec)));
-        * run_seconds += (nseconds/1e9);
-        * run_rate = ((struct cpu*) cpu)->refresh_cycles / run_seconds;
-        * **********************************************************
-        */
+        else if (ticks > MIDSCREEN && needMidscreen == 1) 
+        {
+            /* trigger midscreen interrupt */
+            triggerInterrupt(&processor->currentOp, 0xCF);
+            waitCycles();
+            needMidscreen = 0;   
+        }
+        
+        /* run interrupt if one is ready */
+        processInterrupt(&processor->currentOp);
     }
 
-    // set shutdownCondition and interruptInit to 0
-    // will allow loop to be restarted with EI call
-    // ((struct cpu* ) cpu)->shutdownCondition = 0;
-    //((struct cpu* ) cpu)->interruptInit = 0;
-
-    // return
-    return NULL;
+    /* get return value to check timing */
+    clock_gettime(CLOCK_MONOTONIC, &loopTime);
+    elapsed = (loopTime.tv_nsec - startTime.tv_nsec + (loopTime.tv_sec - startTime.tv_sec) * 1e9) / 1e9;
+    return elapsed;
 }
 
-/*
-int main (void) {
-
-    // start test cpu object with pthread mutex
-    // initialize the pthread mutex 
-    // start cpu with interruptInit set to 0
-    struct cpu my_cpu;
-
-    pthread_mutex_init(&my_cpu.enableInt, NULL);
-    my_cpu.interruptInit = 0;
-
-    // time the main function
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-
-    enableInterrupt(&my_cpu);
-    sleep(10);
-    stopInterruptLoop(&my_cpu);
-
-    sleep(4);
-
-
-    clock_gettime(CLOCK_MONOTONIC, &end);
-
-    double total_time = (end.tv_nsec - start.tv_nsec + (end.tv_sec - start.tv_sec) * 1e9) / 1e9;
-
-    printf("%f\n", total_time);
-
-return 0;    
-}
-*/

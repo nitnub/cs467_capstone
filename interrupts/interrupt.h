@@ -4,59 +4,34 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <time.h>
-#include <pthread.h>
 #include <unistd.h>
+#include <string.h>
+#include <pthread.h>
+#include "../core/handler.h"    // handler.h -> handleSegment.h -> cpu.h & opcodes.h
 
-#define CYCLETIME 16660000                 // interrupts at 60 hz
-#define SECONDS 0                               // seconds
-#define MIDSCREEN_SLEEP_NANOSECONDS 7200000     // nanoseconds before midscreen interrupt
-#define WORKTIME 140500                         // pad time for work to execute (estimate)
+#define CONVERSIONFACTOR 2                      // magic number, accounts for real processing time
+#define STATETIME 500    // nanosecond duration of a processor state
+#define MIDSCREEN 8333333                       // nanoseconds before midscreen interrupt
+#define VBLANK 16666667                         // nanoseconds before VBLANK intrupt
 
 /*
-*   Interrupts currently work with a cpu struct called testCPU
-*   these have several critical components:
-*       -- pthread_mutex_t enableInt  --  mutex lock simulates interrupt enable pin
-*       -- int interruptInit   --  0 if interrupts have not started yet
-*       -- int shutdownCondition -- 0 while interrupt cycle is ongoing
+*   Interrupts will work with a structure within the CPU state of type process_r
+*   this has three components
+*       -- uint8_t currentOpcode -- the current opcode being processed
+*       -- uint8_t interruptBuffer -- a one byte pseudo-register where the interrupt vector can go
+*       -- uint8_t interruptReady -- an unsigned 8-bit integer imitating a boolean: 
+*                                       * zero: no interrupt vector is ready
+*                                       * nonzero: an interrupt vector is ready
+*       -- uint8_t interruptEnable -- an unsigned 8-bit integer representing a boolean:
+*                                       * zero: interrupts are disabled
+*                                       * nonzero: interrupts are enabled.
 *
-*       both interruptInit and shutdownCondition should be initialized to 0
+*       both interruptBuffer, interruptReady, and interruptEnable should be initialized to 0
 *
-*   The following functions should be modified once opcode processing is available:
-*       -- callMidscreenInterrupt should not directly enable interrupts through test_interrupt_cycle()
-*       -- callVblankInterrupt should not directly enable interrupts through test_interrupt_cycle()
-*
-*       ( in both cases, processing the EI instruction should result in a call to the
-*         enableInterupt function )
-*
-*   Finally, the CPU structure contains several variables and a mutex lock that can track 
-*   refresh cycles, and whether the interrupt handlers were touched for testing:
-*
-*       -- uint64_t refresh_cycles   // initialize to 0 for testing
-*       -- uint64_t mid_call         // intialize to 0 for testing
-*       -- uint64_t vblank_call      // initialize to 0 for testing
 */
 
-// test cpu object containing only data members needed for interrupts
-// instead of this the regular cpu object should be imported
-struct cpu {
-    pthread_mutex_t enableInt;
-    pthread_mutex_t cyclesAccess;
-    int interruptInit;
-    int shutdownCondition;
-    uint64_t refresh_cycles;         // for testing
-    uint64_t mid_call;                   // for testing
-    uint64_t vblank_call;                // for testing
-};
-
-void* callMidscreenInterrupt(void *args);
-void* callVblankInterrupt(void *args);
-// void* enableInterrupt(void* cpu);
-void enableInterrupt(struct cpu* cpu);
-void* interruptCycle(void *cpu);
-void* startInterruptLoop(void* cpu);
-void stopInterruptLoop(struct cpu* cpu);
-
-void test_enable_cycle(struct cpu* cpu);    // for testing
-
+int triggerInterrupt(process_r *cpu, uint8_t vector);
+int processInterrupt(process_r *cpu);
+double processorLoop(state *processor, size_t testingCycles);
 
 #endif

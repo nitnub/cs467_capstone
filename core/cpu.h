@@ -63,7 +63,8 @@ enum portDirection {
 typedef struct {
     uint8_t currentOpcode;              // current opocde 
     uint8_t interruptBuffer;            // buffer for interrupt input
-    uint8_t interruptReady;             // boolean. Is cpu interrupt-enabled
+    uint8_t interruptReady;             // boolean. Is interrupt vector in interrupt buffer
+    uint8_t interruptEnabled;           // boolean. is cpu interrupt-enabled
 } process_r;  
 
 typedef struct {
