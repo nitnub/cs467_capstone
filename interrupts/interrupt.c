@@ -1,9 +1,5 @@
 #include "interrupt.h"
 
-pthread_mutex_t timelock = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t timer = PTHREAD_COND_INITIALIZER;
-
-
 /* 
 *   function: waitCycles
 *   delays to make up the extra time the Intel 8080 would have taken for each cycle state
@@ -43,6 +39,10 @@ int triggerInterrupt(process_r *cpu, uint8_t vector) {
 *   function: processInterrupt
 *   When an interrupt vector is ready, move it into the currentOpcode slot for processing.
 *   Then clear the buffer and turn off the ready flag.
+*
+*   @param: cpu, a pointer to the subsection of the state struct that holds interrupt
+*           enable boolean, interrupt ready boolean, buffer for interrupt vector, 
+*           and current opcode.
 */
 int processInterrupt(process_r *cpu) {
 
@@ -50,7 +50,6 @@ int processInterrupt(process_r *cpu) {
     // if so, place the vector into the current opcode position
     // and then clear buffer
     if (cpu->interruptReady != 0x00){
-        //printf("interrupt ran for %02X\n", cpu->interruptBuffer);
         memset(&cpu->currentOpcode, cpu->interruptBuffer, sizeof(uint8_t));
         memset(&cpu->interruptBuffer, 0x00, sizeof(uint8_t));
         memset(&cpu->interruptReady, 0x00, sizeof(uint8_t));
@@ -62,7 +61,17 @@ int processInterrupt(process_r *cpu) {
     return 0;
 }
 
-/* poll for single-character input from keyboard */
+/* 
+*   function: stepOrQuit
+*   poll for single-character input from keyboard for debugger control
+*
+*   @param: disassembler, a pointer to the secondary instruction structure
+*           used for debug/diassembly
+*   @param: inputBuffer, a small pointer to a string buffer
+*   @param: bufferSize: the size of the string buffer, an integer
+*
+*   @returns: 1 if user wants to quit, 3 to continue, 0 for set a breakpoint, 2 otherwise
+*/
 int stepOrQuit(struct instructionData *disassembler, char *inputBuffer, int bufferSize) {
 
     // clear buffer
@@ -92,8 +101,16 @@ int stepOrQuit(struct instructionData *disassembler, char *inputBuffer, int buff
             return 3;
         case 'b': return 0;
     }
+
+    return 2;
 }
 
+/*
+*   function: copyOperands
+*   Sets up disassembler, a pointer to a secondary instruction structure used only for
+*       debug/disassembly. This initialization syncs it with the primary instruction struct,
+*       then steps ahead so that assembly and help strings are available.
+*/
 void copyOperands (struct instructionData *currentIns, struct instructionData *disassembler) {
     disassembler->instruction = currentIns->s->currentOp.currentOpcode;
     uint16_t pc = getReg16(currentIns->s, PC);
@@ -105,10 +122,18 @@ void copyOperands (struct instructionData *currentIns, struct instructionData *d
     return;
 }
 
+/*
+*   function: setLoopBreakpoint
+*   Handles setting a breakpoint for the debugger
+*   @param: breakpoint, a pointer to the breakpoint data member in the disassembler
+*           secondary instruction object.
+*/
 void setLoopBreakpoint(uint16_t *breakpoint) {
 
+    // CRASH OUT: can't dereference null pointer
     if (breakpoint == NULL) {
         perror("Error: breakpoint pointer was NULL\n");
+        exit(EXIT_FAILURE);
     }
 
     // set and clear input buffer
@@ -133,7 +158,15 @@ void setLoopBreakpoint(uint16_t *breakpoint) {
     return;
 }
 
-
+/*
+*   function: handleContinue
+*   Turns off step control to allow the program to run unhindered. Sets 
+*   breakpoint in the disassembler struct. Processing should stop when
+*   program counter reaches this point
+*
+*   @param: disassembler, a pointer to the secondary instruction structure
+*           (used only for debug/disassembly)
+*/
 void handleContinue(struct instructionData *disassembler) {
     if (disassembler->breakpoint != 0) {
         disassembler->stepControl = 0;
@@ -183,7 +216,7 @@ void processStep(struct instructionData *currentIns) {
 
     // CRASH OUT: stack pointer error
     if (getReg16(currentIns->s, SP) < 0x2000 && getReg16(currentIns->s, SP) != 0x00) {
-        printf("ERROR: stack pointer below 0x2000 at %02X\n", getReg16(currentIns->s, PC)-1);
+        printf("ERROR: stack pointer below 0x2000 at %02X\n", currentPC);
         exit(EXIT_FAILURE);
     }
 
@@ -245,13 +278,10 @@ int debuggerControl(struct instructionData *currentIns,
 *
 *   @param: struct instructionData *currentIns, a pointer to the current instruction object
 *   @param: struct instructionData *disassembler, a parallel object we can use to disassemble in advance
-*   @param: size_t testingCycles: the number of screen refresh cycles we plan to test
-*   @param: int limit: the number of opcodes we want to process. (-1 if no limit)
 *
-*   @returns: double elapsed, the number of seconds it took to process testingCycles
-*
+*   @returns: 0 when loop has ended and exited gracefully
 */
-double processorLoop(struct instructionData *currentIns, struct instructionData *disassembler, size_t testingCycles, int limit) {
+int processorLoop(struct instructionData *currentIns, struct instructionData *disassembler) {
 
     // grab the cpu (state) from current instruction
     state *processor = currentIns->s;
@@ -262,30 +292,18 @@ double processorLoop(struct instructionData *currentIns, struct instructionData 
     // turn on midscreen interrupt
     uint8_t needMidscreen = 1;
 
-    // intialize and start clock for testing
-    struct timespec startTime, loopTime, instructionStart; 
-    double elapsed = 0;
-    clock_gettime(CLOCK_MONOTONIC, &startTime);
-
-    // initialize number of refresh cycles for testing
-    size_t i = testingCycles;
-
-    // count number of opcodes executed
-    int counter = 0;
-
-    // input buffer & variable for stepwise loop control
+    // input buffer & variables for stepwise loop control
     char inputBuffer[3];
     int loopControl = 0;
-    char assemblyBuffer[30];
     disassembler->stepControl = 1; // turn on step control until it's turned off
 
-    while (loopControl != 1 && (i > 0 || 1) && (counter != limit || 1)) {
+    while (loopControl != 1) {
 
         /* process CPU instruction */
         processStep(currentIns);
 
-        /* keep accounting of nanoseconds spent */
-        ticks += (STATETIME*currentIns->cycles); // ticks keeps track of nanoseconds "spent"
+        /* keep accounting of nanoseconds "spent" */
+        ticks += (STATETIME*currentIns->cycles);
 
         /* check for interrupts.... is it time? */
         if (ticks > VBLANK) 
@@ -294,9 +312,7 @@ double processorLoop(struct instructionData *currentIns, struct instructionData 
             triggerInterrupt(&processor->currentOp, 0xD7);
             waitCycles();
             ticks = 0; // resets "timer" count
-            needMidscreen = 1;
-
-            i -= 1; // count down the screen refresh cycles for testing    
+            needMidscreen = 1;  
         }
 
         else if (ticks > MIDSCREEN && needMidscreen == 1) 
@@ -310,18 +326,11 @@ double processorLoop(struct instructionData *currentIns, struct instructionData 
         /* run interrupt if one is ready */
         processInterrupt(&processor->currentOp);
 
-        // count number of opcodes executed for testing
-        counter += 1;
-
         // run debugger control
         // TODO: turn this off
         debuggerControl(currentIns, disassembler, &loopControl, inputBuffer, sizeof(inputBuffer));
     }
-
-    /* get return value to check timing */
-    clock_gettime(CLOCK_MONOTONIC, &loopTime);
-    elapsed = (loopTime.tv_nsec - startTime.tv_nsec + (loopTime.tv_sec - startTime.tv_sec) * 1e9) / 1e9;
-    return elapsed;
+    return 0;
 }
 
 // -----------
@@ -356,7 +365,7 @@ double timingTestLoop(state *processor, size_t testingCycles) {
     uint8_t needMidscreen = 1;
 
     // intialize and start clock for testing
-    struct timespec startTime, loopTime, instructionStart; 
+    struct timespec startTime, loopTime; 
     double elapsed = 0;
     clock_gettime(CLOCK_MONOTONIC, &startTime);
 
