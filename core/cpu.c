@@ -447,6 +447,13 @@ uint8_t complementRegister(uint8_t value) {
 uint8_t memFetch(state *currentState, uint8_t high, uint8_t low) {
 
     uint16_t memIndex = convert8To16(high, low);
+
+    // catch addresses out of range
+    if (memIndex > MEM_END) {
+        perror("memory fetch: index out of range\n");
+        return 0xFF;
+    }
+
     return currentState->memory[memIndex];
 
 }
@@ -473,10 +480,20 @@ uint16_t memMirror(uint16_t index) {
 *   @param low, an unsigned 8-bit integer representing the low byte of address
 *
 *   @returns 0 if successful, -1 if error
+*
+*   NOTE: this method must prevent the program from storing data in ROM
 */
 int memStore(state *currentState, uint8_t high, uint8_t low, uint8_t value) {
 
     uint16_t memIndex = convert8To16(high, low);
+
+    // crash out for storage in ROM
+    if (memIndex < 0x2000) {
+        printf("ERROR: memory storage in restricted range (ROM) at %04X (PC-1: %04X)\n", 
+                    memIndex, getReg16(currentState, PC)-1);
+        // do nothing
+        return 0;
+    }
 
     // check for range
     if (memIndex > MEM_END) {
@@ -486,8 +503,17 @@ int memStore(state *currentState, uint8_t high, uint8_t low, uint8_t value) {
 
     // store and mirror value
     currentState->memory[memIndex] = value;
-    currentState->memory[memMirror(memIndex)] = value;
 
+    uint16_t mirrorIndex = memMirror(memIndex);
+    
+    if (mirrorIndex < 0x2000) {
+        printf("ERROR: memory storage in restricted range (ROM) at %04X (PC-1: %04X)\n", 
+            memIndex, getReg16(currentState, PC)-1);
+        // do nothing
+        return 0;
+    }
+
+    currentState->memory[memMirror(memIndex)] = value;
     return 0;
 }
 
@@ -557,4 +583,59 @@ int stackPopValues (state *currentState, int regPairIndex) {
     setReg16(currentState, SP, sp+2);
 
     return 0;
+}
+
+/* 
+*   print CPU state, including registers and next cued up op
+*/
+void printCPUState(state *currentState) {
+
+    // print registers
+    printf("%s%sCurrent CPU state:\nREGISTERS:\n",C_HOME,C_CLEAR);
+    printf("A: 0x%02X\n", getReg8(currentState, A));
+    printf("B: 0x%02X ", getReg8(currentState, B));
+    printf("C: 0x%02X\n", getReg8(currentState, C));
+    printf("D: 0x%02X ", getReg8(currentState, D));
+    printf("E: 0x%02X\n", getReg8(currentState, E));
+    printf("H: 0x%02X ", getReg8(currentState, H));
+    printf("L: 0x%02X\n", getReg8(currentState, L));
+    printf("PC: %04X | loaded opcode: %02X\n", getReg16(currentState, PC), currentState->currentOp.currentOpcode);
+    printf("SP: %04X\n", getReg16(currentState, SP));
+
+    // print flags & interrupt enable bit
+    printf("\nFLAGS\n");
+    printf("Zero: %02X | ", getFlag(currentState, ZERO));
+    printf("Carry: %02X | ", getFlag(currentState, CARRY));
+    printf("Parity: %02X | ", getFlag(currentState, PARITY));
+    printf("Sign: %02X | ", getFlag(currentState, SIGN));
+    printf("Auxiliary Carry: %02X\n", getFlag(currentState, AUX_CARRY));
+    printf("Interrupts enabled: %02X\n", currentState->currentOp.interruptEnabled);
+
+    // print stack
+    printf("\n");   
+    printStack(currentState);
+    printf("\n");
+    return;
+}
+
+/*
+*   print stack
+*/
+void printStack(state *currentState) {
+
+    uint16_t stackPointer = getReg16(currentState, SP);
+    if (stackPointer != 0x0000) {
+        for (uint16_t i = STACKTOP; i >= stackPointer && stackPointer < 0x2400; i--) {
+
+
+            if (i == STACKTOP) {
+                printf("STACK:\n");
+            }
+
+
+            uint8_t stackVal = memFetch(currentState, highFrom16Bit(i), lowFrom16Bit(i));
+            printf("[0x%04X] %02X\n", i, stackVal);
+        }
+    }
+    return;
 }

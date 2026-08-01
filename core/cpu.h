@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <stdio.h>
 #include "../spike_documents_nb/shift_register/shiftRegister.h"   // TODO: adjust to final path
@@ -16,12 +17,19 @@
 #define MEM_END 0x8000
 #define PORT_COUNT 0xFF
 
+#define STACKTOP 0x2400
+#define STACKLIM 0x2000
+
 // shift constants used to convert between flags and PSW
 #define ZERO_SHIFT 0x0E
 #define CARRY_SHIFT 0x08
 #define PARITY_SHIFT 0x0A
 #define SIGN_SHIFT 0x0F
 #define AUX_CARRY_SHIFT 0x0C
+
+// ANSI sequences
+#define C_HOME "\033[2;5H"
+#define C_CLEAR "\033[2J"
 
 // enumeration utility for accessing 8-bit registers
 enum registers8 {
@@ -112,5 +120,9 @@ int memStore(state *currentState, uint8_t high, uint8_t low, uint8_t value);
 int stackPushFromRegister (state *currentState, int regPairIndex);
 int stackPushValues (state *currentState, uint8_t valueHigh, uint8_t valueLow);
 int stackPopValues (state *currentState, int regPairIndex);
+
+/* print functions for CPU state & stack */
+void printCPUState(state *currentState);
+void printStack(state *currentState);
 
 #endif 
