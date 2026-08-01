@@ -19,6 +19,8 @@ struct instructionData {
     int operand2;
     char assembly[30];
     char help[255];
+    uint16_t breakpoint; // for debugger
+    uint16_t stepControl;
     state *s;
 };
 
@@ -29,6 +31,8 @@ extern char *rotateInstructions[8];
 extern char *ALUInstructions[8];
 extern char *ALUImmInstructions[8];
 extern char *flagConditionals[8];
+
+int printInstruction(struct instructionData *currentIns);
 
 /* 
 ****************** SEGMENT 0 ******************

@@ -12,6 +12,18 @@ char *ALUImmInstructions[] = {"ADI", "ACI", "SUI", "SBI", "ANI", "XRI", "ORI", "
 char *flagConditionals[] = {"NZ", "Z", "NC", "C", "PO", "PE", "P", "M"};
 
 /*
+****************** UTILITY FUNCTION ************
+*/
+
+int printInstruction(struct instructionData *currentIns) {
+
+    printf("Next opcode: 0x%02X :: %s\n", currentIns->instruction, currentIns->assembly);
+    printf("%s\n", currentIns->help);
+    printf("Next breakpoint: 0x%02X\n", currentIns->breakpoint);
+    return 0;
+}
+
+/*
 ******************* SEGMENT 0 *******************
 */
 
@@ -921,6 +933,7 @@ int segment3_1(struct instructionData *currentIns) {
     if (pairIndex == 3) {
         strcpy(printableRegisterPair, "PSW\0");
         sprintf(currentIns->help, "Pop program status word (accumulator, flags) from stack");
+        pairIndex = 5; // set to index for PSW
     }
     else {
         memset(printableRegisterPair, '\0', 4 * sizeof(char));
@@ -1010,7 +1023,7 @@ int segment3_3(struct instructionData *currentIns) {
             currentIns->cycles = 4;
 
             // execute instruction
-            handleDI(currentIns->s);
+            currentIns->s->currentOp.interruptEnabled = 0x00;
             break;
     }
 
@@ -1132,7 +1145,7 @@ int segment3_7(struct instructionData *currentIns) {
 
     // execute instruction
     uint8_t vector = resetIndex * 0x08;
-    callProc(currentIns->s, NO_FLAG, 0, 0x00, vector);
+    callProcRST(currentIns->s, vector);
 
     return 0;
 }
@@ -1287,7 +1300,7 @@ int segment3_B(struct instructionData *currentIns) {
             currentIns->cycles = 4;
 
             // execute instruction
-            handleEI(currentIns->s);
+            currentIns->s->currentOp.interruptEnabled = 0x01;
 
             break;
     }
@@ -1392,7 +1405,7 @@ int segment3_F(struct instructionData *currentIns) {
 
     // execute instruction
     uint8_t vector = resetIndex * 0x08;
-    callProc(currentIns->s, NO_FLAG, 0, 0x00, vector);
+    callProcRST(currentIns->s, vector);
 
     return 0;
 }

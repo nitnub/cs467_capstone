@@ -3573,12 +3573,12 @@ int test_C4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address [+3]
+    assert(stackTop == 0x82); // low byte of return address [+3]
 
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
@@ -3658,7 +3658,7 @@ int test_C7(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x80); // no change to program counter during dispatch
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 11);
@@ -3753,11 +3753,11 @@ int test_CC(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x82); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
@@ -3796,11 +3796,11 @@ int test_CD(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x82); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
@@ -3843,7 +3843,7 @@ int test_CF(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 11);
@@ -3979,11 +3979,11 @@ int test_D4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x82); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
@@ -4063,7 +4063,7 @@ int test_D7(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 11);
@@ -4175,11 +4175,11 @@ int test_DC(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x82); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
@@ -4239,7 +4239,7 @@ int test_DF(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
     // check cycles for correct processor state count
     assert(currentIns->cycles == 11);
     // check return value
@@ -4374,11 +4374,11 @@ int test_E4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x82); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
@@ -4456,7 +4456,7 @@ int test_E7(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 11);
@@ -4583,11 +4583,11 @@ int test_EC(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x82); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
@@ -4647,7 +4647,7 @@ int test_EF(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 11);
@@ -4789,11 +4789,11 @@ int test_F4(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x82); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
     // check return value
@@ -4872,7 +4872,7 @@ int test_F7(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
     // check cycles for correct processor state count
     assert(currentIns->cycles == 11);
     // check return value
@@ -4996,11 +4996,11 @@ int test_FC(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x82); // low byte of return address
 
     // check pop of return address back to the program counter
     stackPopValues(currentIns->s, PC);
-    assert(getReg16(currentIns->s, PC) == 0x0083);
+    assert(getReg16(currentIns->s, PC) == 0x0082);
     // check cycles for correct processor state count
     assert(currentIns->cycles == 17);
     // check return value
@@ -5058,7 +5058,7 @@ int test_FF(struct instructionData *currentIns, int opcode) {
     uint8_t stackTop = memFetch(currentIns->s, 0x23, 0xFE);
     uint8_t stackSecond = memFetch(currentIns->s, 0x23, 0xFF);
     assert(stackSecond == 0x00); // low byte of return address
-    assert(stackTop == 0x83); // low byte of return address
+    assert(stackTop == 0x80); // low byte of return address
     // check cycles for correct processor state count
     assert(currentIns->cycles == 11);
     // check return value

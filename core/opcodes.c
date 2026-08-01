@@ -821,7 +821,7 @@ int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t high
     if (flagIndex == NO_FLAG || getFlag(currentState, flagIndex) == condition) {
         
         // increment pc before pushing  
-        setReg16(currentState, PC, getReg16(currentState, PC) + 3);
+        setReg16(currentState, PC, getReg16(currentState, PC) + 2);
         // push program counter to stack
         stackPushFromRegister(currentState, PC);
         // convert address to 16-bit number
@@ -833,6 +833,24 @@ int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t high
     }
     // return 2 to jump over immediate bytes if call does not happen
     return 2;
+}
+
+/*
+*   function: callProcRST
+*   calls a procedure without expecting an operand (so operands are not skipped)
+*
+*   @param: currentState, a pointer to the current state structure
+*   @param: lowAddr, the 8-bit address of the restart vector
+*/
+int callProcRST(state *currentState, uint8_t lowAddr) {
+    // push program counter to the stack
+    stackPushFromRegister(currentState, PC);
+    // convert address to 16-bit number
+    uint16_t address = convert8To16(0x00, lowAddr);
+    // load into program counter
+    setReg16(currentState,PC, address);
+
+    return 0;
 }
 
 /* 

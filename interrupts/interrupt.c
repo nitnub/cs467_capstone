@@ -54,6 +54,186 @@ int processInterrupt(process_r *cpu) {
         memset(&cpu->currentOpcode, cpu->interruptBuffer, sizeof(uint8_t));
         memset(&cpu->interruptBuffer, 0x00, sizeof(uint8_t));
         memset(&cpu->interruptReady, 0x00, sizeof(uint8_t));
+
+        // disable interrupts
+        cpu->interruptEnabled = 0x00;
+    }
+
+    return 0;
+}
+
+/* poll for single-character input from keyboard */
+int stepOrQuit(struct instructionData *disassembler, char *inputBuffer, int bufferSize) {
+
+    // clear buffer
+    memset(inputBuffer, '\0', bufferSize);
+
+    printf("press 'n' to step to next instruction, 'b' to enter breakpoint, 'c' to continue, 'q' to quit: ");
+
+    // while buffer remains an empty string, poll for input
+    while(1) {
+        fgets(inputBuffer, bufferSize, stdin);
+
+        if (inputBuffer[0] == 'n' || inputBuffer[0] == 'q' || inputBuffer[0] == 'c') {
+            break;
+        }
+        else if (inputBuffer[0] == 'b') {
+            setLoopBreakpoint(&disassembler->breakpoint);
+            printf("\rPress 'n' to step to next instruction, 'c' to continue, 'q' to quit: ");
+        }
+    }
+
+    switch(inputBuffer[0]) {
+        case 'q': return 1;
+        case 'c': 
+            // turn off step control
+            printf("case c triggered\n");
+            handleContinue(disassembler);
+            return 3;
+        case 'b': return 0;
+    }
+}
+
+void copyOperands (struct instructionData *currentIns, struct instructionData *disassembler) {
+    disassembler->instruction = currentIns->s->currentOp.currentOpcode;
+    uint16_t pc = getReg16(currentIns->s, PC);
+    disassembler->operand1 = memFetch(currentIns->s, highFrom16Bit(pc+1), lowFrom16Bit(pc+1));
+    disassembler->operand2 = memFetch(currentIns->s, highFrom16Bit(pc+2), lowFrom16Bit(pc+2));
+
+    dispatchLevel2(disassembler);
+
+    return;
+}
+
+void setLoopBreakpoint(uint16_t *breakpoint) {
+
+    if (breakpoint == NULL) {
+        perror("Error: breakpoint pointer was NULL\n");
+    }
+
+    // set and clear input buffer
+    char inputBuffer[10];
+    
+    printf("Please enter breakpoint in hexadecimal: ");
+
+    while (1) {
+        memset(&inputBuffer, '\0', 10);
+        fgets(inputBuffer, 10, stdin);
+        sscanf(inputBuffer, "%hx", breakpoint);
+        if (*breakpoint < 0x2000) {
+            fflush(stdout);
+            break;
+        }
+        else {
+            printf("Enter memory address between 0x0000 and 0x1FFF: ");
+        }
+    }
+    memset(&inputBuffer, '\0', 10);
+    fflush(stdout);
+    return;
+}
+
+
+void handleContinue(struct instructionData *disassembler) {
+    if (disassembler->breakpoint != 0) {
+        disassembler->stepControl = 0;
+    }
+    else {
+        printf("Breakpoint not set. ");
+        setLoopBreakpoint(&disassembler->breakpoint);
+    }
+    return;
+}
+
+/*
+*   function: processStep
+*   Processes an instruction in the CPU. This modifies the CPU as desired depending on the
+*           opcode being processed.
+*
+*   @param: currentIns, a pointer to the current struct instructionData object
+*/
+void processStep(struct instructionData *currentIns) {
+
+    // prep instruction for dispatch
+    state *processor = currentIns->s;
+    currentIns->instruction = processor->currentOp.currentOpcode;
+
+    // set operands from two addresses following program counter
+    uint16_t currentPC = getReg16(processor, PC);
+    currentIns->operand1 = memFetch(processor, highFrom16Bit(currentPC + 1), lowFrom16Bit(currentPC + 1));
+    currentIns->operand2 = memFetch(processor, highFrom16Bit(currentPC + 2), lowFrom16Bit(currentPC + 2));
+
+    // clear assembly, help and cycles
+    memset(currentIns->assembly, '\0', sizeof(currentIns->assembly));
+    memset(currentIns->help, '\0', sizeof(currentIns->help));
+    currentIns->cycles = 0;
+    currentIns->cyclesFalse = 0;
+
+    // increment program counter by 1
+    aluAddImm16NoFlags(processor, PC, 0x01);
+
+    // execute opcode
+    int operands = dispatchLevel2(currentIns);
+
+    // CRASH OUT: program counter error
+    if (getReg16(currentIns->s, PC) > 0x1FFF) {
+        printf("ERROR: program counter above 0x2000 at %02X\n", currentPC);
+        exit(EXIT_FAILURE);
+    }
+
+    // CRASH OUT: stack pointer error
+    if (getReg16(currentIns->s, SP) < 0x2000 && getReg16(currentIns->s, SP) != 0x00) {
+        printf("ERROR: stack pointer below 0x2000 at %02X\n", getReg16(currentIns->s, PC)-1);
+        exit(EXIT_FAILURE);
+    }
+
+    // advance program counter if necessary to account for operands
+    aluAddImm16NoFlags(processor, PC, operands);
+
+    // populate next opcode from PC
+    currentPC = getReg16(processor, PC);
+    processor->currentOp.currentOpcode = memFetch(processor, highFrom16Bit(currentPC), lowFrom16Bit(currentPC));
+
+    return;
+}
+
+/*
+*   function: debuggerControl
+*   a component of the processor loop that provides a debugging infrastructure that allows us 
+*       to step through the code as it executes, tracking down problems.
+*
+*   @param: currentIns, a pointer to the current active instruction object
+*   @param: disassembler, a pointer to a partial mirror that we can disassemble early to get instruction info
+*   @param: loopControl, a pointer to an integer where we store return values (this allows us to quit
+*                       the main loop if we desire to do so)
+*   @param: inputBuffer, a simple string buffer that we can use to get terminal input from the debugger
+*   @param: bufferSize, the size of the string buffer (inputBuffer)
+*
+*   @returns: 0 when completed successfully
+*/
+int debuggerControl(struct instructionData *currentIns, 
+                    struct instructionData *disassembler, 
+                    int *loopControl, 
+                    char* inputBuffer, 
+                    int bufferSize) 
+{
+    // print registers & flags
+    printCPUState(currentIns->s);
+    
+    // disassemble upcoming instruction
+    copyOperands(currentIns, disassembler);
+
+    // print disassembly information
+    printInstruction(disassembler);
+
+    // handle debugger control (stepping in, set breakpoint, continue, next)
+    if (disassembler->stepControl == 1 || getReg16(currentIns->s, PC) == disassembler->breakpoint) {
+
+        // turn step control back on
+        disassembler->stepControl = 1;
+
+        // inquire about next step
+        *loopControl = stepOrQuit(disassembler, inputBuffer, 3);
     }
 
     return 0;
@@ -61,6 +241,93 @@ int processInterrupt(process_r *cpu) {
 
 /*
 *   function: processorLoop
+*   Simulating the following portions of the main game loop: CPU state, interrupts, debugger
+*
+*   @param: struct instructionData *currentIns, a pointer to the current instruction object
+*   @param: struct instructionData *disassembler, a parallel object we can use to disassemble in advance
+*   @param: size_t testingCycles: the number of screen refresh cycles we plan to test
+*   @param: int limit: the number of opcodes we want to process. (-1 if no limit)
+*
+*   @returns: double elapsed, the number of seconds it took to process testingCycles
+*
+*/
+double processorLoop(struct instructionData *currentIns, struct instructionData *disassembler, size_t testingCycles, int limit) {
+
+    // grab the cpu (state) from current instruction
+    state *processor = currentIns->s;
+
+    // simulate nanoseconds passing
+    long ticks = 0;
+
+    // turn on midscreen interrupt
+    uint8_t needMidscreen = 1;
+
+    // intialize and start clock for testing
+    struct timespec startTime, loopTime, instructionStart; 
+    double elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &startTime);
+
+    // initialize number of refresh cycles for testing
+    size_t i = testingCycles;
+
+    // count number of opcodes executed
+    int counter = 0;
+
+    // input buffer & variable for stepwise loop control
+    char inputBuffer[3];
+    int loopControl = 0;
+    char assemblyBuffer[30];
+    disassembler->stepControl = 1; // turn on step control until it's turned off
+
+    while (loopControl != 1 && (i > 0 || 1) && (counter != limit || 1)) {
+
+        /* process CPU instruction */
+        processStep(currentIns);
+
+        /* keep accounting of nanoseconds spent */
+        ticks += (STATETIME*currentIns->cycles); // ticks keeps track of nanoseconds "spent"
+
+        /* check for interrupts.... is it time? */
+        if (ticks > VBLANK) 
+        {
+            /* trigger VBLANK interrupt*/
+            triggerInterrupt(&processor->currentOp, 0xD7);
+            waitCycles();
+            ticks = 0; // resets "timer" count
+            needMidscreen = 1;
+
+            i -= 1; // count down the screen refresh cycles for testing    
+        }
+
+        else if (ticks > MIDSCREEN && needMidscreen == 1) 
+        {
+            /* trigger midscreen interrupt */
+            triggerInterrupt(&processor->currentOp, 0xCF);
+            waitCycles();
+            needMidscreen = 0;   
+        }
+        
+        /* run interrupt if one is ready */
+        processInterrupt(&processor->currentOp);
+
+        // count number of opcodes executed for testing
+        counter += 1;
+
+        // run debugger control
+        // TODO: turn this off
+        debuggerControl(currentIns, disassembler, &loopControl, inputBuffer, sizeof(inputBuffer));
+    }
+
+    /* get return value to check timing */
+    clock_gettime(CLOCK_MONOTONIC, &loopTime);
+    elapsed = (loopTime.tv_nsec - startTime.tv_nsec + (loopTime.tv_sec - startTime.tv_sec) * 1e9) / 1e9;
+    return elapsed;
+}
+
+// -----------
+
+/*
+*   function: timingTestLoop
 *   simulates the timing of a main game loop (60hz monitor refresh with 2 Mhz processor
 *   by setting interrupts at set intervals
 *
@@ -80,7 +347,7 @@ int processInterrupt(process_r *cpu) {
 *       This is why VBLANK is set for 16,666,667 nanoseconds (this is equivalent to 1/60 seconds)
 *
 */
-double processorLoop(state *processor, size_t testingCycles) {
+double timingTestLoop(state *processor, size_t testingCycles) {
 
     // simulate nanoseconds passing
     long ticks = 0;
@@ -130,4 +397,3 @@ double processorLoop(state *processor, size_t testingCycles) {
     elapsed = (loopTime.tv_nsec - startTime.tv_nsec + (loopTime.tv_sec - startTime.tv_sec) * 1e9) / 1e9;
     return elapsed;
 }
-

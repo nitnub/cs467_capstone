@@ -8,6 +8,7 @@
 #include <string.h>
 #include <pthread.h>
 #include "../core/handler.h"    // handler.h -> handleSegment.h -> cpu.h & opcodes.h
+#include "../helpers/helpers.h"
 
 #define CONVERSIONFACTOR 2                      // magic number, accounts for real processing time
 #define STATETIME 500    // nanosecond duration of a processor state
@@ -30,8 +31,23 @@
 *
 */
 
+// cpu interrupts
 int triggerInterrupt(process_r *cpu, uint8_t vector);
 int processInterrupt(process_r *cpu);
-double processorLoop(state *processor, size_t testingCycles);
+
+// cpu instruction processing
+void processStep(struct instructionData *currentIns);
+double processorLoop(struct instructionData *currentIns, struct instructionData *disassembler, size_t testingCycles, int limit);
+double timingTestLoop(state *processor, size_t testingCycles);
+
+// debugger control
+int stepOrQuit(struct instructionData *disassembler, char *inputBuffer, int bufferSize);
+void setLoopBreakpoint(uint16_t *breakpoint);
+void handleContinue(struct instructionData *disassembler);
+int debuggerControl(struct instructionData *currentIns, 
+                    struct instructionData *disassembler, 
+                    int *loopControl, 
+                    char* inputBuffer, 
+                    int bufferSize);
 
 #endif

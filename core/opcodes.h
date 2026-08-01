@@ -87,6 +87,7 @@ static acc_i accum_op_array[] = {rotate_left,
 int returnFrom(state *currentState, int flagIndex, uint8_t condition);
 int jumpTo(state *currentState, int flagIndex, uint8_t condition, uint8_t highAddr, uint8_t lowAddr);
 int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t highAddr, uint8_t lowAddr);
+int callProcRST(state *currentState, uint8_t lowAddr);
 
 /* input / output instructions */
 int handleDI (state *currentState);
