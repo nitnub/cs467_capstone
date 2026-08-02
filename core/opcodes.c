@@ -12,14 +12,15 @@
 *   A left bitshift where the most significant bit wraps around and becomes least signfiicant
 */
 int rotate_left(state* currentState) {
-
+    
     uint8_t accum = getReg8(currentState, A);
     uint8_t wrapper = (accum & 0x80) >> 7;
     accum = accum << 1;
     accum |= wrapper;
     setReg8(currentState, A, accum);
-
+    setFlag(currentState, CARRY, wrapper);
     return 0;
+    
 }
 
 /*
@@ -27,14 +28,15 @@ int rotate_left(state* currentState) {
 *   A right bitshift where the least significant bit wraps around and becomes most signfiicant
 */
 int rotate_right(state* currentState) {
-
+    
     uint8_t accum = getReg8(currentState, A);
     uint8_t wrapper = (accum & 0x01) << 7;
     accum = accum >> 1;
     accum |= wrapper;
     setReg8(currentState, A, accum);
-
+    setFlag(currentState, CARRY, wrapper);
     return 0;
+    
 }
 
 /*
