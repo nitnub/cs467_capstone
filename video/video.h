@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
-// #include "../cpu/cpu.h"
 #include "../core/cpu.h"
 
 
@@ -14,6 +13,7 @@
 #define PIXEL_HEIGHT 256
 #define SCREEN_WIDTH 940 // test scaling
 #define SCREEN_HEIGHT 1272 // test scaling
+#define POINTS_ARR_SIZE 6800
 
 #define BYTE_SIZE 8
 #define SET_BIT '1'
@@ -21,9 +21,9 @@
 
 
 typedef struct {
-    SDL_Point white[6800];  // TODO: test sizing.. calc specific values for each color
-    SDL_Point green[6800];  // TODO: test sizing.. calc specific values for each color
-    SDL_Point red[6800];    // TODO: test sizing.. calc specific values for each color
+    SDL_Point white[POINTS_ARR_SIZE];  // TODO: test sizing.. calc specific values for each color
+    SDL_Point green[POINTS_ARR_SIZE];  // TODO: test sizing.. calc specific values for each color
+    SDL_Point red[POINTS_ARR_SIZE];    // TODO: test sizing.. calc specific values for each color
     SDL_Point black[520192];    // TODO: test sizing.. calc specific values for each color
     int wCount;
     int gCount;
@@ -71,5 +71,5 @@ int updatePoints(state *s, Points_t *points);
 
 
 int drawScreen(state *s, Media_t *game);
-
+void printVideoMemoryDeclaration(state *s);
 #endif //VIDEO_STARTUP_H

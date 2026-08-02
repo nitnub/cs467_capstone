@@ -496,7 +496,8 @@ int memStore(state *currentState, uint8_t high, uint8_t low, uint8_t value) {
     }
 
     // check for range
-    if (memIndex > MEM_END) {
+    // if (memIndex > MEM_END) {
+    if (memIndex > 0xFFFF) {
         perror("Error: memory out of range\n");
         return -1;
     } 

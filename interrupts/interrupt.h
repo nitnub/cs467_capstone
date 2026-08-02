@@ -11,9 +11,15 @@
 #include "../helpers/helpers.h"
 
 #define CONVERSIONFACTOR 2                      // magic number, accounts for real processing time
+// #define STATETIME 500    // nanosecond duration of a processor state
+// #define MIDSCREEN 8333333                       // nanoseconds before midscreen interrupt
+// #define VBLANK 16666667                         // nanoseconds before VBLANK intrupt
+
 #define STATETIME 500    // nanosecond duration of a processor state
-#define MIDSCREEN 8333333                       // nanoseconds before midscreen interrupt
-#define VBLANK 16666667                         // nanoseconds before VBLANK intrupt
+#define MIDSCREEN 8333                      // nanoseconds before midscreen interrupt
+#define VBLANK 16666
+
+
 
 /*
 *   Interrupts will work with a structure within the CPU state of type process_r

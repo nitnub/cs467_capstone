@@ -18,6 +18,7 @@ int rotate_left(state* currentState) {
     accum = accum << 1;
     accum |= wrapper;
     setReg8(currentState, A, accum);
+    setFlag(currentState, CARRY, wrapper & 0x01);
 
     return 0;
 }
@@ -33,6 +34,7 @@ int rotate_right(state* currentState) {
     accum = accum >> 1;
     accum |= wrapper;
     setReg8(currentState, A, accum);
+    setFlag(currentState, CARRY, (wrapper & 0x80) == 0x80);
 
     return 0;
 }
@@ -821,7 +823,7 @@ int callProc(state *currentState, int flagIndex, uint8_t condition, uint8_t high
     if (flagIndex == NO_FLAG || getFlag(currentState, flagIndex) == condition) {
         
         // increment pc before pushing  
-        setReg16(currentState, PC, getReg16(currentState, PC) + 2);
+        setReg16(currentState, PC, getReg16(currentState, PC) + 3);
         // push program counter to stack
         stackPushFromRegister(currentState, PC);
         // convert address to 16-bit number

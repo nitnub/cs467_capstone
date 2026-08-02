@@ -5,6 +5,19 @@
 
 #include "../core/cpu.h"
 #include "../core/handler.h"
+
+
+#define FRAME_RATE 60
+#define CLOCK_SPEED 2000000
+#define CYCLES_PER_FRAME (CLOCK_SPEED / FRAME_RATE)
+
+#define BYTE_SIZE_PADDED 10     // formatted 8-bit length including space and terminator
+#define TWO_BYTE_SIZE_PADDED 20     // formatted 16-bit length including space and terminator
+
+#define INITIAL_PORT0 0x00
+#define INITIAL_PORT1 0x88
+#define INITIAL_PORT2 0x80
+
 /**
  * Print the current memory state in a human-readable format.
  * @param s reference to an Intel 8080 state struct
