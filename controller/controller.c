@@ -1,7 +1,7 @@
 #include "controller.h"
 
 /* 
-*   function: getPort
+*   function: getControllerPort
 *   description: retrieves the port as an unsigned 8-bit integer
 *
 *   @param: ports, a pointer to the array of unsigned integer ports
@@ -9,12 +9,12 @@
 *
 *   @returns: 1-byte contents of the port in question as an unsigned integer
 */
-uint8_t getPort (uint8_t *ports, int portNum) {
+uint8_t getControllerPort (uint8_t *ports, int portNum) {
     return ports[portNum];
 }
 
 /*
-*   function: setPort
+*   function: setControllerPort
 *   populates the ports array apporpriately based on the 
 *   enumerated index for a command.
 *
@@ -27,7 +27,7 @@ uint8_t getPort (uint8_t *ports, int portNum) {
 *           [note: the underscore denotes this is our arbitrary command
 *           number rather than something baked into space invaders] 
 */
-int setPort (uint8_t *ports, int command) {
+int setControllerPort (uint8_t *ports, int command) {
 
     initializeControl(ports);
 
