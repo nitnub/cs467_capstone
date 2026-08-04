@@ -37,7 +37,7 @@ int processInterrupt(process_r *cpu);
 
 // cpu instruction processing
 void processStep(struct instructionData *currentIns);
-double processorLoop(struct instructionData *currentIns, struct instructionData *disassembler, size_t testingCycles, int limit);
+int processorLoop(struct instructionData *currentIns, struct instructionData *disassembler);
 double timingTestLoop(state *processor, size_t testingCycles);
 
 // debugger control

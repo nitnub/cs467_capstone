@@ -96,7 +96,7 @@ int test_interrupt_cycle(struct instructionData *currentIns, size_t testingCycle
 /*
 *   Test processor loop with interrupts enabled
 */
-int test_processor_step(struct instructionData *currentIns, struct instructionData *disassembler, int inpoint, int steps) {
+int test_processor_step(struct instructionData *currentIns, struct instructionData *disassembler, int inpoint) {
     setupMemory(currentIns->s, inpoint);
     setupCPU(&currentIns->s->currentOp);
 
@@ -107,8 +107,7 @@ int test_processor_step(struct instructionData *currentIns, struct instructionDa
     currentIns->s->inp[1] = 0x88;
     currentIns->s->inp[2] = 0x80;
 
-
-    double r = processorLoop(currentIns, disassembler, 1, steps);
+    processorLoop(currentIns, disassembler);
 
     return 0;
 }
@@ -129,7 +128,7 @@ int main (void) {
     test_interrupt_cycle(&ins, 60);
 
     /* full processor step-through */
-    test_processor_step(&ins, &dis, 0x00, -1);
+    test_processor_step(&ins, &dis, 0x00);
 
 
     return 0;
