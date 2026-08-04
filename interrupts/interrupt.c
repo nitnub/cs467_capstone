@@ -12,7 +12,10 @@ int waitCycles(void) {
     cycleWait.tv_nsec = MIDSCREEN;
 
     // wait the time expected for half of screen refresh cycle
-    clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+//    clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+    // remove when not compiling with Apple libc - it doesn't have clock_nanosleep
+    nanosleep(&cycleWait, NULL);
+
 
     return 0;
 }

@@ -5,6 +5,21 @@
 #include "video.h"
 #include <sys/time.h>
 
+
+// For testing...
+void printVideoMemoryDeclaration(state *s) {
+    int length = (int)  MEM_RAM_MIRROR_START - MEM_VIDEO_START;
+    printf("unsigned char testVals[] = {");
+    printf("0x%02x", s->memory[0]);
+
+    for (int i = 0; i < length; i++) {
+        printf(", 0x%02x", s->memory[i + MEM_VIDEO_START]);
+    }
+    printf("};\n");
+
+}
+
+
 long getCurrentMilliseconds() {
     struct timeval currentTime;
     gettimeofday(&currentTime, NULL);
@@ -20,6 +35,7 @@ int sendVideoInterrupt(state *s, long *lastMs) {
     // each 1000 ms / 60 hz = 16.667 ms/hz
 
     // if (currentMs - *lastMs >= 16.6667) {
+    // if (currentMs - *lastMs >= 17) {
     if (currentMs - *lastMs >= 8.33333) {
         *lastMs = currentMs;
         return 1;
@@ -76,12 +92,32 @@ int sdlVideoInit(Media_t *mBucket) {
     return 0;
 }
 
+Points_t *getClearPoints() {
+    int pixelCount = (MEM_RAM_MIRROR_START - MEM_VIDEO_START) * 8;
+    Points_t *bPts = calloc(1, sizeof(Points_t));
+
+    for (int i = 0; i < pixelCount; i++) {
+        // const int pos = (i * BYTE_SIZE) + j;
+        const int y = PIXEL_HEIGHT - (i % PIXEL_HEIGHT);
+        const int x = i / PIXEL_HEIGHT;
+        bPts->black[i].x = x;
+        bPts->black[i].y = y;
+    }
+
+    bPts->bCount = pixelCount;
+
+    return bPts;
+}
+
+
 int drawScreen(state *s, Media_t *mBucket) {
     // if no points to draw, skip draw
     if (!updatePoints(s, &mBucket->points)) {
         return 0;
     }
 
+    // get blankPoints
+    Points_t *bPts = getClearPoints();
     // clear the background
     // SDL_RenderClear(mBucket->renderer);
 
@@ -96,6 +132,11 @@ int drawScreen(state *s, Media_t *mBucket) {
         fprintf(stderr, "Error setting render target: %s\n", SDL_GetError());
         sdlVideoCleanup(mBucket, EXIT_FAILURE);
     }
+
+    // draw bpoints
+    SDL_SetRenderDrawColor(mBucket->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawPoints(mBucket->renderer, bPts->black, bPts->bCount);
+
 
     // draw white to texture
     SDL_SetRenderDrawColor(mBucket->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
@@ -122,6 +163,9 @@ int drawScreen(state *s, Media_t *mBucket) {
         sdlVideoCleanup(mBucket, EXIT_FAILURE);
     }
     SDL_RenderPresent(mBucket->renderer);
+
+
+    free(bPts);
     return 11;
 }
 
@@ -140,10 +184,31 @@ void updateBitBuffer(char **result, uint16_t number) {
     }
 }
 
+// TODO: For Testing; can remove!
+void clearPoints(Points_t *p) {
+    for (int i = 0; i < POINTS_ARR_SIZE; i++) {
+        p->red[i].x = -1;
+        p->red[i].y = -1;
+        p->white[i].x = -1;
+        p->white[i].y = -1;
+        p->green[i].x = -1;
+        p->green[i].y = -1;
+    }
+
+    p->gCount = 0;
+    p->wCount = 0;
+    p->rCount = 0;
+
+}
+
 int updatePoints(state *s, Points_t *points) {
 
     // TODO: can create new arrays or free each time.. have not tested yet..
     memset(points, 0, sizeof(Points_t));
+
+
+    clearPoints(points);
+
 
     // allocate memory for binary buffer
     char *binBuffer = (char*) malloc(BYTE_SIZE);
@@ -167,7 +232,7 @@ int updatePoints(state *s, Points_t *points) {
 
                 // populate each point set by color grouping
                 // color ranges pulled from chart at https://www.emutalk.net/threads/space-invaders.38177/
-                if (y > 32 && y <= 64) {
+                if (y > 32 && y < 63) {
                     // is red
                     points->red[points->rCount].x = x;
                     points->red[points->rCount].y = y;

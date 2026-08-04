@@ -6,6 +6,7 @@
 #include "helpers/helpers.h"
 #include "video/video.h"
 #include "video/windowManager_temp.h"
+#include "audio/audio.h"
 
 
 int main(void) {
@@ -19,6 +20,12 @@ int main(void) {
 
     // try to initialize video module
     if (sdlVideoInit(mediaBucket)) {
+        sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
+    }
+    
+    // video already called SDL_Init
+    Audio audio = { .shot_sound = NULL };
+    if (sdlAudioInit(&audio)) {
         sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
     }
 
@@ -42,6 +49,9 @@ int main(void) {
 
         // advance the CPU state
         stepCPU(&cpuState);
+        
+        // per instruction poll sound
+        pollSound(&cpuState, &audio);
 
         // check for user inputs (filler for now so that we can close the window)
         done = readControls(&cpuState);
