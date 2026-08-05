@@ -64,9 +64,10 @@ int rotate_left_carry(state* currentState) {
 */
 int rotate_right_carry(state* currentState) {
 
+    uint8_t origin_accum = getReg8(currentState, A);
     uint8_t accum = getReg8(currentState, A) >> 1;
     uint8_t carry = getFlag(currentState, CARRY) << 7;
-    uint8_t new_carry = accum & 0x01;
+    uint8_t new_carry = origin_accum & 0x01;
     accum |= carry;
     setFlag(currentState, CARRY, new_carry);
     setReg8(currentState, A, accum);

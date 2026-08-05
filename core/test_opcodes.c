@@ -483,10 +483,12 @@ int test_1E(struct instructionData *currentIns, int opcode) {
 int test_1F(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     setFlag(currentIns->s, CARRY, 0x00);
+    setReg8(currentIns->s, A, 0x0F);
     int r = dispatchLevel2(currentIns);
 
     // check accumulator for value (0x17 -> 0x83)
-    assert(getReg8(currentIns->s, A) == 0x0B);
+    assert(getReg8(currentIns->s, A) == 0x07);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 4);
