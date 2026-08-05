@@ -1004,6 +1004,13 @@ int segment3_3(struct instructionData *currentIns) {
 
             // execute instruction
             setPort(currentIns->s, currentIns->operand1, OUT, getReg8(currentIns->s, A));
+
+            // shift register (ports 2/4)
+            if (currentIns->operand1 == 0x02) {
+                setShiftRegisterOffset(&currentIns->s->shiftReg, getReg8(currentIns->s, A));
+            } else if (currentIns->operand1 == 0x04) {
+                addShiftRegisterValue(&currentIns->s->shiftReg, getReg8(currentIns->s, A));
+            }
             break;
 
         case 2:
@@ -1278,8 +1285,15 @@ int segment3_B(struct instructionData *currentIns) {
             immediateBytes = 1;
 
             // execute instruction
-            uint8_t value = getPort(currentIns->s, currentIns->operand1, IN);
+            uint8_t value = (currentIns->operand1 == 3) 
+                ? getShiftRegisterValue(&currentIns->s->shiftReg)
+                : getPort(currentIns->s, currentIns->operand1, IN);
+
             setReg8(currentIns->s, A, value);
+
+            if (currentIns->operand1 == 1) {
+                setPort(currentIns->s, currentIns->operand1, IN, getPort(currentIns->s, currentIns->operand1, IN) & 0xFE);
+            }
             break;
 
         case 2:

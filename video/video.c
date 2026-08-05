@@ -76,14 +76,37 @@ int sdlVideoInit(Media_t *mBucket) {
     return 0;
 }
 
+Points_t *getClearPoints(void) {
+    int pixelCount = (MEM_RAM_MIRROR_START - MEM_VIDEO_START) * 8;
+    Points_t *bPts = calloc(1, sizeof(Points_t));
+
+    for (int i=0; i<pixelCount; i++) {
+        const int y = PIXEL_HEIGHT - (i % PIXEL_HEIGHT);
+        const int x = i / PIXEL_HEIGHT;
+        bPts->black[i].x=x;
+        bPts->black[i].y=y;
+    }
+
+    bPts->bCount = pixelCount;
+
+    return bPts;
+}
+
+
 int drawScreen(state *s, Media_t *mBucket) {
     // if no points to draw, skip draw
     if (!updatePoints(s, &mBucket->points)) {
         return 0;
     }
 
+    // get blankPoints
+    Points_t *bPts = getClearPoints();
+
+    // try updating points every time
+    //updatePoints(s, &mBucket->points);
+
     // clear the background
-    // SDL_RenderClear(mBucket->renderer);
+    //SDL_RenderClear(mBucket->renderer);
 
     // clear the background
     if (SDL_RenderClear(mBucket->renderer)) {
@@ -96,6 +119,10 @@ int drawScreen(state *s, Media_t *mBucket) {
         fprintf(stderr, "Error setting render target: %s\n", SDL_GetError());
         sdlVideoCleanup(mBucket, EXIT_FAILURE);
     }
+
+    // draw bpoints
+    SDL_SetRenderDrawColor(mBucket->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawPoints(mBucket->renderer, bPts->black, bPts->bCount);
 
     // draw white to texture
     SDL_SetRenderDrawColor(mBucket->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
@@ -122,6 +149,7 @@ int drawScreen(state *s, Media_t *mBucket) {
         sdlVideoCleanup(mBucket, EXIT_FAILURE);
     }
     SDL_RenderPresent(mBucket->renderer);
+    free(bPts);
     return 11;
 }
 

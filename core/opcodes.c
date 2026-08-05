@@ -18,6 +18,7 @@ int rotate_left(state* currentState) {
     accum = accum << 1;
     accum |= wrapper;
     setReg8(currentState, A, accum);
+    setFlag(currentState, CARRY, wrapper);
 
     return 0;
 }
@@ -29,10 +30,12 @@ int rotate_left(state* currentState) {
 int rotate_right(state* currentState) {
 
     uint8_t accum = getReg8(currentState, A);
+    uint8_t carryBit = accum & 0x01;
     uint8_t wrapper = (accum & 0x01) << 7;
     accum = accum >> 1;
     accum |= wrapper;
     setReg8(currentState, A, accum);
+    setFlag(currentState, CARRY, carryBit);
 
     return 0;
 }
@@ -64,9 +67,10 @@ int rotate_left_carry(state* currentState) {
 */
 int rotate_right_carry(state* currentState) {
 
+    uint8_t origin_accum = getReg8(currentState,A);
     uint8_t accum = getReg8(currentState, A) >> 1;
     uint8_t carry = getFlag(currentState, CARRY) << 7;
-    uint8_t new_carry = accum & 0x01;
+    uint8_t new_carry = origin_accum & 0x01;
     accum |= carry;
     setFlag(currentState, CARRY, new_carry);
     setReg8(currentState, A, accum);
@@ -94,22 +98,27 @@ int decimal_adjust(state* currentState) {
     // carry flag is ON, DAA adds six to the accumulator. 
     if (low > 0x09 || ac != 0) {
         accum += 0x06;
+        // pseudocode: set aux flag if so
+        setFlag(currentState, AUX_CARRY, 0x01);
+    } else {
+        setFlag(currentState, AUX_CARRY, 0x00);
     }
 
     // auxiliary carry is either cleared here or set if there is a carry out
-    handleCarry_add(currentState, 0x09, accum);
-    setFlag(currentState, AUX_CARRY, getFlag(currentState, CARRY));
+    //handleCarry_add(currentState, 0x09, accum);
+    //setFlag(currentState, AUX_CARRY, getFlag(currentState, CARRY));
 
-    uint8_t high = accum & 0xF0 >> 4;
+    uint8_t high = (accum & 0xF0) >> 4;
 
     // If the most significant four bits of the accumulator have a value greater than nine, or if the carry
     // flag is ON, DAA adds six to the most significant four bits of the accumulator. 
     if (high > 0x09 || carry != 0) {
         accum += 0x60;
+        setFlag(currentState, CARRY, 0x01);
+    } else {
+        setFlag(currentState, CARRY, 0x00);
     }
 
-    handleCarry_add(currentState, 0x60, accum);
-    aluFlags_arithmetic(currentState, A, accum);
     setReg8(currentState, A, accum);
     return 0;
 }

@@ -3963,6 +3963,13 @@ int test_D3(struct instructionData *currentIns, int opcode) {
     assert(currentIns->cycles == 10);
     // check return value
     assert(r == 1);
+
+    setReg8(currentIns->s, A, 0xFF);
+    currentIns->operand1 = 0x04;
+    int r2 = dispatchLevel2(currentIns);
+    uint16_t actual_value = currentIns->s->shiftReg.value16Bit;
+    assert(actual_value == 0xFF00);
+    
     return 0;
 }
 
@@ -4159,6 +4166,31 @@ int test_DB(struct instructionData *currentIns, int opcode) {
     assert(currentIns->cycles == 10);
     // check return value
     assert(r == 1);
+
+    // output 
+    currentIns->instruction = 0xD3;
+    currentIns->operand1 = 0x02;
+    setReg8(currentIns->s, A, 0x02);
+    int r4 = dispatchLevel2(currentIns);
+
+    currentIns->instruction = 0xD3;
+    currentIns->operand1 = 0x04;
+    setReg8(currentIns->s, A, 0xFF); 
+    int r2 = dispatchLevel2(currentIns);
+
+    currentIns->instruction = 0xD3;
+    currentIns->operand1 = 0x04;
+    setReg8(currentIns->s, A, 0x22); 
+    int r3 = dispatchLevel2(currentIns);
+
+    // input
+    currentIns->instruction = opcode;
+    currentIns->operand1 = 0x03;
+    int r5 = dispatchLevel2(currentIns);
+    uint8_t fromShift = getReg8(currentIns->s, A);
+
+    assert(fromShift == 0x8B);
+    
     return 0;
 }
 
@@ -4975,7 +5007,7 @@ int test_FB(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
     int r = dispatchLevel2(currentIns);
 
-    assert(currentIns->s->currentOp.interruptReady == 0x01);
+    assert(currentIns->s->currentOp.interruptEnabled == 0x01);
     // check cycles for correct processor state count
     assert(currentIns->cycles == 4);
     // check return value

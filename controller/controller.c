@@ -9,7 +9,7 @@
 *
 *   @returns: 1-byte contents of the port in question as an unsigned integer
 */
-uint8_t getPort (uint8_t *ports, int portNum) {
+uint8_t getControllerPort (uint8_t *ports, int portNum) {
     return ports[portNum];
 }
 
@@ -27,7 +27,7 @@ uint8_t getPort (uint8_t *ports, int portNum) {
 *           [note: the underscore denotes this is our arbitrary command
 *           number rather than something baked into space invaders] 
 */
-int setPort (uint8_t *ports, int command) {
+int setControllerPort (uint8_t *ports, int command) {
 
     initializeControl(ports);
 
@@ -37,7 +37,7 @@ int setPort (uint8_t *ports, int command) {
         case _START2PLAYER: p2_start(ports); break;
         case _START1PLAYER: p1_start(ports); break;
         case _FIRE1: p1_fires(ports); break;
-        case _LEFT1: p1_left(ports); break;
+        case _LEFT1: p1_left(ports); break; //coin?
         case _RIGHT1: p1_right(ports); break;
         case _FIRE2: p2_fires(ports); break;
         case _LEFT2: p2_left(ports); break;

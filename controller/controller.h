@@ -3,9 +3,18 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#define INITIAL_PORT0 0x00
-#define INITIAL_PORT1 0x88
+#define INITIAL_PORT0 0xFF
+#define INITIAL_PORT1 0x08
 #define INITIAL_PORT2 0x80
+
+/*
+*
+*
+*
+*   PORT 2
+*   - bit 7: when set, demo/splash reads insert coin: 1 or 2 players
+*            when clear, demo/splash reads 
+*/
 
 
 /* ***** OUR MAPPING ****** */
@@ -38,8 +47,8 @@ void p2_left (uint8_t *ports);
 void p2_right (uint8_t *ports);
 void tilt (uint8_t *ports);
 
-uint8_t getPort (uint8_t *ports, int portNum);
-int setPort (uint8_t *ports, int command);
+uint8_t getControllerPort (uint8_t *ports, int portNum);
+int setControllerPort (uint8_t *ports, int command);
 int setClearBit(uint8_t *ports, int portNum, uint8_t bitNum, uint8_t setOrClear);
 int initializeControl(uint8_t *ports);
 

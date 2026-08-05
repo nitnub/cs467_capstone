@@ -450,7 +450,7 @@ uint8_t memFetch(state *currentState, uint8_t high, uint8_t low) {
 
     // catch addresses out of range
     if (memIndex > MEM_END) {
-        perror("memory fetch: index out of range\n");
+        printf("ERROR (%s): memory fetch: index out of range\n", currentState->name);
         return 0xFF;
     }
 
@@ -489,31 +489,31 @@ int memStore(state *currentState, uint8_t high, uint8_t low, uint8_t value) {
 
     // crash out for storage in ROM
     if (memIndex < 0x2000) {
-        printf("ERROR: memory storage in restricted range (ROM) at %04X (PC-1: %04X)\n", 
-                    memIndex, getReg16(currentState, PC)-1);
+        printf("ERROR (%s): memory storage in restricted range (ROM) at %04X (high: %02X, low: %02X) (PC-1: %04X)\n", 
+                    currentState->name, memIndex, high, low, getReg16(currentState, PC)-1);
         // do nothing
-        return 0;
+        //return 0;
     }
 
     // check for range
     if (memIndex > MEM_END) {
-        perror("Error: memory out of range\n");
+        printf("Error (%s): memory out of range at %04X\n", currentState->name, memIndex);
         return -1;
     } 
 
     // store and mirror value
     currentState->memory[memIndex] = value;
 
-    uint16_t mirrorIndex = memMirror(memIndex);
+    //uint16_t mirrorIndex = memMirror(memIndex);
     
-    if (mirrorIndex < 0x2000) {
-        printf("ERROR: memory storage in restricted range (ROM) at %04X (PC-1: %04X)\n", 
-            memIndex, getReg16(currentState, PC)-1);
-        // do nothing
-        return 0;
-    }
+    //if (mirrorIndex < 0x2000) {
+    //    printf("ERROR (%s): memory storage in restricted range (ROM) at %04X (PC-1: %04X)\n", 
+    //        currentState->name, mirrorIndex, getReg16(currentState, PC)-1);
+    //    // do nothing
+    //    return 0;
+    //}
 
-    currentState->memory[memMirror(memIndex)] = value;
+    //currentState->memory[memMirror(memIndex)] = value;
     return 0;
 }
 
@@ -601,6 +601,10 @@ void printCPUState(state *currentState) {
     printf("L: 0x%02X\n", getReg8(currentState, L));
     printf("PC: %04X | loaded opcode: %02X\n", getReg16(currentState, PC), currentState->currentOp.currentOpcode);
     printf("SP: %04X\n", getReg16(currentState, SP));
+    printf("Shift register: %04X\n", printShiftRegister(&currentState->shiftReg));
+    printf("Shift register offset: %02X\n", printShiftOffset(&currentState->shiftReg));
+    printf("IN PORT1: %02x", currentState->inp[1]);
+    printf("IN PORT2: %02x", currentState->inp[2]);
 
     // print flags & interrupt enable bit
     printf("\nFLAGS\n");

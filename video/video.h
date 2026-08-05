@@ -12,8 +12,8 @@
 #define WINDOW_TITLE "Intel 8080 - Space Invaders" // TODO: temp placeholder name
 #define PIXEL_WIDTH 224
 #define PIXEL_HEIGHT 256
-#define SCREEN_WIDTH 940 // test scaling
-#define SCREEN_HEIGHT 1272 // test scaling
+#define SCREEN_WIDTH 672 // 940 // test scaling
+#define SCREEN_HEIGHT 768 // 1272 // test scaling
 
 #define BYTE_SIZE 8
 #define SET_BIT '1'
@@ -69,6 +69,7 @@ void sdlVideoCleanup(Media_t *game, int exit_status);
  */
 int updatePoints(state *s, Points_t *points);
 
+Points_t *getClearPoints(void);
 
 int drawScreen(state *s, Media_t *game);
 

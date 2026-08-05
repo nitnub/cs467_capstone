@@ -2,7 +2,7 @@
 #define SHIFTREGISTER_H
 
 #include <stdint.h>
-
+#include <stdlib.h>
 
 /**
  * Note: Register value should not be accessed directly; program will
@@ -41,6 +41,9 @@ int setShiftRegisterOffset(ShiftRegister_t *srState, uint8_t offset);
  * @param srState pointer to the program shift register
  * @return shifted hex value from the register
  */
-unsigned char getShiftRegisterValue(ShiftRegister_t *srState);
+uint8_t getShiftRegisterValue(ShiftRegister_t *srState);
+
+uint16_t printShiftRegister(ShiftRegister_t *srState);
+uint8_t printShiftOffset(ShiftRegister_t *srState);
 
 #endif //SHIFTREGISTER_H

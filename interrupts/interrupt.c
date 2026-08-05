@@ -4,16 +4,24 @@
 *   function: waitCycles
 *   delays to make up the extra time the Intel 8080 would have taken for each cycle state
 */
-int waitCycles(void) {
-    
+int waitCycles(state *processor, int ticks, Media_t *mediaBucket) {
+
     // initialize wait time
-    struct timespec cycleWait;
-    cycleWait.tv_sec = 0;
-    cycleWait.tv_nsec = MIDSCREEN;
+
+    // trigger once every VBLANK / 16 ticks
+    if (ticks % CYCLE_NSECS == 0) {
+
+        //drawScreen(processor, mediaBucket);
+        struct timespec cycleWait;
+        
+        cycleWait.tv_sec = 0;
+        cycleWait.tv_nsec = WAIT_TIME; // this is a magic number (515 * 25); replaces 515 * 500 [aprox VBLANK / 64];
+
+        clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+
+    } 
 
     // wait the time expected for half of screen refresh cycle
-    clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
-
     return 0;
 }
 
@@ -44,7 +52,37 @@ int triggerInterrupt(process_r *cpu, uint8_t vector) {
 *           enable boolean, interrupt ready boolean, buffer for interrupt vector, 
 *           and current opcode.
 */
-int processInterrupt(process_r *cpu) {
+int processInterrupt(state *processor, Media_t *mediaBucket, int ticks) {
+
+    process_r *cpu = &processor->currentOp;
+
+    // check if there is an interrupt ready.
+    // if so, place the vector into the current opcode position
+    // and then clear buffer
+    if (cpu->interruptReady != 0x00){
+
+        //waitCycles(ticks);
+
+        memset(&cpu->currentOpcode, cpu->interruptBuffer, sizeof(uint8_t));
+        memset(&cpu->interruptBuffer, 0x00, sizeof(uint8_t));
+        memset(&cpu->interruptReady, 0x00, sizeof(uint8_t));
+
+        // disable interrupts
+        cpu->interruptEnabled = 0x00;
+
+        // decrement program counter
+        uint16_t currentPC = getReg16(processor, PC);
+        setReg16(processor, PC, currentPC-1);
+
+        // draw video memory to the screen
+        drawScreen(processor, mediaBucket);
+
+    }
+
+    return 0;
+}
+
+int processInterruptNoMedia(process_r *cpu) {
 
     // check if there is an interrupt ready.
     // if so, place the vector into the current opcode position
@@ -56,6 +94,7 @@ int processInterrupt(process_r *cpu) {
 
         // disable interrupts
         cpu->interruptEnabled = 0x00;
+
     }
 
     return 0;
@@ -250,17 +289,18 @@ int debuggerControl(struct instructionData *currentIns,
                     char* inputBuffer, 
                     int bufferSize) 
 {
-    // print registers & flags
-    printCPUState(currentIns->s);
-    
-    // disassemble upcoming instruction
-    copyOperands(currentIns, disassembler);
-
-    // print disassembly information
-    printInstruction(disassembler);
 
     // handle debugger control (stepping in, set breakpoint, continue, next)
     if (disassembler->stepControl == 1 || getReg16(currentIns->s, PC) == disassembler->breakpoint) {
+
+        // print registers & flags
+        printCPUState(currentIns->s);
+        
+        // disassemble upcoming instruction
+        copyOperands(currentIns, disassembler);
+
+        // print disassembly information
+        printInstruction(disassembler);
 
         // turn step control back on
         disassembler->stepControl = 1;
@@ -297,39 +337,70 @@ int processorLoop(struct instructionData *currentIns, struct instructionData *di
     int loopControl = 0;
     disassembler->stepControl = 1; // turn on step control until it's turned off
 
+    // initialize video
+    Media_t *mediaBucket = initMedia();
+    if (sdlVideoInit(mediaBucket)) {
+        sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
+    }
+
+    // initialize controller ports
+    initializeControl(currentIns->s->inp);
+
     while (loopControl != 1) {
 
-        /* process CPU instruction */
-        processStep(currentIns);
-
-        /* keep accounting of nanoseconds "spent" */
-        ticks += (STATETIME*currentIns->cycles);
+        // if statement here enables HLT until interrupt
+        if (currentIns->instruction != 0x76) {
+            /* process CPU instruction */
+            processStep(currentIns);
+        }
+            /* keep accounting of nanoseconds "spent" */
+            ticks += (STATETIME*currentIns->cycles);
+        
 
         /* check for interrupts.... is it time? */
         if (ticks > VBLANK) 
         {
+
+            // temporary controller to close the window
+            if (readControls(currentIns->s) == 1) {
+                break;
+            }
             /* trigger VBLANK interrupt*/
             triggerInterrupt(&processor->currentOp, 0xD7);
-            waitCycles();
+            //waitCycles();
             ticks = 0; // resets "timer" count
             needMidscreen = 1;  
         }
 
         else if (ticks > MIDSCREEN && needMidscreen == 1) 
         {
+
+            // temporary controller to close the window
+            if (readControls(currentIns->s) == 1) {
+                break;
+            }
+            
             /* trigger midscreen interrupt */
             triggerInterrupt(&processor->currentOp, 0xCF);
-            waitCycles();
+            //waitCycles();
             needMidscreen = 0;   
         }
         
-        /* run interrupt if one is ready */
-        processInterrupt(&processor->currentOp);
+
+        //initializeControl(processor->inp);
+
+        /* run interrupt if one is ready & draw screen */
+        processInterrupt(processor, mediaBucket, ticks);
+
+        // waits a 16th of VBLANK every 1041500 ticks
+        waitCycles(processor, ticks, mediaBucket);
 
         // run debugger control
         // TODO: turn this off
-        debuggerControl(currentIns, disassembler, &loopControl, inputBuffer, sizeof(inputBuffer));
+        //debuggerControl(currentIns, disassembler, &loopControl, inputBuffer, sizeof(inputBuffer));
     }
+
+    sdlVideoCleanup(mediaBucket, EXIT_SUCCESS);
     return 0;
 }
 
@@ -382,7 +453,6 @@ double timingTestLoop(state *processor, size_t testingCycles) {
         {
             /* trigger VBLANK interrupt*/
             triggerInterrupt(&processor->currentOp, 0xD7);
-            waitCycles();
             ticks = 0; // resets "timer" count
             needMidscreen = 1;
 
@@ -393,12 +463,13 @@ double timingTestLoop(state *processor, size_t testingCycles) {
         {
             /* trigger midscreen interrupt */
             triggerInterrupt(&processor->currentOp, 0xCF);
-            waitCycles();
             needMidscreen = 0;   
         }
         
         /* run interrupt if one is ready */
-        processInterrupt(&processor->currentOp);
+        processInterruptNoMedia(&processor->currentOp);
+
+        //waitCycles(ticks); TODO FIX
     }
 
     /* get return value to check timing */

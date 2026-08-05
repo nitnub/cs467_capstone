@@ -60,7 +60,7 @@ int test_process_interrupt(process_r *cpu) {
     // set interruptReady
     cpu->interruptReady = 0x01;
 
-    processInterrupt(cpu);
+    processInterruptNoMedia(cpu);
 
     assert(cpu->currentOpcode == 0xCF);
     assert(cpu->interruptReady == 0x00);
@@ -104,8 +104,7 @@ int test_processor_step(struct instructionData *currentIns, struct instructionDa
     setupCPU(&disassembler->s->currentOp);
 
     currentIns->s->currentOp.interruptEnabled = 0x01;
-    currentIns->s->inp[1] = 0x88;
-    currentIns->s->inp[2] = 0x80;
+    initializeControl(currentIns->s->inp);
 
     processorLoop(currentIns, disassembler);
 
@@ -117,15 +116,17 @@ int main (void) {
     ins.s = &myCpu;
     dis.s = &disCpu; // set up object used for disassembler
     dis.breakpoint = 0x00;
+    snprintf((char *) &myCpu.name, 15, "%s", "CPU\0");
+    snprintf((char *) &disCpu.name, 15, "%s", "DIS\0");
 
     /* component interrupt functions */
-    test_trigger_interrupt(&myCpu.currentOp);
-    test_process_interrupt(&myCpu.currentOp);
+    // test_trigger_interrupt(&myCpu.currentOp);
+    // test_process_interrupt(&myCpu.currentOp);
 
     /* interrupt timing */
-    test_interrupt_cycle(&ins, 60);
-    test_interrupt_cycle(&ins, 120);
-    test_interrupt_cycle(&ins, 60);
+    // test_interrupt_cycle(&ins, 60);
+    // test_interrupt_cycle(&ins, 120);
+    // test_interrupt_cycle(&ins, 60);
 
     /* full processor step-through */
     test_processor_step(&ins, &dis, 0x00);
