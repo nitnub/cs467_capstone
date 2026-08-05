@@ -7,6 +7,9 @@
 // instant a sound bit turns on.
 static uint8_t port3_prev = 0;
 
+// same idea as port3_prev, but for port 5
+static uint8_t port5_prev = 0;
+
 // loads one chunk, reports which file failed
 static int loadChunk(Mix_Chunk **dest, const char *path) {
     *dest = Mix_LoadWAV(path);
@@ -28,9 +31,15 @@ int sdlAudioInit(Audio *audio) {
     if (loadChunk(&audio->player_death_sound, PLAYER_DEATH_SOUND_PATH)) return 1;
     if (loadChunk(&audio->invader_death_sound, INVADER_DEATH_SOUND_PATH)) return 1;
     if (loadChunk(&audio->ufo_sound, UFO_SOUND_PATH)) return 1;
+    if (loadChunk(&audio->ufo_hit_sound, UFO_HIT_SOUND_PATH)) return 1;
+    if (loadChunk(&audio->fleet_step_sound[0], FLEET_STEP0_SOUND_PATH)) return 1;
+    if (loadChunk(&audio->fleet_step_sound[1], FLEET_STEP1_SOUND_PATH)) return 1;
+    if (loadChunk(&audio->fleet_step_sound[2], FLEET_STEP2_SOUND_PATH)) return 1;
+    if (loadChunk(&audio->fleet_step_sound[3], FLEET_STEP3_SOUND_PATH)) return 1;
 
     // reset edge state so a reinit doesn't inherit a stale port value
     port3_prev = 0;
+    port5_prev = 0;
     audio->ufo_channel = -1;
 
     return 0;
@@ -38,10 +47,15 @@ int sdlAudioInit(Audio *audio) {
 
 void audioFreeResources(Audio *audio) {
     // note this has to be in the reverse order of how things were initialized in sdlAudioInit
-    Mix_FreeChunk(audio->shot_sound);
-    Mix_FreeChunk(audio->player_death_sound);
-    Mix_FreeChunk(audio->invader_death_sound);
+    Mix_FreeChunk(audio->fleet_step_sound[3]);
+    Mix_FreeChunk(audio->fleet_step_sound[2]);
+    Mix_FreeChunk(audio->fleet_step_sound[1]);
+    Mix_FreeChunk(audio->fleet_step_sound[0]);
+    Mix_FreeChunk(audio->ufo_hit_sound);
     Mix_FreeChunk(audio->ufo_sound);
+    Mix_FreeChunk(audio->invader_death_sound);
+    Mix_FreeChunk(audio->player_death_sound);
+    Mix_FreeChunk(audio->shot_sound);
     Mix_CloseAudio();
 }
 
@@ -95,6 +109,29 @@ void pollSound(state *cpuState, Audio *audio) {
     port3_prev = value;
 }
 
+// same as before, but for Port 5
+void pollSoundPort5(state *cpuState, Audio *audio) {
+    const uint8_t value = getPort(cpuState, 5, OUT);
+    const uint8_t rising = value & ~port5_prev;
+
+#ifdef AUDIO_DEBUG
+    if (value != port5_prev) {
+        printf("port5: %02x -> %02x\n", port5_prev, value);
+    }
+#endif
+
+    // fleet steps and UFO hit are all one-shots, no looping needed
+    if (rising & SND_FLEET_STEP0) Mix_PlayChannel(-1, audio->fleet_step_sound[0], 0);
+    if (rising & SND_FLEET_STEP1) Mix_PlayChannel(-1, audio->fleet_step_sound[1], 0);
+    if (rising & SND_FLEET_STEP2) Mix_PlayChannel(-1, audio->fleet_step_sound[2], 0);
+    if (rising & SND_FLEET_STEP3) Mix_PlayChannel(-1, audio->fleet_step_sound[3], 0);
+    if (rising & SND_UFO_HIT)     Mix_PlayChannel(-1, audio->ufo_hit_sound, 0);
+
+    port5_prev = value;
+}
+
 void soundHook(state *cpuState, void *userdata) {
-    pollSound(cpuState, (Audio *)userdata);
+    Audio *audio = (Audio *)userdata;
+    pollSound(cpuState, audio); //TODO: make it PollSoundPort3
+    pollSoundPort5(cpuState, audio);
 }
