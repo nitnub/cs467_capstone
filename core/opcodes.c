@@ -88,28 +88,36 @@ int decimal_adjust(state* currentState) {
     uint8_t ac = getFlag(currentState, AUX_CARRY);
     uint8_t carry = getFlag(currentState, CARRY);
 
+    // get low nibble
     uint8_t low = accum & 0x0F;
 
     //If the least significant four bits of the accumulator have a value greater than nine, or if the auxiliary
     // carry flag is ON, DAA adds six to the accumulator. 
+    // if condition is met, AUX_CARRY flag is set
     if (low > 0x09 || ac != 0) {
         accum += 0x06;
+        setFlag(currentState, AUX_CARRY, 0x01);
+    } else {
+        setFlag(currentState, AUX_CARRY, 0x00);
     }
 
-    // auxiliary carry is either cleared here or set if there is a carry out
-    handleCarry_add(currentState, 0x09, accum);
-    setFlag(currentState, AUX_CARRY, getFlag(currentState, CARRY));
-
-    uint8_t high = accum & 0xF0 >> 4;
+    // get high nibble
+    uint8_t high = (accum & 0xF0) >> 4;
 
     // If the most significant four bits of the accumulator have a value greater than nine, or if the carry
     // flag is ON, DAA adds six to the most significant four bits of the accumulator. 
+    // set carry flag if condition is met, otherwise clear
     if (high > 0x09 || carry != 0) {
         accum += 0x60;
+        setFlag(currentState, CARRY, 0x01);
+    } else {
+        setFlag(currentState, CARRY, 0x00);
     }
 
-    handleCarry_add(currentState, 0x60, accum);
+    // set sign, zero and parity according to normal rules
     aluFlags_arithmetic(currentState, A, accum);
+
+    // put adjusted value back in the accumulator
     setReg8(currentState, A, accum);
     return 0;
 }

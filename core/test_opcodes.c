@@ -598,10 +598,15 @@ int test_26(struct instructionData *currentIns, int opcode) {
 */
 int test_27(struct instructionData *currentIns, int opcode) {
     setupInstruction(currentIns, opcode);
-    setReg8(currentIns->s, A, 0x3A);
+    setReg8(currentIns->s, A, 0x67);
+    setReg8(currentIns->s, L, 0x83);
+    currentIns->instruction = 0x85; // add L
+    dispatchLevel2(currentIns);
+    currentIns->instruction = opcode;
     int r = dispatchLevel2(currentIns);
 
-    assert(getReg8(currentIns->s, A) == 0x40);
+    assert(getReg8(currentIns->s, A) == 0x50);
+    assert(getFlag(currentIns->s, CARRY) == 0x01);
 
     // check cycles for correct processor state count
     assert(currentIns->cycles == 4);
