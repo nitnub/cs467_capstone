@@ -473,8 +473,8 @@ uint16_t memMirror(uint16_t index) {
 
 /*
 *   function: memStore
-*   Store the byte value in memory at the 16-bit address High-Low, as well as the
-*   mirrored memory address (0x0000 - 0x3FFF are mirrored at 0x4000)
+*   Store the byte value in memory at the 16-bit address High-Low.
+*   
 *   @param currentState, a pointer to the current state
 *   @param high, an unsigned 8-bit integer representing the high byte of address
 *   @param low, an unsigned 8-bit integer representing the low byte of address
@@ -487,33 +487,21 @@ int memStore(state *currentState, uint8_t high, uint8_t low, uint8_t value) {
 
     uint16_t memIndex = convert8To16(high, low);
 
-    // crash out for storage in ROM
+    // warn against storage in ROM
     if (memIndex < 0x2000) {
         printf("ERROR: memory storage in restricted range (ROM) at %04X (PC-1: %04X)\n", 
                     memIndex, getReg16(currentState, PC)-1);
-        // do nothing
-        return 0;
     }
 
     // check for range
     if (memIndex > MEM_END) {
-        perror("Error: memory out of range\n");
+        printf("Error: memory out of range at %04X\n", memIndex);
         return -1;
     } 
 
-    // store and mirror value
+    // store value
     currentState->memory[memIndex] = value;
 
-    uint16_t mirrorIndex = memMirror(memIndex);
-    
-    if (mirrorIndex < 0x2000) {
-        printf("ERROR: memory storage in restricted range (ROM) at %04X (PC-1: %04X)\n", 
-            memIndex, getReg16(currentState, PC)-1);
-        // do nothing
-        return 0;
-    }
-
-    currentState->memory[memMirror(memIndex)] = value;
     return 0;
 }
 
