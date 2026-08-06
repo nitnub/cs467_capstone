@@ -8,6 +8,7 @@
 #define MENU_SELECTION_QUIT 1
 #define MAX_TITLE_LENGTH
 
+
 typedef struct {
     int menuSize;
     int currentSelection;
@@ -16,7 +17,11 @@ typedef struct {
 } Menu_t;
 
 
-
+/**
+ * Run the interactive main menu loop.
+ * @param mBucket pointer to the current program's media struct
+ * @return integer representation of the user's selection
+ */
 int mainMenu(Media_t *mBucket);
 
 #endif //MENU_H

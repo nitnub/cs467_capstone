@@ -50,11 +50,9 @@ int mainMenu(Media_t *mBucket) {
 
         // return userInput;
         if (userInput == MENU_SELECTION_QUIT) {
-            printf("Selected QUIT\n");
             return MENU_SELECTION_QUIT;
         }
         if (userInput != -1 ) {
-            printf("Selected Option %d\n", userInput);
             return menuState.currentSelection;
         }
         // updte screen with current selection

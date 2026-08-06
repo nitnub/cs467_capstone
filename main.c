@@ -79,11 +79,12 @@ int main(void) {
 
     if (mainMenu(mediaBucket) == MENU_SELECTION_QUIT) {
         sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
-        printf("Thank you for playing!");
+        printf(SAFE_SHUTDOWN_MESSAGE);
         return 0;
     }
 
-    SDL_SetWindowTitle(mediaBucket->window, "Space Invaders");
+    // update header
+    SDL_SetWindowTitle(mediaBucket->window, WINDOW_TITLE_SPACE_INVADERS);
 
 
     // run game loop...
@@ -96,6 +97,6 @@ int main(void) {
 
     // more to add to a shared cleanup function? Can combine audio in mediaBucket..
     sdlVideoCleanup(mediaBucket, EXIT_SUCCESS);
-    printf("\nShutting down...\n");
+    printf(SAFE_SHUTDOWN_MESSAGE);
     return 0;
 }

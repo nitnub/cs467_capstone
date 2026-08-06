@@ -1,16 +1,16 @@
 
 #ifndef VIDEO_STARTUP_H
 #define VIDEO_STARTUP_H
+
 #include <stdio.h>
-// #include <stdbool.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-// #include "../cpu/cpu.h"
 #include "../core/cpu.h"
 
-
 #define WINDOW_TITLE "Intel 8080 Emulator"     // TODO: temp placeholder name
+#define WINDOW_TITLE_SPACE_INVADERS "Space Invaders"
+#define SAFE_SHUTDOWN_MESSAGE "Thank you for playing!"
 #define PIXEL_WIDTH 224
 #define PIXEL_HEIGHT 256
 #define SCREEN_WIDTH 672 // 940 // test scaling
@@ -26,21 +26,19 @@
 #define FONT_SIZE 24
 #define CURSOR_IMAGE_LOCATION "menu/images/alien_cursor.bmp"
 #define X_OFFSET_MENU (SCREEN_WIDTH / 2)
-
 #define MENU_ELEMENT_HEIGHT 75
 #define MENU_ELEMENT_CURSOR_SPACING 75
-
 #define Y_OFFSET_MENU (SCREEN_HEIGHT / 2) - 150          // set slightly above mid-screen
 #define Y_OFFSET_HEADER  Y_OFFSET_MENU
 #define Y_OFFSET_OPTION_1  Y_OFFSET_MENU + MENU_ELEMENT_HEIGHT * 1
-#define Y_OFFSET_OPTION_2  Y_OFFSET_MENU + MENU_ELEMENT_HEIGHT * 2              // no offset, so minus 0
+#define Y_OFFSET_OPTION_2  Y_OFFSET_MENU + MENU_ELEMENT_HEIGHT * 2
 #define Y_OFFSET_CURSOR Y_OFFSET_MENU + 50
 #define CURSOR_STEP_DISTANCE 75
-
 #define LABEL_HEADER "Welcome!"
 #define LABEL_ROM_1 "Launch Space Invaders"
 #define LABEL_QUIT "Quit"
 #define LABEL_SETTINGS "Settings"
+
 
 typedef struct {
     SDL_Point white[POINTS_ARR_SIZE];                  // TODO: test sizing.. calc specific values for each color
@@ -105,12 +103,26 @@ void sdlVideoCleanup(Media_t *game, int exit_status);
  */
 int updatePoints(state *s, Points_t *points);
 
-
+/**
+ * Draw the currently emulated ROM's video memory to the screen.
+ * @param s pointer to the current program's CPU state struct
+ * @param game the currently running program's SDL data struct
+ * @return count of RBG points drawn
+ */
 int drawScreen(state *s, Media_t *game);
 
-
+/**
+ * Set up initial A/V state to draw the title menu to the screen.
+ * @param mBucket pointer to the current program's media struct
+ * @return 0 if no error; non-zero for error
+ */
 int initializeMenuRender(Media_t *mBucket);
 
-int updateMenuRender(Media_t *mBucket, int selection);
+/**
+ * Redraw the current menu state to the screen.
+ * @param mBucket pointer to the current program's media struct
+ * @param selection index of the currently selected menu item (zero-based)
+ */
+void updateMenuRender(Media_t *mBucket, int selection);
 
 #endif //VIDEO_STARTUP_H

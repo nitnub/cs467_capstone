@@ -5,27 +5,6 @@
 #include "video.h"
 #include <sys/time.h>
 
-long getCurrentMilliseconds() {
-    struct timeval currentTime;
-    gettimeofday(&currentTime, NULL);
-
-    // sum up the seconds and microseconds of the current time, after normalizing both to ms
-    long timeInMs = currentTime.tv_sec * 1000L;
-    timeInMs += currentTime.tv_usec / 1000L;
-    return timeInMs;
-}
-
-int sendVideoInterrupt(state *s, long *lastMs) {
-    long currentMs = getCurrentMilliseconds();
-    // each 1000 ms / 60 hz = 16.667 ms/hz
-
-    // if (currentMs - *lastMs >= 16.6667) {
-    if (currentMs - *lastMs >= 8.33333) {
-        *lastMs = currentMs;
-        return 1;
-    }
-    return 0;
-}
 
 Media_t *initMedia(void) {
     Media_t *mBucket = calloc(1, sizeof(Media_t));
@@ -35,10 +14,10 @@ Media_t *initMedia(void) {
 
     mBucket->menu.font = NULL;
     mBucket->menu.fontColor = malloc(sizeof(*mBucket->menu.fontColor));
-    mBucket->menu.fontColor->a = 0xff;                // defaulting font color to white
-    mBucket->menu.fontColor->b = 0xff;                // defaulting font color to white
-    mBucket->menu.fontColor->g = 0xff;                // defaulting font color to white
-    mBucket->menu.fontColor->r = 0xff;                // defaulting font color to white
+    mBucket->menu.fontColor->a = 0xff;                // defaults font color is white
+    mBucket->menu.fontColor->b = 0xff;                // defaults font color is white
+    mBucket->menu.fontColor->g = 0xff;                // defaults font color is white
+    mBucket->menu.fontColor->r = 0xff;                // defaults font color is white
 
     mBucket->menu.headerTexture = NULL;
     mBucket->menu.rom1Texture = NULL;
@@ -194,7 +173,7 @@ int drawScreen(state *s, Media_t *mBucket) {
     }
     SDL_RenderPresent(mBucket->renderer);
     free(bPts);
-    return 11;
+    return mBucket->points.gCount + mBucket->points.rCount +mBucket->points.bCount;
 }
 
 
@@ -213,8 +192,6 @@ void updateBitBuffer(char **result, uint16_t number) {
 }
 
 int updatePoints(state *s, Points_t *points) {
-
-    // TODO: can create new arrays or free each time.. have not tested yet..
     memset(points, 0, sizeof(Points_t));
 
     // allocate memory for binary buffer
@@ -348,7 +325,7 @@ int initializeMenuRender(Media_t *mBucket) {
     return 0;
 }
 
-int updateMenuRender(Media_t *mBucket, int selectionIdx) {
+void updateMenuRender(Media_t *mBucket, int selectionIdx) {
     // place cursor relative to widest option
     mBucket->menu.cursorRect->y = Y_OFFSET_CURSOR + CURSOR_STEP_DISTANCE * selectionIdx;
     mBucket->menu.cursorRect->x =  (SCREEN_WIDTH / 2) - (mBucket->menu.rom1Rect->w / 2) - MENU_ELEMENT_CURSOR_SPACING;
@@ -367,5 +344,5 @@ int updateMenuRender(Media_t *mBucket, int selectionIdx) {
 
     // delay down to ~60 FPS
     SDL_Delay(17);
-    return 0;
+    return;
 }
