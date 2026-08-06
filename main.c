@@ -9,6 +9,7 @@
 #include "video/windowManager_temp.h"
 #include "interrupts/interrupt.h"
 #include "controller/controller.h"
+#include "audio/audio.h"
 
 struct instructionData ins;
 struct instructionData dis;
@@ -47,8 +48,11 @@ int setupMemory(state *processor, int start) {
 /*
 *   Test processor loop with interrupts enabled
 */
-int setupEmulator(struct instructionData *currentIns, Media_t *mediaBucket) {
+int setupEmulator(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio) {
     if (sdlVideoInit(mediaBucket)) {
+        sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
+    }
+    if (sdlAudioInit(audio)) {
         sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
     }
     setupMemory(currentIns->s, 0x00);
@@ -69,8 +73,12 @@ int main(void) {
     // initialize a media bucket item to hold all of our SDL2 structs; can be passed to
     // shared constructor/destructor funcs to centralize our SDL2 init and tear down.
     Media_t *mediaBucket = initMedia();
+
+    Audio audio = { .shot_sound = NULL, .player_death_sound = NULL,
+                     .invader_death_sound = NULL, .ufo_sound = NULL };
+
     ins.s = &myCpu;
-    setupEmulator(&ins, mediaBucket);
+    setupEmulator(&ins, mediaBucket, &audio);
 
 
     ////////////////////////
@@ -78,14 +86,15 @@ int main(void) {
     ////////////////////////
 
     // run game loop...
-    runIntel8080(&ins, mediaBucket);
+    runIntel8080(&ins, mediaBucket, &audio);
 
 
     ///////////////////////////
     // Tear Down Application //
     ///////////////////////////
 
-    // more to add to a shared cleanup function? Can combine audio in mediaBucket..
+    // audio owns only its own resources; video owns SDL_Quit + exit
+    audioFreeResources(&audio);
     sdlVideoCleanup(mediaBucket, EXIT_SUCCESS);
     printf("\nShutting down...\n");
     return 0;

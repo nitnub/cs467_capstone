@@ -1,5 +1,8 @@
 #include "interrupt.h"
 
+// tracks when waitCycles() should next fire
+static long nextTrigger = 0;
+
 // /* 
 // *   function: waitCycles
 // *   delays to make up the extra time the Intel 8080 would have taken for each cycle state
@@ -26,7 +29,9 @@ int waitCycles(state *processor, long ticks, Media_t *mediaBucket) {
     // initialize wait time
 
     // trigger once every VBLANK / 16 ticks
-    if (ticks % CYCLE_NSECS == 0) {
+    if (ticks >= nextTrigger) {
+
+        nextTrigger = ticks + CYCLE_NSECS;
 
         //drawScreen(processor, mediaBucket);
         struct timespec cycleWait;
@@ -34,7 +39,8 @@ int waitCycles(state *processor, long ticks, Media_t *mediaBucket) {
         cycleWait.tv_sec = 0;
         cycleWait.tv_nsec = WAIT_TIME; // this is a magic number (515 * 25); replaces 515 * 500 [aprox VBLANK / 64];
 
-        clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+        // clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+        nanosleep(&cycleWait, NULL);  // to test with MacOS
 
     }
 
@@ -483,7 +489,7 @@ int debuggerControl(struct instructionData *currentIns,
 *
 *   @returns: 0 when loop has ended and exited gracefully
 */
-int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
+int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio) { // audio added
 
     // grab the cpu (state) from current instruction
     state *processor = currentIns->s;
@@ -502,6 +508,9 @@ int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
             /* process CPU instruction */
             processStep(currentIns);
         }
+        // per instruction sound hook
+        soundHook(processor, audio);
+        
             /* keep accounting of nanoseconds "spent" */
             ticks += (STATETIME*currentIns->cycles);
 
@@ -518,6 +527,7 @@ int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
             triggerInterrupt(&processor->currentOp, 0xD7);
             //waitCycles();
             ticks = 0; // resets "timer" count
+            nextTrigger = 0; // resync waitCycles() to the new tick count
             needMidscreen = 1;
         }
 
