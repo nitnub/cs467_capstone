@@ -1289,6 +1289,11 @@ int segment3_B(struct instructionData *currentIns) {
                 ? getShiftRegisterValue(&currentIns->s->shiftReg)
                 : getPort(currentIns->s, currentIns->operand1, IN);
             setReg8(currentIns->s, A, value);
+
+            // quick-clear: clear only bit 0 of port 1
+            if (currentIns->operand1 == 1) {
+                setPort(currentIns->s, currentIns->operand1, IN, getPort(currentIns->s, currentIns->operand1, IN) & 0xFE);
+            }
             break;
 
         case 2:
