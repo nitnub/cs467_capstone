@@ -39,8 +39,8 @@ int waitCycles(state *processor, long ticks, Media_t *mediaBucket) {
         cycleWait.tv_sec = 0;
         cycleWait.tv_nsec = WAIT_TIME; // this is a magic number (515 * 25); replaces 515 * 500 [aprox VBLANK / 64];
 
-        // clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
-        nanosleep(&cycleWait, NULL);  // to test with MacOS
+        clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+        // nanosleep(&cycleWait, NULL);  // to test with MacOS
 
     }
 
