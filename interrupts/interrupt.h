@@ -9,12 +9,24 @@
 #include <pthread.h>
 #include "../core/handler.h"    // handler.h -> handleSegment.h -> cpu.h & opcodes.h
 #include "../helpers/helpers.h"
+#include "../video/video.h"
+#include "../video/windowManager_temp.h"
 
-#define CONVERSIONFACTOR 2                      // magic number, accounts for real processing time
-#define STATETIME 500    // nanosecond duration of a processor state
-#define MIDSCREEN 8333333                       // nanoseconds before midscreen interrupt
-#define VBLANK 16666667                         // nanoseconds before VBLANK intrupt
+// #define CONVERSIONFACTOR 2              // magic number, accounts for real processing time
+// // #define STATETIME 500                // nanosecond duration of a processor state
+// // #define MIDSCREEN 8333333            // nanoseconds before midscreen interrupt
+// // #define VBLANK 16666667              // nanoseconds before VBLANK intrupt
+//
+// #define STATETIME 500                   // nanosecond duration of a processor state
+// #define MIDSCREEN 8333                  // nanoseconds before midscreen interrupt
+// #define VBLANK 16666
 
+#define SHORTWAIT 100                      // magic number, accounts for real processing time
+#define STATETIME 500 // 500                           // nanosecond duration of a processor state (faster processor)
+#define MIDSCREEN 7000000                       // nanoseconds before midscreen interrupt
+#define VBLANK 16501650 // 16666667                         // nanoseconds before VBLANK intrupt
+#define CYCLE_NSECS 257500
+#define WAIT_TIME 12875
 /*
 *   Interrupts will work with a structure within the CPU state of type process_r
 *   this has three components
@@ -33,7 +45,9 @@
 
 // cpu interrupts
 int triggerInterrupt(process_r *cpu, uint8_t vector);
-int processInterrupt(process_r *cpu);
+// int processInterrupt(process_r *cpu);
+int processInterrupt(state *processor, Media_t *mediaBucket, int ticks);
+int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket);
 
 // cpu instruction processing
 void processStep(struct instructionData *currentIns);
