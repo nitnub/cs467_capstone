@@ -1,21 +1,48 @@
 #include "interrupt.h"
 
-/* 
+// /* 
+// *   function: waitCycles
+// *   delays to make up the extra time the Intel 8080 would have taken for each cycle state
+// */
+// int waitCycles(void) {
+    
+//     // initialize wait time
+//     struct timespec cycleWait;
+//     cycleWait.tv_sec = 0;
+//     cycleWait.tv_nsec = MIDSCREEN;
+
+//     // wait the time expected for half of screen refresh cycle
+//     clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+
+//     return 0;
+// }
+
+/*
 *   function: waitCycles
 *   delays to make up the extra time the Intel 8080 would have taken for each cycle state
 */
-int waitCycles(void) {
-    
+int waitCycles(state *processor, long ticks, Media_t *mediaBucket) {
+
     // initialize wait time
-    struct timespec cycleWait;
-    cycleWait.tv_sec = 0;
-    cycleWait.tv_nsec = MIDSCREEN;
+
+    // trigger once every VBLANK / 16 ticks
+    if (ticks % CYCLE_NSECS == 0) {
+
+        //drawScreen(processor, mediaBucket);
+        struct timespec cycleWait;
+
+        cycleWait.tv_sec = 0;
+        cycleWait.tv_nsec = WAIT_TIME; // this is a magic number (515 * 25); replaces 515 * 500 [aprox VBLANK / 64];
+
+        clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
+
+    }
 
     // wait the time expected for half of screen refresh cycle
-    clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
-
     return 0;
 }
+
+
 
 /*
 *   function: triggerInterrupt
@@ -35,6 +62,31 @@ int triggerInterrupt(process_r *cpu, uint8_t vector) {
     return 0;
 }
 
+// /* 
+// *   function: processInterrupt
+// *   When an interrupt vector is ready, move it into the currentOpcode slot for processing.
+// *   Then clear the buffer and turn off the ready flag.
+// *
+// *   @param: cpu, a pointer to the subsection of the state struct that holds interrupt
+// *           enable boolean, interrupt ready boolean, buffer for interrupt vector, 
+// *           and current opcode.
+// */
+// int processInterrupt(process_r *cpu) {
+
+//     // check if there is an interrupt ready.
+//     // if so, place the vector into the current opcode position
+//     // and then clear buffer
+//     if (cpu->interruptReady != 0x00){
+//         memset(&cpu->currentOpcode, cpu->interruptBuffer, sizeof(uint8_t));
+//         memset(&cpu->interruptBuffer, 0x00, sizeof(uint8_t));
+//         memset(&cpu->interruptReady, 0x00, sizeof(uint8_t));
+
+//         // disable interrupts
+//         cpu->interruptEnabled = 0x00;
+//     }
+
+//     return 0;
+// }
 /* 
 *   function: processInterrupt
 *   When an interrupt vector is ready, move it into the currentOpcode slot for processing.
@@ -44,22 +96,37 @@ int triggerInterrupt(process_r *cpu, uint8_t vector) {
 *           enable boolean, interrupt ready boolean, buffer for interrupt vector, 
 *           and current opcode.
 */
-int processInterrupt(process_r *cpu) {
+int processInterrupt(state *processor, Media_t *mediaBucket, int ticks) {
+
+    process_r *cpu = &processor->currentOp;
 
     // check if there is an interrupt ready.
     // if so, place the vector into the current opcode position
     // and then clear buffer
     if (cpu->interruptReady != 0x00){
+
+        //waitCycles(ticks);
+
         memset(&cpu->currentOpcode, cpu->interruptBuffer, sizeof(uint8_t));
         memset(&cpu->interruptBuffer, 0x00, sizeof(uint8_t));
         memset(&cpu->interruptReady, 0x00, sizeof(uint8_t));
 
         // disable interrupts
         cpu->interruptEnabled = 0x00;
+
+        // decrement program counter
+        uint16_t currentPC = getReg16(processor, PC);
+        setReg16(processor, PC, currentPC-1);
+
+        // draw video memory to the screen
+        drawScreen(processor, mediaBucket);
+
     }
 
     return 0;
 }
+
+
 
 /* 
 *   function: stepOrQuit
@@ -272,6 +339,141 @@ int debuggerControl(struct instructionData *currentIns,
     return 0;
 }
 
+// /*
+// *   function: processorLoop
+// *   Simulating the following portions of the main game loop: CPU state, interrupts, debugger
+// *
+// *   @param: struct instructionData *currentIns, a pointer to the current instruction object
+// *   @param: struct instructionData *disassembler, a parallel object we can use to disassemble in advance
+// *
+// *   @returns: 0 when loop has ended and exited gracefully
+// */
+// int processorLoop(struct instructionData *currentIns, struct instructionData *disassembler) {
+
+//     // grab the cpu (state) from current instruction
+//     state *processor = currentIns->s;
+
+//     // simulate nanoseconds passing
+//     long ticks = 0;
+
+//     // turn on midscreen interrupt
+//     uint8_t needMidscreen = 1;
+
+//     // input buffer & variables for stepwise loop control
+//     char inputBuffer[3];
+//     int loopControl = 0;
+//     disassembler->stepControl = 1; // turn on step control until it's turned off
+
+//     while (loopControl != 1) {
+
+//         /* process CPU instruction */
+//         processStep(currentIns);
+
+//         /* keep accounting of nanoseconds "spent" */
+//         ticks += (STATETIME*currentIns->cycles);
+
+//         /* check for interrupts.... is it time? */
+//         if (ticks > VBLANK) 
+//         {
+//             /* trigger VBLANK interrupt*/
+//             triggerInterrupt(&processor->currentOp, 0xD7);
+//             waitCycles();
+//             ticks = 0; // resets "timer" count
+//             needMidscreen = 1;  
+//         }
+
+//         else if (ticks > MIDSCREEN && needMidscreen == 1) 
+//         {
+//             /* trigger midscreen interrupt */
+//             triggerInterrupt(&processor->currentOp, 0xCF);
+//             waitCycles();
+//             needMidscreen = 0;   
+//         }
+        
+//         /* run interrupt if one is ready */
+//         processInterrupt(&processor->currentOp);
+
+//         // run debugger control
+//         // TODO: turn this off
+//         debuggerControl(currentIns, disassembler, &loopControl, inputBuffer, sizeof(inputBuffer));
+//     }
+//     return 0;
+// }
+
+// -----------
+
+// /*
+// *   function: timingTestLoop
+// *   simulates the timing of a main game loop (60hz monitor refresh with 2 Mhz processor
+// *   by setting interrupts at set intervals
+// *
+// *   @param: state *processor, a pointer to the cpu structure
+// *   @param: size_t testingCycles: the number of screen refresh cycles we plan to test
+// *
+// *   @returns: double elapsed, the number of seconds it took to process testingCycles
+// *
+// *   NOTE: processor timing
+// *       The intel 8080 runs at 2 Mhz (2 million cpu states per second)
+// *
+// *       1 processor state should take 500 nanoseconds. It is difficult to wait such a granular time,
+// *       so this loop adds up the number of states passed and waits when an interrupt is called
+// *
+// *   NOTE: monitor refresh rate:
+// *       The Space Invaders arcade game monitor refreshed at a rate of 60 hz.
+// *       This is why VBLANK is set for 16,666,667 nanoseconds (this is equivalent to 1/60 seconds)
+// *
+// */
+// double timingTestLoop(state *processor, size_t testingCycles) {
+
+//     // simulate nanoseconds passing
+//     long ticks = 0;
+
+//     // turn on midscreen interrupt
+//     uint8_t needMidscreen = 1;
+
+//     // intialize and start clock for testing
+//     struct timespec startTime, loopTime; 
+//     double elapsed = 0;
+//     clock_gettime(CLOCK_MONOTONIC, &startTime);
+
+//     // initialize number of refresh cycles for testing
+//     size_t i = testingCycles;
+
+//     while (i > 0) {
+      
+//         /* toy instruction execution -- simulates stepCPU or similar */
+//         int cycles = 10;    // after dispatch, we get cycles from struct instructionData
+//         ticks += (STATETIME*cycles); // ticks keeps track of nanoseconds "spent"
+
+//         if (ticks > VBLANK) 
+//         {
+//             /* trigger VBLANK interrupt*/
+//             triggerInterrupt(&processor->currentOp, 0xD7);
+//             waitCycles();
+//             ticks = 0; // resets "timer" count
+//             needMidscreen = 1;
+
+//             i -= 1; // count down the screen refresh cycles for testing    
+//         }
+
+//         else if (ticks > MIDSCREEN && needMidscreen == 1) 
+//         {
+//             /* trigger midscreen interrupt */
+//             triggerInterrupt(&processor->currentOp, 0xCF);
+//             waitCycles();
+//             needMidscreen = 0;   
+//         }
+        
+//         /* run interrupt if one is ready */
+//         processInterrupt(&processor->currentOp);
+//     }
+
+//     /* get return value to check timing */
+//     clock_gettime(CLOCK_MONOTONIC, &loopTime);
+//     elapsed = (loopTime.tv_nsec - startTime.tv_nsec + (loopTime.tv_sec - startTime.tv_sec) * 1e9) / 1e9;
+//     return elapsed;
+// }
+
 /*
 *   function: processorLoop
 *   Simulating the following portions of the main game loop: CPU state, interrupts, debugger
@@ -281,7 +483,7 @@ int debuggerControl(struct instructionData *currentIns,
 *
 *   @returns: 0 when loop has ended and exited gracefully
 */
-int processorLoop(struct instructionData *currentIns, struct instructionData *disassembler) {
+int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
 
     // grab the cpu (state) from current instruction
     state *processor = currentIns->s;
@@ -292,117 +494,56 @@ int processorLoop(struct instructionData *currentIns, struct instructionData *di
     // turn on midscreen interrupt
     uint8_t needMidscreen = 1;
 
-    // input buffer & variables for stepwise loop control
-    char inputBuffer[3];
     int loopControl = 0;
-    disassembler->stepControl = 1; // turn on step control until it's turned off
-
     while (loopControl != 1) {
 
-        /* process CPU instruction */
-        processStep(currentIns);
+        // if statement here enables HLT until interrupt
+        if (currentIns->instruction != 0x76) {
+            /* process CPU instruction */
+            processStep(currentIns);
+        }
+            /* keep accounting of nanoseconds "spent" */
+            ticks += (STATETIME*currentIns->cycles);
 
-        /* keep accounting of nanoseconds "spent" */
-        ticks += (STATETIME*currentIns->cycles);
 
         /* check for interrupts.... is it time? */
-        if (ticks > VBLANK) 
+        if (ticks > VBLANK)
         {
+
+            // temporary controller to close the window
+            if (readControls(currentIns->s) == 1) {
+                break;
+            }
             /* trigger VBLANK interrupt*/
             triggerInterrupt(&processor->currentOp, 0xD7);
-            waitCycles();
-            ticks = 0; // resets "timer" count
-            needMidscreen = 1;  
-        }
-
-        else if (ticks > MIDSCREEN && needMidscreen == 1) 
-        {
-            /* trigger midscreen interrupt */
-            triggerInterrupt(&processor->currentOp, 0xCF);
-            waitCycles();
-            needMidscreen = 0;   
-        }
-        
-        /* run interrupt if one is ready */
-        processInterrupt(&processor->currentOp);
-
-        // run debugger control
-        // TODO: turn this off
-        debuggerControl(currentIns, disassembler, &loopControl, inputBuffer, sizeof(inputBuffer));
-    }
-    return 0;
-}
-
-// -----------
-
-/*
-*   function: timingTestLoop
-*   simulates the timing of a main game loop (60hz monitor refresh with 2 Mhz processor
-*   by setting interrupts at set intervals
-*
-*   @param: state *processor, a pointer to the cpu structure
-*   @param: size_t testingCycles: the number of screen refresh cycles we plan to test
-*
-*   @returns: double elapsed, the number of seconds it took to process testingCycles
-*
-*   NOTE: processor timing
-*       The intel 8080 runs at 2 Mhz (2 million cpu states per second)
-*
-*       1 processor state should take 500 nanoseconds. It is difficult to wait such a granular time,
-*       so this loop adds up the number of states passed and waits when an interrupt is called
-*
-*   NOTE: monitor refresh rate:
-*       The Space Invaders arcade game monitor refreshed at a rate of 60 hz.
-*       This is why VBLANK is set for 16,666,667 nanoseconds (this is equivalent to 1/60 seconds)
-*
-*/
-double timingTestLoop(state *processor, size_t testingCycles) {
-
-    // simulate nanoseconds passing
-    long ticks = 0;
-
-    // turn on midscreen interrupt
-    uint8_t needMidscreen = 1;
-
-    // intialize and start clock for testing
-    struct timespec startTime, loopTime; 
-    double elapsed = 0;
-    clock_gettime(CLOCK_MONOTONIC, &startTime);
-
-    // initialize number of refresh cycles for testing
-    size_t i = testingCycles;
-
-    while (i > 0) {
-      
-        /* toy instruction execution -- simulates stepCPU or similar */
-        int cycles = 10;    // after dispatch, we get cycles from struct instructionData
-        ticks += (STATETIME*cycles); // ticks keeps track of nanoseconds "spent"
-
-        if (ticks > VBLANK) 
-        {
-            /* trigger VBLANK interrupt*/
-            triggerInterrupt(&processor->currentOp, 0xD7);
-            waitCycles();
+            //waitCycles();
             ticks = 0; // resets "timer" count
             needMidscreen = 1;
-
-            i -= 1; // count down the screen refresh cycles for testing    
         }
 
-        else if (ticks > MIDSCREEN && needMidscreen == 1) 
+        else if (ticks > MIDSCREEN && needMidscreen == 1)
         {
+            // temporary controller to close the window
+            if (readControls(currentIns->s) == 1) {
+                break;
+            }
+
             /* trigger midscreen interrupt */
             triggerInterrupt(&processor->currentOp, 0xCF);
-            waitCycles();
-            needMidscreen = 0;   
+            //waitCycles();
+            needMidscreen = 0;
         }
-        
-        /* run interrupt if one is ready */
-        processInterrupt(&processor->currentOp);
+
+
+        /* run interrupt if one is ready & draw screen */
+        // processInterrupt(processor, mediaBucket, ticks);
+        processInterrupt(processor, mediaBucket, 0);
+
+
+        // waits a 16th of VBLANK every 1041500 ticks
+        waitCycles(processor, ticks, mediaBucket);
     }
 
-    /* get return value to check timing */
-    clock_gettime(CLOCK_MONOTONIC, &loopTime);
-    elapsed = (loopTime.tv_nsec - startTime.tv_nsec + (loopTime.tv_sec - startTime.tv_sec) * 1e9) / 1e9;
-    return elapsed;
+
+    return 0;
 }

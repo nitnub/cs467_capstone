@@ -12,8 +12,8 @@
 #define WINDOW_TITLE "Intel 8080 - Space Invaders" // TODO: temp placeholder name
 #define PIXEL_WIDTH 224
 #define PIXEL_HEIGHT 256
-#define SCREEN_WIDTH 940 // test scaling
-#define SCREEN_HEIGHT 1272 // test scaling
+#define SCREEN_WIDTH 672 // 940 // test scaling
+#define SCREEN_HEIGHT 768 // 1272 // test scaling
 
 #define BYTE_SIZE 8
 #define SET_BIT '1'
