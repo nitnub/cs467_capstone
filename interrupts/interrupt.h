@@ -28,8 +28,8 @@
 #define VBLANK 16501650 // 16666667                         // nanoseconds before VBLANK intrupt
 #define CYCLE_NSECS 257500
 //#define WAIT_TIME 12875
+// this value worked on M4 Pro, feel free to comment out
 #define WAIT_TIME 260000
-// this is correct ~60Hz pacing on M4 Pro so NOT machine-agnostic.
 
 /*
 *   Interrupts will work with a structure within the CPU state of type process_r
