@@ -6,16 +6,14 @@ VIDEO_C="video/*.c"
 #AUDIO_C="audio/mixer_test.c"
 #AUDIO_C="yigit_sound/*.c"
 SHIFT_C="spike_documents_nb/shift_register/shiftRegister.c"
-
 INTERRUPT_C="interrupts/interrupt.c"
-# MENU_C="menu/main_menu.c"
+MENU_C="menu/menu.c"
 CONTROLLER_C="controller/controller.c"
 
 # combine source file list
-SOURCE_FILES="main.c $VIDEO_C $CORE_C $HELPERS_C $CONTROLLER_C $INTERRUPT_C $AUDIO_C $SHIFT_C"
+SOURCE_FILES="main.c $VIDEO_C $CORE_C $HELPERS_C $CONTROLLER_C $INTERRUPT_C $AUDIO_C $SHIFT_C $MENU_C"
 
-
-# run for canonical loop
+# compile
 gcc -g -Wall $SOURCE_FILES -o main -lSDL2 -lSDL2_mixer -lSDL2_ttf -lm -lpthread
 
 # run

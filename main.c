@@ -5,10 +5,10 @@
 #include "core/cpu.h"
 #include "helpers/helpers.h"
 #include "video/video.h"
-// #include "video/control_test.h"
 #include "video/windowManager_temp.h"
 #include "interrupts/interrupt.h"
 #include "controller/controller.h"
+#include "menu/menu.h"
 
 struct instructionData ins;
 struct instructionData dis;
@@ -76,6 +76,18 @@ int main(void) {
     ////////////////////////
     // Main Emulator Loop //
     ////////////////////////
+
+    int userInput = mainMenu(mediaBucket);
+    printf("USER SELECTTION: %d\n", userInput);
+    printf("USER SELECTTION: %d\n", userInput);
+    printf("USER SELECTTION: %d\n", userInput);
+    if (userInput == MENU_SELECTION_QUIT) {
+        sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
+        printf("Thank you for playing!");
+        return 0;
+    }
+    SDL_SetWindowTitle(mediaBucket->window, "Space Invaders");
+
 
     // run game loop...
     runIntel8080(&ins, mediaBucket);

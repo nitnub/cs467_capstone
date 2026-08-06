@@ -32,11 +32,37 @@ Media_t *initMedia(void) {
     mBucket->window = NULL;
     mBucket->texture = NULL;
     mBucket->renderer = NULL;
+    mBucket->menu.font = NULL;
+    // mBucket->text.color = calloc(1, sizeof(*mBucket->text.color));
+    mBucket->menu.fontColor = malloc(sizeof(*mBucket->menu.fontColor));
+    mBucket->menu.fontColor->a = 0xff;
+    mBucket->menu.fontColor->b = 0xff;
+    mBucket->menu.fontColor->g = 0xff;
+    mBucket->menu.fontColor->r = 0xff;
+
+    mBucket->menu.headerTexture = NULL;
+    mBucket->menu.cursorTexture = NULL;
+
+
     return mBucket;
 }
 
 void sdlVideoCleanup(Media_t *mBucket, int exit_status) {
     // note this has to be in the reverse order of how things were initialized in the sdl_initialize function
+
+    // menu
+    SDL_DestroyTexture(mBucket->menu.headerTexture);
+    SDL_DestroyTexture(mBucket->menu.rom1Texture);
+    SDL_DestroyTexture(mBucket->menu.quitTexture);
+    SDL_DestroyTexture(mBucket->menu.cursorTexture);
+    free(mBucket->menu.headerRect);
+    free(mBucket->menu.rom1Rect);
+    free(mBucket->menu.quitRect);
+    free(mBucket->menu.cursorRect);
+    TTF_CloseFont(mBucket->menu.font);
+    free(mBucket->menu.fontColor);
+
+    // game emulation
     SDL_DestroyTexture(mBucket->texture);
     SDL_DestroyRenderer(mBucket->renderer);
     SDL_DestroyWindow(mBucket->window);
@@ -70,6 +96,19 @@ int sdlVideoInit(Media_t *mBucket) {
     mBucket->texture = SDL_CreateTexture(mBucket->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, PIXEL_WIDTH, PIXEL_HEIGHT);
     if (!mBucket->texture) {
         fprintf(stderr, "Error creating texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // initialize text support
+    if (TTF_Init()) {
+        fprintf(stderr, "Error initializing text support: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // try to load font
+    mBucket->menu.font = TTF_OpenFont(FONT_LOCATION, FONT_SIZE);
+    if (!mBucket->menu.font) {
+        fprintf(stderr, "Error loading file '%s': %s\n", FONT_LOCATION, SDL_GetError());
         return 1;
     }
 
@@ -217,4 +256,166 @@ int updatePoints(state *s, Points_t *points) {
 
     free(binBuffer);
     return points->wCount + points->gCount + points->rCount;
+}
+
+
+    //////////////////
+    // Mwnu Support //
+    //////////////////
+
+int initializeMenuRender(Media_t *mBucket) {
+    // mBucket->text.color = ;
+
+    SDL_Surface *cursorSurface = SDL_LoadBMP(CURSOR_IMAGE_LOCATION);
+
+    SDL_Surface *headerSurface = TTF_RenderText_Blended(mBucket->menu.font, "Welcome!", *mBucket->menu.fontColor);
+    SDL_Surface *optionOneSurface = TTF_RenderText_Blended(mBucket->menu.font, "Launch Space Invaders", *mBucket->menu.fontColor);
+    SDL_Surface *optionQuitSurface = TTF_RenderText_Blended(mBucket->menu.font, "Quit", *mBucket->menu.fontColor);
+
+
+
+    // verify surfaces were created
+
+    if (!cursorSurface) {
+        fprintf(stderr, "Error rendering cursor image: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    if (!headerSurface) {
+        fprintf(stderr, "Error rendering menu text: %s\n", SDL_GetError());
+        return 1;
+    }
+    if (!optionOneSurface) {
+        fprintf(stderr, "Error rendering menu option text: %s\n", SDL_GetError());
+        return 1;
+    }
+    if (!optionQuitSurface) {
+        fprintf(stderr, "Error rendering menu quittext: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // int xOffset = 450;
+    // int xOffset = (SCREEN_WIDTH ) / 2;
+
+    // allocate and set initial position for cursor
+    mBucket->menu.cursorRect = calloc(1, sizeof(SDL_Rect));
+    mBucket->menu.cursorRect->x = X_OFFSET_MENU - (optionOneSurface->w / 2) - 75;
+    mBucket->menu.cursorRect->y = Y_OFFSET_CURSOR; // (SCREEN_HEIGHT / 2) - 100;
+
+
+    // allocate and position header
+    mBucket->menu.headerRect = calloc(1, sizeof(SDL_Rect));
+    mBucket->menu.headerRect->x =  X_OFFSET_MENU - (headerSurface->w / 2);
+    mBucket->menu.headerRect->y = Y_OFFSET_HEADER; //  (SCREEN_HEIGHT / 2) - 150;
+
+    // allocate and position option 1
+    mBucket->menu.rom1Rect = calloc(1, sizeof(SDL_Rect));
+    mBucket->menu.rom1Rect->x =  X_OFFSET_MENU - (optionOneSurface->w / 2);
+    mBucket->menu.rom1Rect->y = Y_OFFSET_OPTION_1; // (SCREEN_HEIGHT / 2) -75;
+
+    // allocate and position quit
+    mBucket->menu.quitRect = calloc(1, sizeof(SDL_Rect));
+    mBucket->menu.quitRect->x = X_OFFSET_MENU - (optionQuitSurface->w / 2);
+    mBucket->menu.quitRect->y = Y_OFFSET_OPTION_2;  //(SCREEN_HEIGHT / 2);
+
+
+    // printf("##########\n");
+    printf("W: %d\n", headerSurface->w);
+    printf("W: %d\n", optionOneSurface->w);
+    printf("W: %d\n", optionQuitSurface->w);
+
+
+
+
+    // set width and height to the surface of the original text
+    // t_rect.w = surface->w;
+    // t_rect.h = surface->h;
+
+    // set rectangle heights and widths
+    mBucket->menu.cursorRect->h = cursorSurface->h;
+    mBucket->menu.cursorRect->w = cursorSurface->w;
+
+    mBucket->menu.headerRect->h = headerSurface->h;
+    mBucket->menu.headerRect->w = headerSurface->w;
+
+    mBucket->menu.rom1Rect->h = optionOneSurface->h;
+    mBucket->menu.rom1Rect->w = optionOneSurface->w;
+
+    mBucket->menu.quitRect->h = optionQuitSurface->h;
+    mBucket->menu.quitRect->w = optionQuitSurface->w;
+
+
+    // convert surface to texture
+    mBucket->menu.cursorTexture = SDL_CreateTextureFromSurface(mBucket->renderer, cursorSurface);
+
+
+    mBucket->menu.headerTexture = SDL_CreateTextureFromSurface(mBucket->renderer, headerSurface);
+    mBucket->menu.rom1Texture = SDL_CreateTextureFromSurface(mBucket->renderer, optionOneSurface);
+    mBucket->menu.quitTexture = SDL_CreateTextureFromSurface(mBucket->renderer, optionQuitSurface);
+
+    // free no-longer needed surface
+    SDL_FreeSurface(cursorSurface);
+    SDL_FreeSurface(headerSurface);
+    SDL_FreeSurface(optionOneSurface);
+    SDL_FreeSurface(optionQuitSurface);
+
+
+    if (!mBucket->menu.cursorTexture) {
+        fprintf(stderr, "Error creating cursor texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    if (!mBucket->menu.headerTexture) {
+        fprintf(stderr, "Error creating menu texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+
+
+    // draw to screen
+    // null source gets the entire source... draw to the text rectangle
+
+
+    return 0;
+
+}
+
+
+int updateMenuRender(Media_t *mBucket, int selectionIdx) {
+    // int menuStatus = 0;
+
+    // if in location 0
+
+    mBucket->menu.cursorRect->y = Y_OFFSET_CURSOR + CURSOR_STEP_DISTANCE * selectionIdx;
+
+    // if in location 1
+    printf("Drawing...y_o_c = %d , c_s_d = %d,, idx = %d cursor y at %d\n", Y_OFFSET_CURSOR, CURSOR_STEP_DISTANCE, selectionIdx, mBucket->menu.cursorRect->y);
+
+    // while (!menuStatus) {
+    // clear previous render
+    SDL_RenderClear(mBucket->renderer);
+    // readControls(&cpuState);
+    // render menu item 1 text
+    // SDL_RenderCopy(mBucket->renderer, mBucket->menu.menuImage, NULL, &t_rect);
+
+    SDL_RenderCopy(mBucket->renderer, mBucket->menu.cursorTexture, NULL, mBucket->menu.cursorRect);
+
+
+    SDL_RenderCopy(mBucket->renderer, mBucket->menu.headerTexture, NULL, mBucket->menu.headerRect);
+    SDL_RenderCopy(mBucket->renderer, mBucket->menu.rom1Texture, NULL, mBucket->menu.rom1Rect);
+    SDL_RenderCopy(mBucket->renderer, mBucket->menu.quitTexture, NULL, mBucket->menu.quitRect);
+
+    // display to the screen
+    SDL_RenderPresent(mBucket->renderer);
+
+    // delay for ~60 FPS
+    SDL_Delay(17);
+    // }
+
+
+
+    // clean up menu
+
+
+    return 0;
 }
