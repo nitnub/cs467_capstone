@@ -3,10 +3,9 @@
 
 #include <SDL2/SDL_events.h>
 #include "../video/video.h"
+
 #define MENU_SELECTION_ROM_1 0
 #define MENU_SELECTION_QUIT 1
-// #define MENU_SIZE 2
-
 #define MAX_TITLE_LENGTH
 
 typedef struct {
@@ -19,6 +18,5 @@ typedef struct {
 
 
 int mainMenu(Media_t *mBucket);
-
 
 #endif //MENU_H

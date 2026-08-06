@@ -10,7 +10,7 @@
 #include "../core/cpu.h"
 
 
-#define WINDOW_TITLE "Intel 8080 - Space Invaders"     // TODO: temp placeholder name
+#define WINDOW_TITLE "Intel 8080 Emulator"     // TODO: temp placeholder name
 #define PIXEL_WIDTH 224
 #define PIXEL_HEIGHT 256
 #define SCREEN_WIDTH 672 // 940 // test scaling
@@ -27,12 +27,20 @@
 #define CURSOR_IMAGE_LOCATION "menu/images/alien_cursor.bmp"
 #define X_OFFSET_MENU (SCREEN_WIDTH / 2)
 
-#define Y_OFFSET_MENU (SCREEN_HEIGHT / 2)
-#define Y_OFFSET_HEADER  Y_OFFSET_MENU - 150
-#define Y_OFFSET_OPTION_1  Y_OFFSET_MENU - 75
-#define Y_OFFSET_OPTION_2  Y_OFFSET_MENU               // no offset, so minus 0
-#define Y_OFFSET_CURSOR Y_OFFSET_MENU - 100
+#define MENU_ELEMENT_HEIGHT 75
+#define MENU_ELEMENT_CURSOR_SPACING 75
+
+#define Y_OFFSET_MENU (SCREEN_HEIGHT / 2) - 150          // set slightly above mid-screen
+#define Y_OFFSET_HEADER  Y_OFFSET_MENU
+#define Y_OFFSET_OPTION_1  Y_OFFSET_MENU + MENU_ELEMENT_HEIGHT * 1
+#define Y_OFFSET_OPTION_2  Y_OFFSET_MENU + MENU_ELEMENT_HEIGHT * 2              // no offset, so minus 0
+#define Y_OFFSET_CURSOR Y_OFFSET_MENU + 50
 #define CURSOR_STEP_DISTANCE 75
+
+#define LABEL_HEADER "Welcome!"
+#define LABEL_ROM_1 "Launch Space Invaders"
+#define LABEL_QUIT "Quit"
+#define LABEL_SETTINGS "Settings"
 
 typedef struct {
     SDL_Point white[POINTS_ARR_SIZE];                  // TODO: test sizing.. calc specific values for each color
@@ -46,23 +54,16 @@ typedef struct {
 } Points_t;
 
 typedef struct {
-    // Text_t text;
     TTF_Font *font;
     SDL_Color *fontColor;
-    // SDL_Texture *menuImage;
-
     SDL_Rect *headerRect;
     SDL_Texture *headerTexture;
-
     SDL_Rect *rom1Rect;
     SDL_Texture *rom1Texture;
-
     SDL_Rect *quitRect;
     SDL_Texture *quitTexture;
-
     SDL_Rect *cursorRect;
     SDL_Texture *cursorTexture;
-
 } MenuUI_t;
 
 typedef struct  {

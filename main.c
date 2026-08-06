@@ -77,15 +77,12 @@ int main(void) {
     // Main Emulator Loop //
     ////////////////////////
 
-    int userInput = mainMenu(mediaBucket);
-    printf("USER SELECTTION: %d\n", userInput);
-    printf("USER SELECTTION: %d\n", userInput);
-    printf("USER SELECTTION: %d\n", userInput);
-    if (userInput == MENU_SELECTION_QUIT) {
+    if (mainMenu(mediaBucket) == MENU_SELECTION_QUIT) {
         sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
         printf("Thank you for playing!");
         return 0;
     }
+
     SDL_SetWindowTitle(mediaBucket->window, "Space Invaders");
 
 
