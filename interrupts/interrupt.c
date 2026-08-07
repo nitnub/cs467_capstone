@@ -483,7 +483,7 @@ int debuggerControl(struct instructionData *currentIns,
 *
 *   @returns: 0 when loop has ended and exited gracefully
 */
-int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
+int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio) { // audio added
 
     // grab the cpu (state) from current instruction
     state *processor = currentIns->s;
@@ -502,8 +502,12 @@ int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
             /* process CPU instruction */
             processStep(currentIns);
         }
-            /* keep accounting of nanoseconds "spent" */
-            ticks += (STATETIME*currentIns->cycles);
+        
+        // per instruction sound hook
+        soundHook(processor, audio);
+        
+        /* keep accounting of nanoseconds "spent" */
+        ticks += (STATETIME*currentIns->cycles);
 
 
         /* check for interrupts.... is it time? */

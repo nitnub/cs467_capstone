@@ -10,6 +10,7 @@
 #include "../core/handler.h"    // handler.h -> handleSegment.h -> cpu.h & opcodes.h
 #include "../helpers/helpers.h"
 #include "../video/video.h"
+#include "../audio/audio.h"
 #include "../video/windowManager_temp.h"
 
 // #define CONVERSIONFACTOR 2              // magic number, accounts for real processing time
@@ -26,7 +27,10 @@
 #define MIDSCREEN 7000000                       // nanoseconds before midscreen interrupt
 #define VBLANK 16501650 // 16666667                         // nanoseconds before VBLANK intrupt
 #define CYCLE_NSECS 257500
-#define WAIT_TIME 12875
+//#define WAIT_TIME 12875
+// equal to CYCLE_NSECS, which  worked on M4 Pro, feel free to comment out
+#define WAIT_TIME 257500
+
 /*
 *   Interrupts will work with a structure within the CPU state of type process_r
 *   this has three components
@@ -47,7 +51,7 @@
 int triggerInterrupt(process_r *cpu, uint8_t vector);
 // int processInterrupt(process_r *cpu);
 int processInterrupt(state *processor, Media_t *mediaBucket, int ticks);
-int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket);
+int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio); // audio added
 
 // cpu instruction processing
 void processStep(struct instructionData *currentIns);
