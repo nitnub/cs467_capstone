@@ -5,6 +5,8 @@
 #include "core/cpu.h"
 #include "helpers/helpers.h"
 #include "video/video.h"
+// #include "video/control_test.h"
+#include "audio/audio.h"
 #include "video/windowManager_temp.h"
 #include "interrupts/interrupt.h"
 #include "controller/controller.h"
@@ -39,7 +41,7 @@ int setupMemory(state *processor, int start) {
 
     // point to first instruction
     processor->currentOp.currentOpcode = start;
-
+    
     // set name of game in the state structure
     processor->gameIndex = SPACE_INVADERS;
 
@@ -50,8 +52,11 @@ int setupMemory(state *processor, int start) {
 /*
 *   Test processor loop with interrupts enabled
 */
-int setupEmulator(struct instructionData *currentIns, Media_t *mediaBucket) {
+int setupEmulator(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio) {
     if (sdlVideoInit(mediaBucket)) {
+        sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
+    }
+    if (sdlAudioInit(audio)) {
         sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
     }
     setupMemory(currentIns->s, 0x00);
@@ -72,15 +77,19 @@ int main(void) {
     // initialize a media bucket item to hold all of our SDL2 structs; can be passed to
     // shared constructor/destructor funcs to centralize our SDL2 init and tear down.
     Media_t *mediaBucket = initMedia();
+
+    Audio audio = {0};
+
     ins.s = &myCpu;
-    setupEmulator(&ins, mediaBucket);
+    setupEmulator(&ins, mediaBucket, &audio);
 
 
     ////////////////////////
     // Main Emulator Loop //
     ////////////////////////
 
-    if (mainMenu(mediaBucket) == MENU_SELECTION_QUIT) {
+    if (mainMenu(mediaBucket, &audio) == MENU_SELECTION_QUIT) {
+        SDL_Delay(500);   // let the quit sound finish 
         sdlVideoCleanup(mediaBucket, EXIT_SUCCESS);
         printf(SAFE_SHUTDOWN_MESSAGE);
         return 0;
@@ -89,16 +98,16 @@ int main(void) {
     // update header
     SDL_SetWindowTitle(mediaBucket->window, WINDOW_TITLE_SPACE_INVADERS);
 
-
     // run game loop...
-    runIntel8080(&ins, mediaBucket);
+    runIntel8080(&ins, mediaBucket, &audio);
 
 
     ///////////////////////////
     // Tear Down Application //
     ///////////////////////////
 
-    // more to add to a shared cleanup function? Can combine audio in mediaBucket..
+    // audio owns only its own resources, video owns SDL_Quit + exit
+    audioFreeResources(&audio);
     sdlVideoCleanup(mediaBucket, EXIT_SUCCESS);
     printf(SAFE_SHUTDOWN_MESSAGE);
     return 0;

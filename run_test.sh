@@ -1,10 +1,8 @@
 # source file list
 CORE_C="core/cpu.c core/handler.c core/handleSegment.c core/opcodes.c"
-HELPERS_C=helpers/helpers.c
+HELPERS_C="helpers/helpers.c"
 VIDEO_C="video/*.c"
-#AUDIO_C="yigit_sound/simple_mixer.c"
-#AUDIO_C="audio/mixer_test.c"
-#AUDIO_C="yigit_sound/*.c"
+AUDIO_C="audio/audio.c"
 SHIFT_C="spike_documents_nb/shift_register/shiftRegister.c"
 INTERRUPT_C="interrupts/interrupt.c"
 MENU_C="menu/menu.c"
