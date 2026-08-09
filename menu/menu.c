@@ -29,7 +29,7 @@ int processUserInput(Menu_t *menuState, Audio *audio) {
                         } else {
                             playSound(audio->invader_death_sound);
                         }
-                        return menuState->currentSelection;                        return menuState->currentSelection;
+                        return menuState->currentSelection;
                     case SDL_SCANCODE_Q:
                     case SDL_SCANCODE_ESCAPE:
                         playSound(audio->player_death_sound);
