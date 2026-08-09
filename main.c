@@ -78,7 +78,7 @@ int main(void) {
     ////////////////////////
 
     if (mainMenu(mediaBucket) == MENU_SELECTION_QUIT) {
-        sdlVideoCleanup(mediaBucket, EXIT_FAILURE);
+        sdlVideoCleanup(mediaBucket, EXIT_SUCCESS);
         printf(SAFE_SHUTDOWN_MESSAGE);
         return 0;
     }
