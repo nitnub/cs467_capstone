@@ -5,10 +5,10 @@
 #include "core/cpu.h"
 #include "helpers/helpers.h"
 #include "video/video.h"
-// #include "video/control_test.h"
 #include "video/windowManager_temp.h"
 #include "interrupts/interrupt.h"
 #include "controller/controller.h"
+#include "menu/menu.h"
 
 struct instructionData ins;
 struct instructionData dis;
@@ -80,6 +80,16 @@ int main(void) {
     // Main Emulator Loop //
     ////////////////////////
 
+    if (mainMenu(mediaBucket) == MENU_SELECTION_QUIT) {
+        sdlVideoCleanup(mediaBucket, EXIT_SUCCESS);
+        printf(SAFE_SHUTDOWN_MESSAGE);
+        return 0;
+    }
+
+    // update header
+    SDL_SetWindowTitle(mediaBucket->window, WINDOW_TITLE_SPACE_INVADERS);
+
+
     // run game loop...
     runIntel8080(&ins, mediaBucket);
 
@@ -90,6 +100,6 @@ int main(void) {
 
     // more to add to a shared cleanup function? Can combine audio in mediaBucket..
     sdlVideoCleanup(mediaBucket, EXIT_SUCCESS);
-    printf("\nShutting down...\n");
+    printf(SAFE_SHUTDOWN_MESSAGE);
     return 0;
 }
