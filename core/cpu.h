@@ -85,6 +85,7 @@ typedef struct {
     uint8_t inp[PORT_COUNT];            // input ports
     ShiftRegister_t shiftReg;           // shift register
     unsigned char memory[MEM_SIZE];     // memory
+    int gameIndex;                      // the enumerated index of the current game
 } state;
 
 

@@ -16,7 +16,7 @@ state myCpu;
 state disCpu;
 
 /*
-* setup CPU for testing
+* setup interrupts & processing structure within CPU
 */
 int setupCPU(process_r *cpu) {
     cpu->interruptBuffer = (uint8_t) 0x00;
@@ -39,6 +39,9 @@ int setupMemory(state *processor, int start) {
 
     // point to first instruction
     processor->currentOp.currentOpcode = start;
+
+    // set name of game in the state structure
+    processor->gameIndex = SPACE_INVADERS;
 
     return 0;
 }

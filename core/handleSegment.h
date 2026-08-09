@@ -175,4 +175,11 @@ static hfv_i seg3Array[] = {
                                 segment3_F
                             };
 
+/* game specific controls that must be cleared after input read */
+enum gameIndex {
+    SPACE_INVADERS = 1
+};
+
+void clearAfterInput(struct instructionData *currentIns, int gameIndex); 
+
 #endif

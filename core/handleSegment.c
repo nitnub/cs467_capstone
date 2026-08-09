@@ -1289,6 +1289,9 @@ int segment3_B(struct instructionData *currentIns) {
                 ? getShiftRegisterValue(&currentIns->s->shiftReg)
                 : getPort(currentIns->s, currentIns->operand1, IN);
             setReg8(currentIns->s, A, value);
+
+            // quick-clear: clear only bit 0 of port 1
+            clearAfterInput(currentIns, currentIns->s->gameIndex);
             break;
 
         case 2:
@@ -1310,7 +1313,6 @@ int segment3_B(struct instructionData *currentIns) {
 
             // execute instruction
             currentIns->s->currentOp.interruptEnabled = 0x01;
-
             break;
     }
 
@@ -1417,4 +1419,34 @@ int segment3_F(struct instructionData *currentIns) {
     callProcRST(currentIns->s, vector);
 
     return 0;
+}
+
+
+/*********************************** GAME SPECIFIC OPERATIONS ****************************** */
+
+/** 
+*   function: clearAfterInput
+*   completes game-specific mechanics following input read for controller instructions
+*
+*   ** game 1: space invaders: clears coin bit immediately after read into port
+*
+*   @param: currentIns, a pointer to the current instruction structure
+*   @param: gameIndex, an enumerated integer index representing the current game
+*/
+void clearAfterInput(struct instructionData *currentIns, int gameIndex) {
+
+    switch (gameIndex) {
+     
+        case SPACE_INVADERS:
+            // space invaders: clear the coin bit after it is read in
+            if (currentIns->operand1 == 1) {
+                setPort(currentIns->s, currentIns->operand1, IN, getPort(currentIns->s, currentIns->operand1, IN) & 0xFE);
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    return;
 }

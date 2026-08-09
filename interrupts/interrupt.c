@@ -509,11 +509,6 @@ int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
         /* check for interrupts.... is it time? */
         if (ticks > VBLANK)
         {
-
-            // temporary controller to close the window
-            if (readControls(currentIns->s) == 1) {
-                break;
-            }
             /* trigger VBLANK interrupt*/
             triggerInterrupt(&processor->currentOp, 0xD7);
             //waitCycles();
@@ -523,10 +518,6 @@ int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
 
         else if (ticks > MIDSCREEN && needMidscreen == 1)
         {
-            // temporary controller to close the window
-            if (readControls(currentIns->s) == 1) {
-                break;
-            }
 
             /* trigger midscreen interrupt */
             triggerInterrupt(&processor->currentOp, 0xCF);
@@ -534,6 +525,10 @@ int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket) {
             needMidscreen = 0;
         }
 
+        // poll controller. 1 means escape key has been pressed
+        if (readControls(currentIns->s) == 1) {
+            break;
+        }
 
         /* run interrupt if one is ready & draw screen */
         // processInterrupt(processor, mediaBucket, ticks);
