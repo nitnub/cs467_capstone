@@ -29,11 +29,11 @@ int waitCycles(state *processor, long ticks, Media_t *mediaBucket) {
     // initialize wait time
 
     // trigger once every VBLANK / 16 ticks
-//    if (ticks % CYCLE_NSECS == 0) {
+    //if (ticks % CYCLE_NSECS == 0) {
     
     if (ticks >= nextTrigger) {
 
-        nextTrigger = ticks + CYCLE_NSECS;
+        nextTrigger = (ticks + CYCLE_NSECS);
 
         //drawScreen(processor, mediaBucket);
         struct timespec cycleWait;
