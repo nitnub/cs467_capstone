@@ -90,13 +90,13 @@ int readControls(state *cpuState) {
                     case SDL_SCANCODE_SPACE:
                         setClearBit(cpuState->inp, 1, ONEP_FIRES, 0);
                         break;
-                    //case SDL_SCANCODE_LEFT:
+                    case SDL_SCANCODE_LEFT:
                     //    initializeControl(cpuState->inp);
-                    //    setClearBit(cpuState->inp, 1, ONEP_LEFT, 0);
-                    //    break;
-                    //case SDL_SCANCODE_RIGHT:
-                    //    setClearBit(cpuState->inp, 1, ONEP_RIGHT, 0);
-                    //    break;
+                        setClearBit(cpuState->inp, 1, ONEP_LEFT, 0);
+                        break;
+                    case SDL_SCANCODE_RIGHT:
+                        setClearBit(cpuState->inp, 1, ONEP_RIGHT, 0);
+                        break;
                     // case SDL_SCANCODE_A:
                     //    setClearBit(cpuState->inp, 2, TWOP_LEFT, 0);
                     //    break;
