@@ -24,10 +24,12 @@
 
 #define SHORTWAIT 100                      // magic number, accounts for real processing time
 #define STATETIME 500 // 500                           // nanosecond duration of a processor state (faster processor)
-#define MIDSCREEN 7000000                       // nanoseconds before midscreen interrupt
-#define VBLANK 16501650 // 16666667                         // nanoseconds before VBLANK intrupt
-#define CYCLE_NSECS 257500
-#define WAIT_TIME 12875
+//#define MIDSCREEN (STATETIME * 515 * 28)                       // nanoseconds before midscreen interrupt
+//#define VBLANK (STATETIME * 515 * 64) // 16666667                         // nanoseconds before VBLANK intrupt
+#define CYCLE_NSECS (STATETIME * 515)
+#define VBLANK (CYCLE_NSECS * 64)
+#define MIDSCREEN (CYCLE_NSECS * 26)
+#define WAIT_TIME (515 * 10)
 
 /*
 *   Interrupts will work with a structure within the CPU state of type process_r
