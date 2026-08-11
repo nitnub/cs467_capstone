@@ -289,8 +289,14 @@ int initializeMenuCursor(Media_t *mBucket, SDL_Texture **elTexture, SDL_Rect *el
 
     // verify surface was created
     if (elSurface == NULL) {
+        //fprintf(stderr, "Error rendering cursor image: %s\n", SDL_GetError());
+        //return 1;
+
+		elSurface = SDL_LoadBMP(CURSOR_IMAGE_LOCATION_DEFAULT);
+		if (elSurface == NULL) {
         fprintf(stderr, "Error rendering cursor image: %s\n", SDL_GetError());
         return 1;
+		}
     }
 
     // try to create cursor, initializing to index (0),

@@ -24,7 +24,8 @@
 // menu support
 #define FONT_LOCATION "hardware/video/fonts/PressStart2P-Regular.ttf"
 #define FONT_SIZE 24
-#define CURSOR_IMAGE_LOCATION "menu/images/alien_cursor.bmp"
+#define CURSOR_IMAGE_LOCATION "game_files/images/alien_cursor.bmp"
+#define CURSOR_IMAGE_LOCATION_DEFAULT "menu/images/default_cursor.bmp"
 #define X_OFFSET_MENU (SCREEN_WIDTH / 2)
 #define MENU_ELEMENT_HEIGHT 75
 #define MENU_ELEMENT_CURSOR_SPACING 75

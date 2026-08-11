@@ -35,7 +35,7 @@ int setupMemory(state *processor, int start) {
     memset(processor->memory, 0, MEM_SIZE);
 
     // load game ROM into memory
-    char romName[] = "./invaders.combined";
+    char romName[] = "./game_files/invaders.combined";
     loadRomToMemory(processor, romName);
 
     // point to first instruction
