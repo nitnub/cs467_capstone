@@ -3,8 +3,8 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include "../core/cpu.h"
-#include "../core/handler.h"
+#include "../cpu.h"
+#include "../handler.h"
 /**
  * Print the current memory state in a human-readable format.
  * @param s reference to an Intel 8080 state struct

@@ -1,9 +1,7 @@
 // Temp logic to manage closing / advancing the window for testing
 
 #include "windowManager_temp.h"
-#include "video.h"
-#include "../core/cpu.h"
-#include"../controller/controller.h"
+
 
 int readControls(state *cpuState) {
     SDL_Event event;

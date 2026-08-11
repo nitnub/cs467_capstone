@@ -3,13 +3,12 @@
 #include <sys/time.h>
 
 #include "core/cpu.h"
-#include "helpers/helpers.h"
-#include "video/video.h"
-// #include "video/control_test.h"
-#include "audio/audio.h"
-#include "video/windowManager_temp.h"
-#include "interrupts/interrupt.h"
-#include "controller/controller.h"
+#include "core/helpers/helpers.h"
+#include "hardware/video/video.h"
+#include "hardware/audio/audio.h"
+// #include "hardware/video/windowManager_temp.h"
+#include "hardware/interrupts/interrupt.h"
+#include "hardware/controller/controller.h"
 #include "menu/menu.h"
 
 struct instructionData ins;
@@ -36,7 +35,7 @@ int setupMemory(state *processor, int start) {
     memset(processor->memory, 0, MEM_SIZE);
 
     // load game ROM into memory
-    char romName[] = "./invaders.combined";
+    char romName[] = "./game_files/invaders.combined";
     loadRomToMemory(processor, romName);
 
     // point to first instruction

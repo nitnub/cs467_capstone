@@ -6,7 +6,7 @@
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "../core/cpu.h"
+#include "../../core/cpu.h"
 
 #define WINDOW_TITLE "Intel 8080 Emulator"     // TODO: temp placeholder name
 #define WINDOW_TITLE_SPACE_INVADERS "Space Invaders"
@@ -22,9 +22,10 @@
 #define CLEAR_BIT '0'
 
 // menu support
-#define FONT_LOCATION "video/fonts/PressStart2P-Regular.ttf"
+#define FONT_LOCATION "hardware/video/fonts/PressStart2P-Regular.ttf"
 #define FONT_SIZE 24
-#define CURSOR_IMAGE_LOCATION "menu/images/alien_cursor.bmp"
+#define CURSOR_IMAGE_LOCATION "game_files/images/alien_cursor.bmp"
+#define CURSOR_IMAGE_LOCATION_DEFAULT "menu/images/default_cursor.bmp"
 #define X_OFFSET_MENU (SCREEN_WIDTH / 2)
 #define MENU_ELEMENT_HEIGHT 75
 #define MENU_ELEMENT_CURSOR_SPACING 75
