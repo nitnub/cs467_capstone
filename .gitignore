@@ -1,3 +1,7 @@
-.DS_Store
+# directories
 .idea/
 game_files/
+
+# files
+.DS_Store
+main
