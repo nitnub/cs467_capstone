@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdio.h>
-#include "../spike_documents_nb/shift_register/shiftRegister.h"   // TODO: adjust to final path
+#include "../hardware/shift_register/shiftRegister.h"
 
 #define MEM_SIZE 65536
 

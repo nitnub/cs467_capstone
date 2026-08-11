@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
-#include "../core/cpu.h"
+#include "../../core/cpu.h"
 
 #define AUDIO_FREQUENCY 11025
 #define AUDIO_FORMAT AUDIO_U8
@@ -12,16 +12,16 @@
 #define AUDIO_CHUNKSIZE 1024
 
 // all sounds
-#define SHOT_SOUND_PATH "audio/si_sounds/shoot.wav"
-#define PLAYER_DEATH_SOUND_PATH "audio/si_sounds/explosion.wav"
-#define INVADER_DEATH_SOUND_PATH "audio/si_sounds/invaderkilled.wav"
-#define UFO_SOUND_PATH "audio/si_sounds/ufo_highpitch.wav"
-#define UFO_HIT_SOUND_PATH "audio/si_sounds/ufo_lowpitch.wav"
+#define SHOT_SOUND_PATH "game_files/si_sounds/shoot.wav"
+#define PLAYER_DEATH_SOUND_PATH "game_files/si_sounds/explosion.wav"
+#define INVADER_DEATH_SOUND_PATH "game_files/si_sounds/invaderkilled.wav"
+#define UFO_SOUND_PATH "game_files/si_sounds/ufo_highpitch.wav"
+#define UFO_HIT_SOUND_PATH "game_files/si_sounds/ufo_lowpitch.wav"
 // quick&dirty fix: order changed so that it starts with the highest tone
-#define FLEET_STEP0_SOUND_PATH "audio/si_sounds/fastinvader3.wav"
-#define FLEET_STEP1_SOUND_PATH "audio/si_sounds/fastinvader0.wav"
-#define FLEET_STEP2_SOUND_PATH "audio/si_sounds/fastinvader1.wav"
-#define FLEET_STEP3_SOUND_PATH "audio/si_sounds/fastinvader2.wav"
+#define FLEET_STEP0_SOUND_PATH "game_files/si_sounds/fastinvader3.wav"
+#define FLEET_STEP1_SOUND_PATH "game_files/si_sounds/fastinvader0.wav"
+#define FLEET_STEP2_SOUND_PATH "game_files/si_sounds/fastinvader1.wav"
+#define FLEET_STEP3_SOUND_PATH "game_files/si_sounds/fastinvader2.wav"
 
 // port 3 bit assignments
 #define SND_UFO 0x01

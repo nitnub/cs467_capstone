@@ -3,8 +3,10 @@
 #define CONTROL_TEST_H
 
 #include <SDL2/SDL_events.h>
+#include "../video/video.h"
+#include "../../core/cpu.h"
+#include "controller.h"
 
-#include "../core/cpu.h"
 
 /**
  * Test controller input to manage screen closure. Event polling is

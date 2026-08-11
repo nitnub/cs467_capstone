@@ -7,11 +7,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <pthread.h>
-#include "../core/handler.h"    // handler.h -> handleSegment.h -> cpu.h & opcodes.h
-#include "../helpers/helpers.h"
+#include "../../core/handler.h"    // handler.h -> handleSegment.h -> cpu.h & opcodes.h
+#include "../../core/helpers/helpers.h"
 #include "../video/video.h"
+#include "../controller/windowManager_temp.h"
 #include "../audio/audio.h"
-#include "../video/windowManager_temp.h"
 
 // #define CONVERSIONFACTOR 2              // magic number, accounts for real processing time
 // // #define STATETIME 500                // nanosecond duration of a processor state
