@@ -1291,7 +1291,7 @@ int segment3_B(struct instructionData *currentIns) {
             setReg8(currentIns->s, A, value);
 
             // quick-clear: clear only bit 0 of port 1
-            clearAfterInput(currentIns, currentIns->s->gameIndex);
+            //clearAfterInput(currentIns, currentIns->s->gameIndex);
             break;
 
         case 2:
