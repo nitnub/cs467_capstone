@@ -68,3 +68,18 @@ int mainMenu(Media_t *mBucket, Audio *audio) {
     }
     return menuStatus;
 }
+
+int gameFilesExist() {
+
+    // try to open a directory stream
+    DIR *gameDir = opendir("./game_files");
+
+    // if directory does not exist, alert user
+    if (gameDir == NULL) {
+        return 0;
+    }
+
+    // close directory stream
+    closedir(gameDir);
+    return 1;
+}
