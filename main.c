@@ -85,6 +85,7 @@ int main(int argc, char* argv[]) {
     ///////////////////////
     // Debug status      //
     ///////////////////////
+
     int debug;
     struct instructionData *disassembler = NULL;
     if (argc < 2) {
