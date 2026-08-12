@@ -69,6 +69,13 @@ int setupEmulator(struct instructionData *currentIns, Media_t *mediaBucket, Audi
 
 
 int main(void) {
+
+    // verify valid game files exist
+    if (!gameFilesExist()){
+        printf("Error opening game files. Pleasa place your unzipped game_files folder in the project's root directory.\n");
+        return 1;
+    }
+
     ////////////////////////
     // Set Up Application //
     ////////////////////////
@@ -81,6 +88,8 @@ int main(void) {
 
     ins.s = &myCpu;
     setupEmulator(&ins, mediaBucket, &audio);
+
+
 
 
     ////////////////////////
