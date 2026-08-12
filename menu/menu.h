@@ -24,7 +24,6 @@ typedef struct {
  */
 int mainMenu(Media_t *mBucket, Audio *audio); //added audio for FX
 
-
 /**
  * Check if the root project directory has a game_files folder.
  * @return 1 if directory exists, 0 if not

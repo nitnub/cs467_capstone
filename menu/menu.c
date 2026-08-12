@@ -70,7 +70,6 @@ int mainMenu(Media_t *mBucket, Audio *audio) {
 }
 
 int gameFilesExist() {
-
     // try to open a directory stream
     DIR *gameDir = opendir("./game_files");
 
