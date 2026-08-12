@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <SDL2/SDL_events.h>
+#include "../../core/cpu.h"
+
 #define INITIAL_PORT0 0x00
 #define INITIAL_PORT1 0x88
 #define INITIAL_PORT2 0x80
@@ -68,6 +71,15 @@ enum p2bits {
     TWOP_LEFT = 5,
     TWOP_RIGHT = 6
 };
+
+/**
+ * Test controller input to manage screen closure. Event polling is
+ * mandatory to use the SDL window's 'X' close button
+ * @param cpuState pointer to the current program's CPU state struct
+ * @return 1 on close, 0 otherwise
+ */
+int readControls(state *cpuState);
+
 
 /*
 *   ******* Outline of Input Ports 1 & 2 *******

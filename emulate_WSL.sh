@@ -5,7 +5,7 @@ VIDEO_C="hardware/video/*.c"
 AUDIO_C="hardware/audio/audio.c"
 SHIFT_C="hardware/shift_register/shiftRegister.c"
 INTERRUPT_C="hardware/interrupts/interrupt.c"
-CONTROLLER_C="hardware/controller/controller.c hardware/controller/windowManager_temp.c"
+CONTROLLER_C="hardware/controller/controller.c"
 MENU_C="menu/menu.c"
 
 # combine source file list

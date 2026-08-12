@@ -10,7 +10,7 @@
 #include "../../core/handler.h"    // handler.h -> handleSegment.h -> cpu.h & opcodes.h
 #include "../../core/helpers/helpers.h"
 #include "../video/video.h"
-#include "../controller/windowManager_temp.h"
+#include "../controller/controller.h"
 #include "../audio/audio.h"
 
 // #define CONVERSIONFACTOR 2              // magic number, accounts for real processing time
