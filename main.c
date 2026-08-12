@@ -68,7 +68,7 @@ int setupEmulator(struct instructionData *currentIns, Media_t *mediaBucket, Audi
 }
 
 
-int main(void) {
+int main(int argc, char* argv[]) {
     ////////////////////////
     // Set Up Application //
     ////////////////////////
@@ -82,6 +82,26 @@ int main(void) {
     ins.s = &myCpu;
     setupEmulator(&ins, mediaBucket, &audio);
 
+    ///////////////////////
+    // Debug status      //
+    ///////////////////////
+    int debug;
+    struct instructionData *disassembler = NULL;
+    if (argc < 2) {
+        debug = 0;
+    }
+    else if (!strcmp(argv[1], "debug")) {
+        debug = 1;
+        
+        // set up secondary CPU for disassembly
+        disassembler = &dis;
+        dis.s = &disCpu;
+        setupMemory(&disCpu, 0x00);
+        setupCPU(&disCpu.currentOp);
+    }
+    else {
+        debug = 0;
+    }
 
     ////////////////////////
     // Main Emulator Loop //
@@ -98,7 +118,7 @@ int main(void) {
     SDL_SetWindowTitle(mediaBucket->window, WINDOW_TITLE_SPACE_INVADERS);
 
     // run game loop...
-    runIntel8080(&ins, mediaBucket, &audio);
+    runIntel8080(&ins, mediaBucket, &audio, debug, disassembler);
 
 
     ///////////////////////////

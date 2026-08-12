@@ -49,7 +49,7 @@
 int triggerInterrupt(process_r *cpu, uint8_t vector);
 // int processInterrupt(process_r *cpu);
 int processInterrupt(state *processor, Media_t *mediaBucket, int ticks);
-int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio); // audio added
+int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio, int debug, struct instructionData *disassembler); // audio added
 
 // cpu instruction processing
 void processStep(struct instructionData *currentIns);
