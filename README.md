@@ -32,8 +32,7 @@ chmod +x ./emulate.sh             # make the launch script executable
 Due to issues with the interaction between WSL2 and SDL, if you are running the project within WSL2, the display should render using the CPU, rather than GPU. In addition, VSYNC should be turned off. To do this, run:
 ```bash
 chmod +x ./emulate_WSL.sh                 # make launch script executable
-export SDL_RENDER_DRIVER=software     # render using CPU
-__GL_SYNC_TO_VBLANK=0 ./emulate_WSL.sh    # turn off VSYNC and launch
+./emulate_WSL.sh                          # launch the application
 ```
 
 ### macOS
@@ -41,7 +40,6 @@ __GL_SYNC_TO_VBLANK=0 ./emulate_WSL.sh    # turn off VSYNC and launch
 chmod +x ./emulate_mac.sh             # make the launch script executable
 ./emulate_mac.sh                      # launch the application
 ```
-
 
 ## How to play
 
