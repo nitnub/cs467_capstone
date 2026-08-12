@@ -76,6 +76,7 @@ int main(void) {
         return 1;
     }
 
+
     ////////////////////////
     // Set Up Application //
     ////////////////////////
@@ -88,8 +89,6 @@ int main(void) {
 
     ins.s = &myCpu;
     setupEmulator(&ins, mediaBucket, &audio);
-
-
 
 
     ////////////////////////
