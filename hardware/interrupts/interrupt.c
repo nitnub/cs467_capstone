@@ -328,17 +328,17 @@ int debuggerControl(struct instructionData *currentIns,
                     char* inputBuffer, 
                     int bufferSize) 
 {
-    // print registers & flags
-    printCPUState(currentIns->s);
-    
-    // disassemble upcoming instruction
-    copyOperands(currentIns, disassembler);
-
-    // print disassembly information
-    printInstruction(disassembler);
-
     // handle debugger control (stepping in, set breakpoint, continue, next)
     if (disassembler->stepControl == 1 || getReg16(currentIns->s, PC) == disassembler->breakpoint) {
+
+        // print registers & flags
+        printCPUState(currentIns->s);
+        
+        // disassemble upcoming instruction
+        copyOperands(currentIns, disassembler);
+
+        // print disassembly information
+        printInstruction(disassembler);
 
         // turn step control back on
         disassembler->stepControl = 1;
@@ -494,7 +494,7 @@ int debuggerControl(struct instructionData *currentIns,
 *
 *   @returns: 0 when loop has ended and exited gracefully
 */
-int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio) { // audio added
+int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio *audio, int debug, struct instructionData *disassembler) { // audio added
 
     // grab the cpu (state) from current instruction
     state *processor = currentIns->s;
@@ -504,6 +504,13 @@ int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio
 
     // turn on midscreen interrupt
     uint8_t needMidscreen = 1;
+
+    // initialize debugger
+    //disassembler->stepControl = 0;  // without debugger, turn off step control
+    char inputBuffer[3];
+    if (debug == 1) {
+        disassembler->stepControl = 1; // turn on step control until it's turned off
+    }
 
     int loopControl = 0;
     while (loopControl != 1) {
@@ -549,9 +556,13 @@ int runIntel8080(struct instructionData *currentIns, Media_t *mediaBucket, Audio
         // processInterrupt(processor, mediaBucket, ticks);
         processInterrupt(processor, mediaBucket, 0);
 
-
         // waits a 16th of VBLANK every 1041500 ticks
         waitCycles(processor, ticks, mediaBucket);
+
+        // debugger
+        if (debug == 1) {
+            debuggerControl(currentIns, disassembler, &loopControl, inputBuffer, sizeof(inputBuffer));
+        }
     }
 
 
