@@ -62,6 +62,40 @@ chmod +x ./emulate_mac.sh             # make the launch script executable
 | Player 1 | `←` | `→` | `Space` | `1` |
 | Player 2 | `A` | `D` | `Enter/Return` | `2` |
 
+## Debugger
+We have built a debugger that allows you to step through ROM code as it executes on our emulated CPU. 
+
+### Debugger Controls
+
+The debugger opens in your terminal at the same time a game is running. Please note that breakpoint addresses must be entered in hexadecimal.
+
+| Control | Description |
+|---|---|
+|`n`|`step forward one instruction`|
+|`b`|`set breakpoint`|
+|`c`|`continue to breakpoint`|
+|`q`|`quit debugger and game`|
+
+To use the debugger, run one of the following scripts:
+
+### Debian (Ubuntu, etc.)
+```bash
+chmod +x ./debug.sh                  
+./debug.sh
+```
+
+### Debian (Ubuntu, etc.) on WSL2/Windows
+```bash
+chmod +x ./debug_WSL.sh
+./debug_WSL.sh
+```
+
+### macOS
+```bash
+chmod +x ./debug_mac.sh
+./debug_mac.sh
+```
+
 
 ## License
 
