@@ -46,8 +46,8 @@ int waitCycles(state *processor, long ticks, Media_t *mediaBucket) {
         #else
             clock_nanosleep(CLOCK_MONOTONIC, 0, &cycleWait, NULL);
         #endif
-        
-}
+
+    }
 
     // wait the time expected for half of screen refresh cycle
     return 0;
