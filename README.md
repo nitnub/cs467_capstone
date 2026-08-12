@@ -32,7 +32,8 @@ chmod +x ./emulate.sh             # make the launch script executable
 Due to issues with the interaction between WSL2 and SDL, if you are running the project within WSL2, the display should render using the CPU, rather than GPU. In addition, VSYNC should be turned off. To do this, run:
 ```bash
 chmod +x ./emulate_WSL.sh                 # make launch script executable
-./emulate_WSL.sh                          # launch the application
+export SDL_RENDER_DRIVER=software     # render using CPU
+__GL_SYNC_TO_VBLANK=0 ./emulate_WSL.sh    # turn off VSYNC and launch
 ```
 
 ### macOS
@@ -40,6 +41,7 @@ chmod +x ./emulate_WSL.sh                 # make launch script executable
 chmod +x ./emulate_mac.sh             # make the launch script executable
 ./emulate_mac.sh                      # launch the application
 ```
+
 
 ## How to play
 
@@ -62,6 +64,39 @@ chmod +x ./emulate_mac.sh             # make the launch script executable
 | Player 1 | `←` | `→` | `Space` | `1` |
 | Player 2 | `A` | `D` | `Enter/Return` | `2` |
 
+## Debugger
+We have built a debugger that allows you to step through ROM code as it executes on our emulated CPU. 
+
+### Debugger Controls
+
+The debugger opens in your terminal at the same time a game is running. Please note that breakpoint addresses must be entered in hexadecimal.
+
+| Control | Description |
+|---|---|
+|`n`|`step forward one instruction`|
+|`b`|`set breakpoint`|
+|`c`|`continue to breakpoint`|
+|`q`|`quit debugger and game`|
+
+To use the debugger, run one of the following scripts:
+
+### Debian (Ubuntu, etc.)
+```bash
+chmod +x ./debug.sh                  
+./debug.sh
+```
+
+### Debian (Ubuntu, etc.) on WSL2/Windows
+```bash
+chmod +x ./debug_WSL.sh
+./debug_WSL.sh
+```
+
+### macOS
+```bash
+chmod +x ./debug_mac.sh
+./debug_mac.sh
+```
 
 ## License
 
